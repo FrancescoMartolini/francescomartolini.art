@@ -1,0 +1,16 @@
+{
+  "name": "Francesco Martolini .art",
+  "short_name": "FM.art",
+  "description": "Il tempo lascia tracce. Io le cerco.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafaf8",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "images/apple-touch-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "testo": "Il tempo non passa nelle immagini. Si deposita.",
+    "data": "2026-04-30",
+    "foto": null
+  },
+  {
+    "id": 2,
+    "testo": "Osservo. Aspetto. Raccolgo.",
+    "data": "2026-04-28",
+    "foto": null
+  },
+  {
+    "id": 3,
+    "testo": "Le storie non si inventano. Si riconoscono.",
+    "data": "2026-04-24",
+    "foto": null
+  },
+  {
+    "id": 4,
+    "testo": "A volte basta uno sguardo per capire dove sei.",
+    "data": "2026-04-18",
+    "foto": null
+  },
+  {
+    "id": 5,
+    "testo": "La luce giusta arriva sempre quando smetti di cercarla.",
+    "data": "2026-04-12",
+    "foto": null
+  },
+  {
+    "id": 6,
+    "testo": "Ogni fotografia è un frammento di silenzio.",
+    "data": "2026-04-05",
+    "foto": null
+  },
+  {
+    "id": 7,
+    "testo": "Non fotografo luoghi. Fotografo il tempo che li attraversa.",
+    "data": "2026-03-28",
+    "foto": null
+  }
+]

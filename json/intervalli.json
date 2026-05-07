@@ -1,0 +1,24 @@
+[
+  {
+    "id": "sequenza-01",
+    "titolo": "Sequenza 01",
+    "descrizione": "Appunti visivi. Provini. Sequenze brevi.",
+    "immagini": [
+      "images/intervalli/seq01-a.jpg",
+      "images/intervalli/seq01-b.jpg",
+      "images/intervalli/seq01-c.jpg"
+    ],
+    "pagina_libro": 13
+  },
+  {
+    "id": "sequenza-02",
+    "titolo": "Sequenza 02",
+    "descrizione": "Intervalli di sguardo e di tempo.",
+    "immagini": [
+      "images/intervalli/seq02-a.jpg",
+      "images/intervalli/seq02-b.jpg",
+      "images/intervalli/seq02-c.jpg"
+    ],
+    "pagina_libro": 15
+  }
+]
