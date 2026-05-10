@@ -5,11 +5,15 @@
     "anno": "2019 — in corso",
     "descrizione": "Un'indagine visiva sul rapporto tra spazio, memoria e identità urbana.",
     "testo_lungo": "Le città hanno una pelle. Strati di tempo sovrapposti, cicatrici di trasformazioni, rughe di abitudine.\n\nHo percorso le strade nelle ore più silenziose, cercando i segni che il giorno cancella. Muri che parlano, ombre che indicano, vuoti che raccontano più di qualsiasi presenza.\n\nLa pelle della città è un archivio in costruzione. Non cerca di essere esaustivo — cerca di essere onesto.",
-    "immagine_copertina": "images/progetti/la-pelle-della-citta/cover.jpg",
+    "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778416462/LaPelleDellaCitta40_ppttqh.jpg",
     "galleria": [
-      "images/progetti/la-pelle-della-citta/01.jpg",
-      "images/progetti/la-pelle-della-citta/02.jpg",
-      "images/progetti/la-pelle-della-citta/03.jpg"
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778416455/LaPelleDellaCitta107_sh3xyv.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778416463/LaPelleDellaCitta96_xa1ydm.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778416466/LaPelleDellaCitta93_lyiv6w.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778416462/LaPelleDellaCitta133_ivxt9p.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778416462/LaPelleDellaCitta91_n4lpsb.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778416462/LaPelleDellaCitta3_tcaiy5.png",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778416455/LaPelleDellaCitta112_merfsj.jpg"      
     ],
     "link_esterno": "",
     "mappa": {
@@ -21,16 +25,16 @@
     "pagina_libro": 3
   },
   {
-    "id": "anatomia-degli-alberi",
-    "titolo": "Anatomia degli alberi",
-    "anno": "2022 — 2024",
-    "descrizione": "Sequenze verticali. La struttura nascosta delle cose che crescono lentamente.",
-    "testo_lungo": "Gli alberi crescono due volte: verso l'alto e verso l'interno. Ogni anno aggiungono uno strato — visibile a chi sa tagliare, invisibile a chi passa.\n\nHo fotografato alberi per due anni, sempre nella stessa luce, sempre con la stessa distanza. Cercando non la bellezza ma la struttura.\n\nAnatomia degli alberi è un catalogo di forme. Un tentativo di capire cosa significa crescere con pazienza.",
-    "immagine_copertina": "images/progetti/anatomia-degli-alberi/cover.jpg",
+    "id": "PROGETTO-XPAN",
+    "titolo": "PROGETTO XPAN",
+    "anno": "2025",
+    "descrizione": "PROGETTO XPAN",
+    "testo_lungo": "PROGETTO XPAN",
+    "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778414649/cover_bpfi9g.jpg",
     "galleria": [
-      "images/progetti/anatomia-degli-alberi/01.jpg",
-      "images/progetti/anatomia-degli-alberi/02.jpg",
-      "images/progetti/anatomia-degli-alberi/03.jpg"
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778414649/03_epi573.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778414650/02_ernxtg.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778414649/01_x3gn0k.jpg"
     ],
     "pagina_libro": 5
   },
@@ -63,16 +67,16 @@
     "pagina_libro": 9
   },
   {
-    "id": "PROGETTO-XPAN",
-    "titolo": "PROGETTO XPAN",
-    "anno": "2025",
-    "descrizione": "PROGETTO XPAN",
-    "testo_lungo": "PROGETTO XPAN",
-    "immagine_copertina": "images/progetti/PROGETTO-XPAN/cover.jpg",
+    "id": "anatomia-degli-alberi",
+    "titolo": "Anatomia degli alberi",
+    "anno": "2022 — 2024",
+    "descrizione": "Sequenze verticali. La struttura nascosta delle cose che crescono lentamente.",
+    "testo_lungo": "Gli alberi crescono due volte: verso l'alto e verso l'interno. Ogni anno aggiungono uno strato — visibile a chi sa tagliare, invisibile a chi passa.\n\nHo fotografato alberi per due anni, sempre nella stessa luce, sempre con la stessa distanza. Cercando non la bellezza ma la struttura.\n\nAnatomia degli alberi è un catalogo di forme. Un tentativo di capire cosa significa crescere con pazienza.",
+    "immagine_copertina": "images/progetti/anatomia-degli-alberi/cover.jpg",
     "galleria": [
-      "images/progetti/PROGETTO-XPAN/01.jpg",
-      "images/progetti/PROGETTO-XPAN/02.jpg",
-      "images/progetti/PROGETTO-XPAN/03.jpg"
+      "images/progetti/anatomia-degli-alberi/01.jpg",
+      "images/progetti/anatomia-degli-alberi/02.jpg",
+      "images/progetti/anatomia-degli-alberi/03.jpg"
     ],
     "pagina_libro": 11
   },
@@ -88,6 +92,6 @@
       "images/progetti/PROGETTO-3.3/02.jpg",
       "images/progetti/PROGETTO-3.3/03.jpg"
     ],
-    "pagina_libro": 11
+    "pagina_libro": 13
   }  
 ]

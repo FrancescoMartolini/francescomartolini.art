@@ -4,21 +4,23 @@
     "titolo": "Sequenza 01",
     "descrizione": "Appunti visivi. Provini. Sequenze brevi.",
     "immagini": [
-      "images/intervalli/seq01-a.jpg",
-      "images/intervalli/seq01-b.jpg",
-      "images/intervalli/seq01-c.jpg"
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778415814/pisaStreet08082024-9_albncm.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778415812/pisaStreet08082024-3_gwewnt.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778415710/Street-Firenze12-05-2024-28_h0y4re.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778415708/MartoliniFrancesco-000000-poesia-2025-ST_mqsgzx.jpg"
     ],
-    "pagina_libro": 13
+    "pagina_libro": 16
   },
   {
     "id": "sequenza-02",
     "titolo": "Sequenza 02",
     "descrizione": "Intervalli di sguardo e di tempo.",
     "immagini": [
-      "images/intervalli/seq02-a.jpg",
-      "images/intervalli/seq02-b.jpg",
-      "images/intervalli/seq02-c.jpg"
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778415166/ProveSangimignano-05-03-2023-13_geb1es.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778415251/StreetFirenze08-03-2023-16_btqkbv.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778415271/StreetSangi09-03-2023-5_ugy906.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778415510/Napoli-77_efvsal.jpg"
     ],
-    "pagina_libro": 15
+    "pagina_libro": 17
   }
 ]

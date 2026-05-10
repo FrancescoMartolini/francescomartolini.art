@@ -6,130 +6,222 @@
   <meta name="description" content="Francesco Martolini .art — Il tempo lascia tracce. Io le cerco.">
   <meta name="theme-color" content="#0a0a0a">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="FM.art">
   <meta property="og:title" content="Francesco Martolini .art">
   <meta property="og:description" content="Il tempo lascia tracce. Io le cerco.">
   <meta property="og:type" content="website">
-
   <title>Francesco Martolini .art</title>
-
-  <!-- Favicon base (aggiornata dinamicamente da JS) -->
   <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="images/apple-touch-icon.svg">
   <link rel="manifest" href="images/manifest.json">
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="css/stile.css">
 </head>
 <body>
 
-  <!-- ══════════════════════════════
-       HEADER
-       ══════════════════════════════ -->
-  <header id="site-header" role="banner">
-
-    <span class="menu-logo" role="button" tabindex="0" aria-label="Torna all'inizio">
-      <span class="logo-sinistra">
-        <span>Francesco</span>
-        <span>Martolini</span>
-      </span>
+  <!-- ══ HEADER desktop ══ -->
+  <header id="site-header">
+    <a class="header-logo" href="#home">
+      <span class="logo-sinistra"><span>Francesco</span><span>Martolini</span></span>
       <span class="logo-destra">.art</span>
-    </span>
-
-
-    <!-- Menu desktop -->
-    <nav role="navigation" aria-label="Menu principale">
+    </a>
+    <nav>
       <ul class="menu-voci">
-        <li><a href="#" data-capitolo="progetti">Progetti</a></li>
-        <li><a href="#" data-capitolo="intervalli">Intervalli</a></li>
-        <li><a href="#" data-capitolo="chi sono">Chi sono</a></li>
-        <li><a href="#" data-capitolo="commerciali">Fotografie commerciali</a></li>
-        <li><a href="#" data-capitolo="taccuino">Taccuino</a></li>
-        <li><div class="menu-dot" aria-hidden="true"></div></li>
-        <!--<li>
-          <button id="translate-btn" onclick="attivaTranslate()"
-            style="background:none;border:none;font-size:11px;font-weight:400;letter-spacing:0.1em;text-transform:uppercase;color:var(--grigio-testo);cursor:pointer;">
-            EN
-          </button>
-        </li>-->
+        <li><a href="#progetti">Progetti</a></li>
+        <li><a href="#intervalli">Studi</a></li>
+        <li><a href="#chi-sono">Chi sono</a></li>
+        <li><a href="#collaborazioni">Collaborazioni</a></li>
+        <li><a href="#taccuino-section">Taccuino</a></li>
+        <li><div class="menu-dot"></div></li>
       </ul>
-
-      <!-- Toggle tema chiaro/scuro -->
-      <button id="tema-toggle" aria-label="Cambia tema" title="Tema chiaro / scuro">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="5"/>
-          <line x1="12" y1="1" x2="12" y2="3"/>
-          <line x1="12" y1="21" x2="12" y2="23"/>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-          <line x1="1" y1="12" x2="3" y2="12"/>
-          <line x1="21" y1="12" x2="23" y2="12"/>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-        </svg>
-      </button>
     </nav>
-
+    <button id="tema-toggle" aria-label="Tema chiaro/scuro">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
   </header>
 
-  <!-- ══════════════════════════════
-       LIBRO (area centrale)
-       ══════════════════════════════ -->
-  <main id="libro" role="main" aria-label="Il libro fotografico">
-    <!-- Generato da JavaScript -->
+  <!-- ══ MAIN ══ -->
+  <main id="main-content">
+
+    <!-- HOME -->
+    <section class="page" id="home" data-favicon="H" data-titolo="Home">
+      <div class="mobile-page-content">
+        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
+        <div class="pagina-corpo"><div><p class="capitolo-label">Francesco Martolini .art</p><h1 class="titolo-principale">Il tempo<br>lascia tracce.<br><em>Io le cerco.</em></h1></div></div>
+      </div>
+      <div class="desktop-hero">
+        <div class="hero-sinistra">
+          <h1 class="hero-titolo">Il tempo<br>lascia tracce.<br><em>Io le cerco.</em></h1>
+          <div class="hero-separatore"></div>
+          <p class="hero-sottotitolo">Fotografia come indagine.<br>Progetti come mappe del tempo.</p>
+          <a href="#progetti" class="hero-cta">Scopri i progetti <svg viewBox="0 0 24 24" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19,12 12,19 5,12"/></svg></a>
+        </div>
+        <div class="hero-destra"><div class="hero-immagine" id="hero-img"></div></div>
+        <div class="hero-margine-dx">
+          <span class="data-live"></span>
+          <div class="margine-separatore"></div>
+          <span class="ora-live"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROGETTI -->
+    <section class="page" id="progetti" data-favicon="P" data-titolo="Progetti">
+      <div class="mobile-page-content">
+        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
+        <div class="pagina-corpo"><div><p class="capitolo-label">Capitolo 01</p><h2 class="capitolo-titolo">Progetti</h2><p class="capitolo-descrizione">I progetti principali. Serie fotografiche.</p></div></div>
+      </div>
+      <div class="desktop-section desktop-progetti">
+        <div class="section-header-row">
+          <div class="section-label-wrap">
+            <p class="section-label">Progetti</p>
+            <p class="section-desc">Ogni progetto nasce da una domanda che il tempo continua a restituirmi.</p>
+            <a href="#tutti-progetti" class="section-link" onclick="apriPagina('tutti-progetti')">Vedi tutti →</a>
+          </div>
+          <div class="progetti-slider-wrap">
+            <div class="progetti-griglia" id="progetti-griglia-desktop"></div>
+            <button class="slider-arrow slider-arrow-sx" id="proj-sx" aria-label="Precedente">&#8592;</button>
+            <button class="slider-arrow slider-arrow-dx" id="proj-dx" aria-label="Successivo">&#8594;</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MOBILE: pagine singoli progetti -->
+    <div id="mobile-progetti-container"></div>
+
+    <!-- TACCUINO -->
+    <section class="page" id="taccuino-section" data-favicon="T" data-titolo="Taccuino">
+      <div class="mobile-page-content">
+        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
+        <div class="pagina-corpo"><div class="taccuino-wrap" id="taccuino-mobile-frase"><p class="taccuino-frase">—</p><p class="taccuino-data">—</p></div></div>
+      </div>
+      <div class="desktop-section desktop-taccuino">
+        <div class="section-header-col">
+          <p class="section-label">Taccuino</p>
+          <p class="section-desc">Appunti, pensieri, osservazioni.<br>Frammenti di un percorso in corso.</p>
+          <button class="section-link" onclick="apriTaccuino()">Leggi tutti →</button>
+        </div>
+        <div class="taccuino-colonne" id="taccuino-colonne-desktop"></div>
+      </div>
+    </section>
+
+    <!-- STUDI / INTERVALLI -->
+    <section class="page" id="intervalli" data-favicon="I" data-titolo="Studi">
+      <div class="mobile-page-content">
+        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
+        <div class="pagina-corpo"><div><p class="capitolo-label">Capitolo 02</p><h2 class="capitolo-titolo">Studi</h2><p class="capitolo-descrizione">Appunti visivi. Provini. Sequenze brevi.</p></div></div>
+      </div>
+      <div class="desktop-section desktop-studi">
+        <div class="section-header-col">
+          <p class="section-label">Studi</p>
+          <p class="section-desc">Fotografie che non appartengono a un progetto, ma al mio modo di guardare.</p>
+          <a href="#tutti-studi" class="section-link" onclick="apriPagina('tutti-studi')">Vedi tutti →</a>
+        </div>
+        <div class="studi-griglia" id="studi-griglia-desktop"></div>
+      </div>
+    </section>
+
+    <!-- MOBILE: pagine singoli intervalli -->
+    <div id="mobile-intervalli-container"></div>
+
+    <!-- CHI SONO -->
+    <section class="page" id="chi-sono" data-favicon="C" data-titolo="Chi sono">
+      <div class="mobile-page-content">
+        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
+        <div class="pagina-corpo">
+          <div class="chi-sono-wrap">
+            <div class="chi-sono-testo">
+              <h2>Un ritratto essenziale.<br><em>Parole e immagini che raccontano il percorso.</em></h2>
+              <p>Francesco Martolini è un fotografo italiano. Il suo lavoro esplora il rapporto tra spazio, tempo e memoria.</p>
+              <p>Basato tra Roma e Milano, lavora su progetti a lungo termine e commissioni selezionate.</p>
+            </div>
+            <div class="chi-sono-contatti">
+              <p class="contatti-label">Contatti</p>
+              <p class="contatti-nota">Non offro servizi di shooting su richiesta. Scrivimi se sei interessato a un'opera o vuoi costruire qualcosa insieme.</p>
+              <a class="contatto-btn" href="mailto:info@francescomartolini.art"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>info@francescomartolini.art</a>
+              <a class="contatto-btn" href="https://instagram.com/francescomartolini" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>@francescomartolini</a>
+              <a class="contatto-btn" href="tel:+39XXXXXXXXXX"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.09 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7a2 2 0 011.72 2.03z"/></svg>+39 XXX XXX XXXX</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="desktop-section desktop-chi-sono" id="collaborazioni">
+        <div class="chi-sono-desktop-sx">
+          <p class="section-label">Chi sono</p>
+          <p class="chi-sono-bio">Mi interessa il tempo.<br>Nelle sue forme,<br>nei suoi strati,<br>nelle sue assenze.</p>
+          <a href="#" class="section-link" onclick="apriPagina('chi-sono-pagina')">Scopri di più →</a>
+        </div>
+        <div class="chi-sono-desktop-img" id="chi-sono-img"><div style="width:100%;height:100%;background:var(--grigio-chiaro);"></div></div>
+        <div class="chi-sono-desktop-dx">
+          <p class="section-label">Collaborazioni fotografiche</p>
+          <p class="chi-sono-collab">Lavoro su progetti commerciali ed editoriali in ambiti diversi.</p>
+          <a href="#" class="section-link" onclick="apriPagina('collaborazioni-pagina')">Vedi alcuni lavori →</a>
+          <div class="chi-sono-social">
+            <a href="https://instagram.com/francescomartolini" target="_blank" rel="noopener" class="social-link">Instagram</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FIN mobile -->
+    <section class="page page-fin" id="fin" data-favicon="·" data-titolo="Fine">
+      <div class="mobile-page-content">
+        <div class="pagina-corpo"><div class="fin-wrap"><p class="fin-titolo">fin.</p><button class="fin-link" onclick="navigaA(0)">← Torna all'inizio</button></div></div>
+      </div>
+    </section>
+
   </main>
 
-  <!-- ══════════════════════════════
-       INDICATORE LATERALE
-       ══════════════════════════════ -->
-  <div id="indicatore" role="navigation" aria-label="Indicatore pagine"></div>
-
-  <!-- ══════════════════════════════
-       FOOTER — frecce + numero
-       ══════════════════════════════ -->
-  <footer id="site-footer" role="navigation" aria-label="Navigazione pagine">
-    <button class="freccia freccia-sx" id="freccia-sx" aria-label="Pagina precedente">Indietro</button>
-    <span id="numero-nav" aria-label="Pagina corrente">01</span>
-    <button class="freccia freccia-dx" id="freccia-dx" aria-label="Pagina successiva">Avanti</button>
+  <!-- ══ FOOTER desktop ══ -->
+  <footer id="site-footer-desktop">
+    <span class="footer-logo">Francesco Martolini</span>
+    <div class="footer-centro">
+      <a href="https://instagram.com/francescomartolini" target="_blank" rel="noopener">Instagram</a>
+      <a href="#">Vimeo</a>
+    </div>
+    <div class="footer-dx">© <span id="footer-anno"></span> Tutti i diritti riservati</div>
   </footer>
 
-  <!-- ══════════════════════════════
-       TOUCH HINT (mobile)
-       ══════════════════════════════ -->
-  <p id="touch-hint" aria-hidden="true">Scorri per sfogliare</p>
+  <!-- ══ MOBILE nav ══ -->
+  <div id="mobile-nav">
+    <button class="freccia freccia-sx" id="freccia-sx">← Indietro</button>
+    <span id="numero-nav">01</span>
+    <button class="freccia freccia-dx" id="freccia-dx">Avanti →</button>
+  </div>
 
-  <!-- ══════════════════════════════
-       OVERLAY — Pagina progetto
-       ══════════════════════════════ -->
-  <article id="pagina-progetto" aria-label="Dettaglio progetto" aria-hidden="true">
+  <div id="indicatore"></div>
+
+  <!-- ══ PAGINE OVERLAY (tutti i progetti, studi, chi sono, collaborazioni) ══ -->
+  <div id="overlay-pagina" class="overlay-pagina">
+    <div class="overlay-inner">
+      <button class="overlay-chiudi" onclick="chiudiPagina()">
+        <svg viewBox="0 0 24 24" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Chiudi
+      </button>
+      <div id="overlay-contenuto"></div>
+    </div>
+  </div>
+
+  <!-- ══ OVERLAY progetto dettaglio ══ -->
+  <article id="pagina-progetto" aria-hidden="true">
     <div class="progetto-interno"></div>
   </article>
 
-  <!-- ══════════════════════════════
-       OVERLAY — Archivio taccuino
-       ══════════════════════════════ -->
-  <section id="pagina-taccuino-archivio" aria-label="Archivio taccuino" aria-hidden="true">
+  <!-- ══ OVERLAY taccuino archivio ══ -->
+  <section id="pagina-taccuino-archivio" aria-hidden="true">
     <div class="taccuino-archivio-interno"></div>
   </section>
 
-  <!-- ══════════════════════════════
-       COOKIE BANNER
-       ══════════════════════════════ -->
-  <div id="cookie-banner" role="dialog" aria-label="Informativa cookie" aria-live="polite">
-    <p class="cookie-testo">
-      Questo sito usa solo cookie tecnici essenziali per il funzionamento.
-      Nessun cookie di profilazione o tracciamento.
-    </p>
+  <!-- ══ COOKIE ══ -->
+  <div id="cookie-banner">
+    <p class="cookie-testo">Questo sito usa solo cookie tecnici essenziali. Nessun cookie di profilazione.</p>
     <div class="cookie-azioni">
       <button class="cookie-btn cookie-btn-rifiuta" id="cookie-rifiuta">Solo essenziali</button>
       <button class="cookie-btn cookie-btn-accetta" id="cookie-accetta">Ho capito</button>
     </div>
   </div>
-
-  <!-- Google Translate 
-  <div id="google_translate_element" style="display:none"></div>-->
 
   <script src="js/libro.js"></script>
 </body>
