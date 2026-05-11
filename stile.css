@@ -87,7 +87,7 @@ body.tema-scuro {
   height: var(--header-h);
   z-index: 200;
   display: flex;
-  /*justify-content: space-between;*/
+  justify-content: space-between;
   align-items: center;
   padding: 0 clamp(24px, 5vw, 72px);
   background: var(--bianco);
