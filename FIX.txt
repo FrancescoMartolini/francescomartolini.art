@@ -3,3 +3,11 @@ Fix Implementazioni
 2. Cercare di capire se posso non scrivere io la pagina all'interno del json perchè se aggiungo un nuovo elemento poi devo riscrivere tutte le pagine
 3. ora nell'area progetti non visibile
 4. pagina fin togliere in basso inizio che la freccia è uguale alla freccia di indietro e vidsivamente non torna
+
+Cose da implementare:
+- Visualizzazione a tutto schermo di una foto solo nella pagina web desktop
+- rivedere il cursore in base allo sfondo deve cambiare il colore sia del puntatore che del cerchietto
+- inserire le immagini per capire la visione completa
+- spostare tutto a destra il menù
+- linkare su menù taccuino la pagina di tutto l'elenco delle note
+- 

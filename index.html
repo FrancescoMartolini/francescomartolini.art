@@ -28,11 +28,11 @@
     </a>
     <nav>
       <ul class="menu-voci">
-        <li><a href="#progetti">Progetti</a></li>
-        <li><a href="#intervalli">Studi</a></li>
-        <li><a href="#chi-sono">Chi sono</a></li>
-        <li><a href="#collaborazioni">Collaborazioni</a></li>
-        <li><a href="#taccuino-section">Taccuino</a></li>
+        <li><a class="section-link" onclick="apriPagina('tutti-progetti')">Progetti</a></li>
+        <li><a class="section-link" onclick="apriPagina('tutti-studi')">Intervalli</a></li>
+        <li><a class="section-link" onclick="apriPagina('chi-sono-pagina')">Chi sono</a></li>
+        <li><a class="section-link" onclick="apriPagina('collaborazioni-pagina')">Collaborazioni</a></li>
+        <li><a class="section-link" onclick="apriTaccuino()">Taccuino</a></li>
         <li><div class="menu-dot"></div></li>
       </ul>
     </nav>
@@ -57,7 +57,7 @@
           <p class="hero-sottotitolo">Fotografia come indagine.<br>Progetti come mappe del tempo.</p>
           <a href="#progetti" class="hero-cta">Scopri i progetti <svg viewBox="0 0 24 24" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19,12 12,19 5,12"/></svg></a>
         </div>
-        <div class="hero-destra"><div class="hero-immagine" id="hero-img"></div></div>
+        <div class="hero-destra"><div class="hero-immagine" id="hero-img" alt="Immagine" class="zoomable"></div></div>
         <div class="hero-margine-dx">
           <span class="data-live"></span>
           <div class="margine-separatore"></div>
@@ -92,12 +92,12 @@
     <div id="mobile-progetti-container"></div>
 
     <!-- TACCUINO -->
-    <section class="page" id="taccuino-section" data-favicon="T" data-titolo="Taccuino">
+    <section class="page" data-favicon="T" data-titolo="Taccuino">
       <div class="mobile-page-content">
         <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
         <div class="pagina-corpo"><div class="taccuino-wrap" id="taccuino-mobile-frase"><p class="taccuino-frase">—</p><p class="taccuino-data">—</p></div></div>
       </div>
-      <div class="desktop-section desktop-taccuino">
+      <div class="desktop-section desktop-taccuino" id="taccuino-section">
         <div class="section-header-col">
           <p class="section-label">Taccuino</p>
           <p class="section-desc">Appunti, pensieri, osservazioni.<br>Frammenti di un percorso in corso.</p>
