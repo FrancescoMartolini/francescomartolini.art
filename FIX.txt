@@ -9,5 +9,4 @@ Cose da implementare:
 - rivedere il cursore in base allo sfondo deve cambiare il colore sia del puntatore che del cerchietto
 - inserire le immagini per capire la visione completa
 - spostare tutto a destra il menù
-- linkare su menù taccuino la pagina di tutto l'elenco delle note
-- 
+Fatto - linkare su menù taccuino la pagina di tutto l'elenco delle note 
