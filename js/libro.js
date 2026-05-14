@@ -28,6 +28,7 @@ const stato = {
   progetti: [],
   intervalli: [],
   taccuino: [],
+  collaborazioni:[],
   sliderIdx: 0
 };
 
@@ -68,12 +69,14 @@ function parseCsv(csv) {
 
 // ── Carica dati ──
 async function caricaDati() {
-  const [progetti, intervalli] = await Promise.all([
+  const [progetti, intervalli, collaborazioni] = await Promise.all([
     fetch('json/progetti.json').then(r => r.json()),
-    fetch('json/intervalli.json').then(r => r.json())
+    fetch('json/intervalli.json').then(r => r.json()),
+    fetch('json/collaborazioni.json').then(r => r.json())
   ]);
   stato.progetti = progetti;
   stato.intervalli = intervalli;
+  stato.collaborazioni = collaborazioni
 
   try {
     const r = await fetch(SHEETS_URL);
@@ -350,14 +353,14 @@ function apriPagina(tipo) {
       // Placeholder collaborazioni (da riempire con dati reali)
       const grid = $('collab-grid');
       if (grid) {
-        ['Cliente A', 'Cliente B', 'Cliente C', 'Cliente D', 'Cliente E', 'Cliente F'].forEach((cliente, i) => {
+        stato.collaborazioni.forEach(v => {
           const item = crea('div'); item.className = 'collab-item';
           item.innerHTML = `
             <div class="collab-img"></div>
-            <p class="collab-cliente">${cliente}</p>
-            <p class="collab-anno">202${i % 3 + 3}</p>
+            <p class="collab-cliente">${v.titolo}</p>
+            <p class="collab-anno">${v.anno}</p>
           `;
-          item.querySelector('.collab-img').appendChild(creaImg(null, cliente));
+          item.querySelector('.collab-img').appendChild(creaImg(v.foto, v.titolo));
           grid.appendChild(item);
         });
       }
