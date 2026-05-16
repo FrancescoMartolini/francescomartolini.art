@@ -269,11 +269,12 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .section-link:hover { color: var(--nero); border-color: var(--nero); }
 
 @media (min-width: 769px) {
-  .progetto-galleria-img img,
-  .studi-griglia .studio-img img,
-  .tutti-studi-griglia .tutti-studio-img img,
-  .taccuino-voce-foto img { 
-    cursor: zoom-in !important; 
+  .progetto-galleria-img,
+  .studio-img,
+  .tutti-studio-img,
+  .taccuino-voce-foto,
+  .intervallo-img {
+    cursor: zoom-in;
   }
 }
 /* SLIDER PROGETTI */
@@ -375,7 +376,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   position: fixed; inset: 0; z-index: 350;
   background: var(--bianco);
   transform: translateY(100%);
-  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   overflow-y: auto;
 }
 
@@ -517,7 +518,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .taccuino-voce:last-child { border-bottom: 1px solid var(--grigio-chiaro); }
 .taccuino-voce-frase { font-family: var(--font-taccuino); font-size: clamp(20px, 2.8vw, 30px); line-height: 1.4; margin-bottom: 10px; }
 .taccuino-voce-foto { width: 100%; max-width: 300px; aspect-ratio: 4/3; overflow: hidden; margin-bottom: 10px; background: var(--grigio-chiaro); }
-.taccuino-voce-foto img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.taccuino-voce-foto img { width: 100%; height: 100%; object-fit: cover;; }
 .taccuino-voce-data { font-size: 11px; font-weight: 300; letter-spacing: 0.2em; color: var(--grigio-medio); }
 
 /* ── CONTATTO BTN (shared) ── */
@@ -571,7 +572,8 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
     position: absolute; inset: 0;
     opacity: 0; pointer-events: none;
     transform: translateX(60px);
-    transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      transition: opacity 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     will-change: transform, opacity;
   }
 
@@ -584,7 +586,8 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
     position: absolute; inset: 0;
     opacity: 0; pointer-events: none;
     transform: translateX(60px);
-    transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: opacity 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   .pagina-progetto-mobile.attiva { opacity: 1; pointer-events: all; transform: translateX(0); z-index: 2; }

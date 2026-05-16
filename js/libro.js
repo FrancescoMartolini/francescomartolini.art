@@ -158,16 +158,20 @@ function avviaCursore() {
     mx = e.clientX; my = e.clientY;
     c.style.left = mx + 'px'; c.style.top = my + 'px';
 
-    // Nascondi cursore per non intercettare elementFromPoint
-    c.style.visibility = 'hidden';
-    r.style.visibility = 'hidden';
-    const elSotto = document.elementFromPoint(mx, my);
-    c.style.visibility = '';
-    r.style.visibility = '';
-
-    if (elSotto) {
-      const bg = trovaBgReale(elSotto);
-      document.body.classList.toggle('cursore-invertito', isColorDark(bg));
+    // Throttle: controlla sfondo solo ogni 100ms
+    if (!avviaCursore._t) {
+      avviaCursore._t = setTimeout(() => {
+        avviaCursore._t = null;
+        c.style.visibility = 'hidden';
+        r.style.visibility = 'hidden';
+        const elSotto = document.elementFromPoint(mx, my);
+        c.style.visibility = '';
+        r.style.visibility = '';
+        if (elSotto) {
+          const bg = trovaBgReale(elSotto);
+          document.body.classList.toggle('cursore-invertito', isColorDark(bg));
+        }
+      }, 100);
     }
   });
 
@@ -241,6 +245,27 @@ function popolaDesktop() {
   const annoEl = $('footer-anno');
   if (annoEl) annoEl.textContent = new Date().getFullYear();
 }
+
+document.addEventListener('click', e => {
+  if (isMobile()) return;
+  if ($('lightbox')?.classList.contains('aperto')) return;
+
+  // Cerca img sia come target diretto che come figlio del target
+  const img = e.target.tagName === 'IMG'
+    ? e.target
+    : e.target.querySelector('img');
+
+  if (!img) return;
+  if (img.closest('#lightbox')) return;
+  if (img.closest('.progetto-card-img')) return;
+  if (img.closest('.hero-immagine')) return;
+  if (img.closest('.tutti-card-img')) return;
+  if (img.closest('.chi-sono-desktop-img')) return;
+  if (img.closest('.collab-img')) return;
+
+  const src = img.src;
+  if (src && !src.endsWith('favicon.svg')) apriLightbox(src, img.alt || '');
+});
 
 // ── Slider progetti ──
 function popolaSliderProgetti() {
@@ -387,6 +412,8 @@ function chiudiPagina() {
 }
 
 // ── Progetto dettaglio ──
+const _cacheProgetti = {};
+
 function apriProgetto(id) {
   const pr = stato.progetti.find(p => p.id === id);
   if (!pr) return;
@@ -394,37 +421,50 @@ function apriProgetto(id) {
   const el = $('pagina-progetto');
   const interno = el.querySelector('.progetto-interno');
 
-  const linkEsterno = pr.link_esterno
-    ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">Vedi online</a>` : '';
+  // Costruisce una sola volta, poi riusa
+  if (!_cacheProgetti[id]) {
+    const linkEsterno = pr.link_esterno
+      ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">Vedi online</a>` : '';
 
-  const mappaHTML = pr.mappa ? `
-    <div class="progetto-mappa-wrap">
-      <p class="progetto-mappa-label">${pr.mappa.label || 'Luogo'}</p>
-      <iframe class="progetto-mappa" src="https://maps.google.com/maps?q=${pr.mappa.lat},${pr.mappa.lng}&z=${pr.mappa.zoom||13}&output=embed" allowfullscreen loading="lazy"></iframe>
-    </div>` : '';
+    const mappaHTML = pr.mappa ? `
+      <div class="progetto-mappa-wrap">
+        <p class="progetto-mappa-label">${pr.mappa.label || 'Luogo'}</p>
+        <iframe class="progetto-mappa"
+          src="https://maps.google.com/maps?q=${pr.mappa.lat},${pr.mappa.lng}&z=${pr.mappa.zoom||13}&output=embed"
+          allowfullscreen loading="lazy"></iframe>
+      </div>` : '';
 
-  /*const galleriaHTML = pr.galleria.map(src =>
-    `<div class="progetto-galleria-img"><img src="${src}" alt="${pr.titolo}" draggable="false" oncontextmenu="return false"></div>`
-  ).join('');*/
-
-  const galleriaHTML = pr.galleria.map(src =>
-      `<div class="progetto-galleria-img" onclick="if(!window.matchMedia('(max-width:768px)').matches) apriLightbox('${src}', '${pr.titolo}')">
-        <img src="${src}" alt="${pr.titolo}" draggable="false" oncontextmenu="return false">
+    const galleriaHTML = pr.galleria.map(src =>
+      `<div class="progetto-galleria-img">
+        <img src="${src}" alt="${pr.titolo}" draggable="false"
+          loading="lazy" oncontextmenu="return false">
       </div>`
     ).join('');
 
-  interno.innerHTML = `
-    <button class="progetto-torna" onclick="chiudiProgetto()">Torna</button>
-    <div class="progetto-interno-header">
-      <div><h1 class="progetto-interno-titolo">${pr.titolo}</h1><p class="progetto-interno-anno">${pr.anno}</p></div>
-      <div class="progetto-interno-azioni">${linkEsterno}</div>
-    </div>
-    <p class="progetto-interno-testo">${pr.testo_lungo}</p>
-    ${mappaHTML}
-    <div class="progetto-galleria">${galleriaHTML}</div>
-  `;
+    _cacheProgetti[id] = `
+      <button class="progetto-torna" onclick="chiudiProgetto()">Torna</button>
+      <div class="progetto-interno-header">
+        <div><h1 class="progetto-interno-titolo">${pr.titolo}</h1>
+        <p class="progetto-interno-anno">${pr.anno}</p></div>
+        <div class="progetto-interno-azioni">${linkEsterno}</div>
+      </div>
+      <p class="progetto-interno-testo">${pr.testo_lungo}</p>
+      ${mappaHTML}
+      <div class="progetto-galleria">${galleriaHTML}</div>
+    `;
+  }
 
-  el.classList.add('aperta'); el.scrollTop = 0;
+  interno.innerHTML = _cacheProgetti[id];
+
+  // Aggiunge listener lightbox sulle immagini appena inserite
+  interno.querySelectorAll('.progetto-galleria-img img').forEach(img => {
+    img.addEventListener('click', () => {
+      if (!isMobile()) apriLightbox(img.src, img.alt);
+    });
+  });
+
+  el.classList.add('aperta');
+  el.scrollTop = 0;
 }
 
 function chiudiProgetto() { $('pagina-progetto').classList.remove('aperta'); }
@@ -714,8 +754,6 @@ function chiudiLightbox() {
   $('lightbox')?.classList.remove('aperto');
   document.body.style.overflow = '';
 }
-
-window.chiudiLightbox = chiudiLightbox;
 
 // ── Esponi globali ──
 window.navigaA = navigaA;
