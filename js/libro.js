@@ -528,7 +528,7 @@ function costruisciMobile() {
 
     const testo = crea('div'); testo.className = 'progetto-mobile-testo';
     const linkEsterno = pr.link_esterno ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">Vedi online</a>` : '';
-    testo.innerHTML = `<p class="progetto-anno">${pr.anno}</p><h2 class="progetto-titolo">${pr.titolo}</h2><button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>${linkEsterno}`;
+    testo.innerHTML = `<p class="progetto-anno">${pr.anno}</p><h2 class="progetto-titolo">${pr.titolo}</h2> <p class="progetto-anno">${pr.descrizione}</p> <button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>${linkEsterno}`;
     testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(pr.id));
 
     wrap.appendChild(imgDiv); wrap.appendChild(testo); p.appendChild(wrap);
