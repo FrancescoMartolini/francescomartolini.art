@@ -25,7 +25,7 @@ html { font-size: 16px; -webkit-font-smoothing: antialiased; scroll-behavior: sm
 body { background: var(--bianco); color: var(--nero); font-family: var(--font-testo); }
 a { color: inherit; text-decoration: none; }
 button { background: none; border: none; cursor: pointer; font: inherit; color: inherit; }
-img { display: block; -webkit-user-drag: none; pointer-events: none; user-select: none; }
+img { display: block; -webkit-user-drag: none; user-select: none; }
 
 /* ── TEMA SCURO ── */
 body.tema-scuro {
@@ -268,6 +268,14 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 
 .section-link:hover { color: var(--nero); border-color: var(--nero); }
 
+@media (min-width: 769px) {
+  .progetto-galleria-img img,
+  .studi-griglia .studio-img img,
+  .tutti-studi-griglia .tutti-studio-img img,
+  .taccuino-voce-foto img { 
+    cursor: zoom-in !important; 
+  }
+}
 /* SLIDER PROGETTI */
 .progetti-slider-wrap {
   flex: 1;
@@ -641,4 +649,53 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   #cookie-banner { flex-direction: column; align-items: flex-start; gap: 14px; padding-bottom: 60px; }
   .cookie-azioni { width: 100%; }
   .cookie-btn { flex: 1; text-align: center; }
+}
+
+/* ── LIGHTBOX ── */
+#lightbox {
+  position: fixed; inset: 0; z-index: 600;
+  display: none; align-items: center; justify-content: center;
+}
+
+#lightbox.aperto { display: flex; }
+
+#lightbox-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.92);
+  cursor: none;
+}
+
+#lightbox-wrap {
+  position: relative; z-index: 1;
+  max-width: 90vw; max-height: 90vh;
+  display: flex; align-items: center; justify-content: center;
+}
+
+#lightbox-img {
+  max-width: 90vw; max-height: 90vh;
+  width: auto; height: auto;
+  object-fit: contain;
+  pointer-events: none;
+  display: block;
+}
+
+#lightbox-chiudi {
+  position: fixed; top: 24px; right: 24px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.6);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; z-index: 2;
+}
+
+#lightbox-chiudi:hover { color: white; border-color: white; }
+#lightbox-chiudi svg { stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; }
+
+body.cursore-invertito #cursore {
+  background: #f5f4f0;
+}
+
+body.cursore-invertito #cursore-ring {
+  border-color: rgba(245, 244, 240, 0.6);
 }
