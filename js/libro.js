@@ -158,12 +158,16 @@ function avviaCursore() {
     mx = e.clientX; my = e.clientY;
     c.style.left = mx + 'px'; c.style.top = my + 'px';
 
-    // Controlla se il cursore è sopra un elemento scuro
-    const el = document.elementFromPoint(mx, my);
-    if (el) {
-      const bg = window.getComputedStyle(el).backgroundColor;
-      const isScuro = isColorDark(bg);
-      document.body.classList.toggle('cursore-invertito', isScuro);
+    // Nascondi cursore per non intercettare elementFromPoint
+    c.style.visibility = 'hidden';
+    r.style.visibility = 'hidden';
+    const elSotto = document.elementFromPoint(mx, my);
+    c.style.visibility = '';
+    r.style.visibility = '';
+
+    if (elSotto) {
+      const bg = trovaBgReale(elSotto);
+      document.body.classList.toggle('cursore-invertito', isColorDark(bg));
     }
   });
 
@@ -176,14 +180,24 @@ function avviaCursore() {
   animaRing();
 }
 
+function trovaBgReale(el) {
+  let current = el;
+  while (current && current !== document.documentElement) {
+    const bg = window.getComputedStyle(current).backgroundColor;
+    if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') return bg;
+    current = current.parentElement;
+  }
+  return window.getComputedStyle(document.body).backgroundColor;
+}
+
 function isColorDark(colorStr) {
-  // Parsa rgb/rgba e calcola luminosità
-  const match = colorStr.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if (!colorStr) return false;
+  const match = colorStr.match(/rgba?\((\d+),\s*(\d+),\s*(\d+),?\s*([\d.]*)/);
   if (!match) return false;
-  const [, r, g, b] = match.map(Number);
-  if (r === 0 && g === 0 && b === 0 && colorStr.includes('0)')) return false; // trasparente
-  const luminanza = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return luminanza < 0.35;
+  const [, r, g, b, a] = match;
+  if (parseFloat(a) === 0) return false; // trasparente
+  const luminanza = (0.299 * +r + 0.587 * +g + 0.114 * +b) / 255;
+  return luminanza < 0.4;
 }
 
 // ════════════════════════════════
@@ -299,7 +313,7 @@ function apriPagina(tipo) {
       break;
 
     case 'tutti-studi':
-      contenuto.innerHTML = `<h1 class="overlay-titolo">Studi</h1><p style="font-size:13px;font-weight:300;color:var(--grigio-testo);margin-bottom:40px;line-height:1.8;">Fotografie che non appartengono a un progetto, ma al mio modo di guardare.</p><div class="tutti-studi-griglia" id="tutti-studi-grid"></div>`;
+      contenuto.innerHTML = `<h1 class="overlay-titolo">Intervalli</h1><p style="font-size:13px;font-weight:300;color:var(--grigio-testo);margin-bottom:40px;line-height:1.8;">Fotografie che non appartengono a un progetto, ma al mio modo di guardare.</p><div class="tutti-studi-griglia" id="tutti-studi-grid"></div>`;
       overlay.classList.add('aperta');
       overlay.scrollTop = 0;
       stato.intervalli.flatMap(iv => iv.immagini).forEach((src, i) => {
@@ -389,9 +403,15 @@ function apriProgetto(id) {
       <iframe class="progetto-mappa" src="https://maps.google.com/maps?q=${pr.mappa.lat},${pr.mappa.lng}&z=${pr.mappa.zoom||13}&output=embed" allowfullscreen loading="lazy"></iframe>
     </div>` : '';
 
-  const galleriaHTML = pr.galleria.map(src =>
+  /*const galleriaHTML = pr.galleria.map(src =>
     `<div class="progetto-galleria-img"><img src="${src}" alt="${pr.titolo}" draggable="false" oncontextmenu="return false"></div>`
-  ).join('');
+  ).join('');*/
+
+  const galleriaHTML = pr.galleria.map(src =>
+      `<div class="progetto-galleria-img" onclick="if(!window.matchMedia('(max-width:768px)').matches) apriLightbox('${src}', '${pr.titolo}')">
+        <img src="${src}" alt="${pr.titolo}" draggable="false" oncontextmenu="return false">
+      </div>`
+    ).join('');
 
   interno.innerHTML = `
     <button class="progetto-torna" onclick="chiudiProgetto()">Torna</button>
@@ -601,6 +621,22 @@ function protezioneImmagini() {
   document.addEventListener('contextmenu', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
   document.addEventListener('dragstart', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
   document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && ['s','u','p'].includes(e.key)) e.preventDefault(); });
+
+    // Lightbox globale su desktop
+  document.addEventListener('click', e => {
+    if (isMobile()) return;
+    const img = e.target.closest('img');
+    if (!img) return;
+    // Escludi immagini di interfaccia (copertine card, hero)
+    if (img.closest('#lightbox')) return;
+    if (img.closest('.progetto-card-img')) return;
+    if (img.closest('.hero-immagine')) return;
+    if (img.closest('.tutti-card-img')) return;
+    if (img.closest('.chi-sono-desktop-img')) return;
+    const src = img.src;
+    const alt = img.alt || '';
+    if (src) apriLightbox(src, alt);
+  });
 }
 
 // ── Input ──
@@ -650,6 +686,37 @@ function inizializzaScrollDesktop() {
   });
 }
 
+function apriLightbox(src, alt) {
+  let lb = $('lightbox');
+  if (!lb) {
+    lb = crea('div'); lb.id = 'lightbox';
+    lb.innerHTML = `
+      <div id="lightbox-overlay"></div>
+      <div id="lightbox-wrap">
+        <img id="lightbox-img" src="" alt="">
+        <button id="lightbox-chiudi">
+          <svg viewBox="0 0 24 24" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    `;
+    document.body.appendChild(lb);
+    $('lightbox-overlay').addEventListener('click', chiudiLightbox);
+    $('lightbox-chiudi').addEventListener('click', chiudiLightbox);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') chiudiLightbox(); });
+  }
+  $('lightbox-img').src = src;
+  $('lightbox-img').alt = alt || '';
+  lb.classList.add('aperto');
+  document.body.style.overflow = 'hidden';
+}
+
+function chiudiLightbox() {
+  $('lightbox')?.classList.remove('aperto');
+  document.body.style.overflow = '';
+}
+
+window.chiudiLightbox = chiudiLightbox;
+
 // ── Esponi globali ──
 window.navigaA = navigaA;
 window.chiudiProgetto = chiudiProgetto;
@@ -657,6 +724,8 @@ window.chiudiTaccuino = chiudiTaccuino;
 window.apriTaccuino = apriTaccuino;
 window.apriPagina = apriPagina;
 window.chiudiPagina = chiudiPagina;
+window.apriLightbox = apriLightbox;
+window.chiudiLightbox = chiudiLightbox;
 
 // ── Init ──
 async function init() {
