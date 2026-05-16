@@ -53,19 +53,18 @@ body.tema-scuro {
     pointer-events: none;
     z-index: 9999;
     transform: translate(-50%, -50%);
-    transition: width 0.2s, height 0.2s, background 0.2s, mix-blend-mode 0.2s;
-    mix-blend-mode: normal;
+    transition: background 0.15s ease, width 0.2s, height 0.2s;
   }
 
   #cursore-ring {
     position: fixed;
     width: 32px; height: 32px;
     border-radius: 50%;
-    border: 1px solid rgba(10,10,10,0.2);
+    border: 1px solid rgba(10,10,10,0.25);
     pointer-events: none;
     z-index: 9998;
     transform: translate(-50%, -50%);
-    transition: border-color 0.2s;
+    transition: border-color 0.15s ease;
   }
 
   /* Cursore invertito quando sopra area scura */
@@ -74,7 +73,7 @@ body.tema-scuro {
   }
 
   body.cursore-invertito #cursore-ring {
-    border-color: rgba(245,244,240,0.3);
+    border-color: rgba(245,244,240,0.7);
   }
 }
 
@@ -695,10 +694,4 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 #lightbox-chiudi:hover { color: white; border-color: white; }
 #lightbox-chiudi svg { stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; }
 
-body.cursore-invertito #cursore {
-  background: #f5f4f0;
-}
-
-body.cursore-invertito #cursore-ring {
-  border-color: rgba(245, 244, 240, 0.6);
-}
+/* fine stile.css */

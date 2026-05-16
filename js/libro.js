@@ -97,8 +97,13 @@ function avviaOrologio() {
     const pad = n => String(n).padStart(2, '0');
     const oo = `${pad(o.getHours())}:${pad(o.getMinutes())}:${pad(o.getSeconds())}`;
     const dd = `${pad(o.getDate())}.${pad(o.getMonth()+1)}.${o.getFullYear()}`;
-    document.querySelectorAll('.ora-live').forEach(el => el.textContent = oo);
-    document.querySelectorAll('.data-live').forEach(el => el.textContent = dd);
+    // Aggiorna solo elementi visibili per non sprecare risorse
+    document.querySelectorAll('.ora-live').forEach(el => {
+      if (el.offsetParent !== null || el.closest('#orologio-sticky')) el.textContent = oo;
+    });
+    document.querySelectorAll('.data-live').forEach(el => {
+      if (el.offsetParent !== null || el.closest('#orologio-sticky')) el.textContent = dd;
+    });
   }
   tick(); setInterval(tick, 1000);
 }
@@ -120,12 +125,13 @@ function avviaOrologioSticky() {
 }
 
 // ── Immagine protetta ──
-function creaImg(src, alt) {
+function creaImg(src, alt, eager) {
   const wrap = crea('div');
   wrap.style.cssText = 'width:100%;height:100%;overflow:hidden;position:relative;background:var(--grigio-chiaro);';
   if (src) {
     const img = crea('img');
     img.src = src; img.alt = alt || ''; img.draggable = false;
+    img.loading = eager ? 'eager' : 'lazy';
     img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none;';
     img.onerror = () => {
       img.remove();
@@ -211,7 +217,7 @@ function popolaDesktop() {
   // Hero image
   const heroImg = $('hero-img');
   if (heroImg && stato.progetti[0]) {
-    heroImg.appendChild(creaImg(stato.progetti[0].immagine_copertina, stato.progetti[0].titolo));
+    heroImg.appendChild(creaImg(stato.progetti[0].immagine_copertina, stato.progetti[0].titolo, true));
   }
 
   // Slider progetti
@@ -246,26 +252,7 @@ function popolaDesktop() {
   if (annoEl) annoEl.textContent = new Date().getFullYear();
 }
 
-document.addEventListener('click', e => {
-  if (isMobile()) return;
-  if ($('lightbox')?.classList.contains('aperto')) return;
-
-  // Cerca img sia come target diretto che come figlio del target
-  const img = e.target.tagName === 'IMG'
-    ? e.target
-    : e.target.querySelector('img');
-
-  if (!img) return;
-  if (img.closest('#lightbox')) return;
-  if (img.closest('.progetto-card-img')) return;
-  if (img.closest('.hero-immagine')) return;
-  if (img.closest('.tutti-card-img')) return;
-  if (img.closest('.chi-sono-desktop-img')) return;
-  if (img.closest('.collab-img')) return;
-
-  const src = img.src;
-  if (src && !src.endsWith('favicon.svg')) apriLightbox(src, img.alt || '');
-});
+// listener lightbox spostato dentro protezioneImmagini()
 
 // ── Slider progetti ──
 function popolaSliderProgetti() {
@@ -470,24 +457,31 @@ function apriProgetto(id) {
 function chiudiProgetto() { $('pagina-progetto').classList.remove('aperta'); }
 
 // ── Taccuino archivio ──
+let _cacheTaccuino = null;
+
 function apriTaccuino() {
   const el = $('pagina-taccuino-archivio');
   const interno = el.querySelector('.taccuino-archivio-interno');
 
-  const voci = stato.taccuino.map(v => {
-    const foto = v.foto ? `<div class="taccuino-voce-foto"><img src="${v.foto}" alt="" draggable="false"></div>` : '';
-    return `<div class="taccuino-voce" data-testo="${v.testo.toLowerCase()}">${foto}<p class="taccuino-voce-frase">${v.testo}</p><p class="taccuino-voce-data">${formatData(v.data)}</p></div>`;
-  }).join('');
+  if (!_cacheTaccuino) {
+    const voci = stato.taccuino.map(v => {
+      const foto = v.foto ? `<div class="taccuino-voce-foto"><img src="${v.foto}" alt="" draggable="false" loading="lazy"></div>` : '';
+      return `<div class="taccuino-voce" data-testo="${v.testo.toLowerCase()}">${foto}<p class="taccuino-voce-frase">${v.testo}</p><p class="taccuino-voce-data">${formatData(v.data)}</p></div>`;
+    }).join('');
 
-  interno.innerHTML = `
-    <button class="progetto-torna" onclick="chiudiTaccuino()">Chiudi</button>
-    <h1>Taccuino</h1>
-    <div class="taccuino-cerca-wrap">
-      <input type="search" id="taccuino-cerca" class="taccuino-cerca" placeholder="Cerca nel taccuino..." autocomplete="off" spellcheck="false">
-      <span id="taccuino-risultati" class="taccuino-risultati"></span>
-    </div>
-    <div id="taccuino-lista">${voci}</div>
-  `;
+    _cacheTaccuino = `
+      <button class="progetto-torna" onclick="chiudiTaccuino()">Chiudi</button>
+      <h1>Taccuino</h1>
+      <div class="taccuino-cerca-wrap">
+        <input type="search" id="taccuino-cerca" class="taccuino-cerca"
+          placeholder="Cerca nel taccuino..." autocomplete="off" spellcheck="false">
+        <span id="taccuino-risultati" class="taccuino-risultati"></span>
+      </div>
+      <div id="taccuino-lista">${voci}</div>
+    `;
+  }
+
+  interno.innerHTML = _cacheTaccuino;
 
   const input = $('taccuino-cerca'), lista = $('taccuino-lista'), risultati = $('taccuino-risultati');
   input.addEventListener('input', () => {
@@ -662,20 +656,26 @@ function protezioneImmagini() {
   document.addEventListener('dragstart', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
   document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && ['s','u','p'].includes(e.key)) e.preventDefault(); });
 
-    // Lightbox globale su desktop
+  // Lightbox globale su desktop — unico listener
   document.addEventListener('click', e => {
     if (isMobile()) return;
-    const img = e.target.closest('img');
+    if ($('lightbox')?.classList.contains('aperto')) return;
+
+    // Intercetta click sul div contenitore O sull'img direttamente
+    const img = e.target.tagName === 'IMG'
+      ? e.target
+      : e.target.querySelector('img');
+
     if (!img) return;
-    // Escludi immagini di interfaccia (copertine card, hero)
     if (img.closest('#lightbox')) return;
     if (img.closest('.progetto-card-img')) return;
     if (img.closest('.hero-immagine')) return;
     if (img.closest('.tutti-card-img')) return;
     if (img.closest('.chi-sono-desktop-img')) return;
+    if (img.closest('.collab-img')) return;
+
     const src = img.src;
-    const alt = img.alt || '';
-    if (src) apriLightbox(src, alt);
+    if (src && !src.endsWith('favicon.svg')) apriLightbox(src, img.alt || '');
   });
 }
 
