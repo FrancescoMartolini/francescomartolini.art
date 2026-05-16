@@ -588,14 +588,16 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
     transition: opacity 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
+  .pagina.pagina-progetto-mobile .pagina-header,
+  .pagina-progetto-mobile .pagina-header { position: absolute; top: 16px; left: 0; right: 0; justify-content: center; margin-bottom: 0;}
 
   .pagina-progetto-mobile.attiva { opacity: 1; pointer-events: all; transform: translateX(0); z-index: 2; }
   .pagina-progetto-mobile.uscita-sinistra { opacity: 0; transform: translateX(-60px); z-index: 1; }
 
-  .progetto-mobile-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; }
-  .progetto-mobile-img { width: 100%; height: 52vw; min-height: 180px; max-height: 240px; flex-shrink: 0; overflow: hidden; background: var(--grigio-chiaro); }
+  .progetto-mobile-wrap { position: absolute; left: 0; right: 0; top: 52px; bottom: 0; display: flex; flex-direction: column; justify-content: center; padding: 20px; gap: 20px;}
+  .progetto-mobile-img { width: 100%; height: 44vw; min-height: 160px; max-height: 220px; flex-shrink: 0; overflow: hidden; background: var(--grigio-chiaro); border-radius: 2px;}
   .progetto-mobile-img > div, .progetto-mobile-img img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-  .progetto-mobile-testo { flex: 1; padding: 20px 20px 8px; display: flex; flex-direction: column; justify-content: flex-start; overflow-y: auto; }
+  .progetto-mobile-testo { padding: 0; display: flex; flex-direction: column; justify-content: flex-start;}
 
   .pagina-header { display: flex; justify-content: center; margin-bottom: 12px; flex-shrink: 0; }
   .data-ora { text-align: center; font-size: 11px; font-weight: 300; color: var(--grigio-medio); line-height: 1.6; letter-spacing: 0.06em; }

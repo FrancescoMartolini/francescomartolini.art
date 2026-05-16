@@ -516,6 +516,12 @@ function costruisciMobile() {
     const p = crea('div'); p.className = 'page pagina-progetto-mobile';
     p.dataset.favicon = pr.titolo[0].toUpperCase(); p.dataset.titolo = pr.titolo;
 
+    //data/ora
+    const ph = crea('div'); ph.className = 'pagina-header';
+    ph.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
+    p.appendChild(ph);
+
+
     const wrap = crea('div'); wrap.className = 'progetto-mobile-wrap';
     const imgDiv = crea('div'); imgDiv.className = 'progetto-mobile-img';
     imgDiv.appendChild(creaImg(pr.immagine_copertina, pr.titolo));
