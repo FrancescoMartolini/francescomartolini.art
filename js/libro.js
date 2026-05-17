@@ -29,6 +29,7 @@ const stato = {
   intervalli: [],
   taccuino: [],
   collaborazioni:[],
+  intro:{},
   sliderIdx: 0
 };
 
@@ -69,14 +70,16 @@ function parseCsv(csv) {
 
 // ── Carica dati ──
 async function caricaDati() {
-  const [progetti, intervalli, collaborazioni] = await Promise.all([
+  const [progetti, intervalli, collaborazioni,intro] = await Promise.all([
     fetch('json/progetti.json').then(r => r.json()),
     fetch('json/intervalli.json').then(r => r.json()),
-    fetch('json/collaborazioni.json').then(r => r.json())
+    fetch('json/collaborazioni.json').then(r => r.json()),
+    fetch('json/intro.json').then(r => r.json()).catch(() => ({ testo: '' }))
   ]);
   stato.progetti = progetti;
   stato.intervalli = intervalli;
-  stato.collaborazioni = collaborazioni
+  stato.collaborazioni = collaborazioni;
+  stato.intro = intro;
 
   try {
     const r = await fetch(SHEETS_URL);
@@ -503,6 +506,35 @@ function chiudiTaccuino() { $('pagina-taccuino-archivio').classList.remove('aper
 // MOBILE — Costruisci pagine
 // ════════════════════════════════
 function costruisciMobile() {
+
+  // Pagina introduzione — inserita dopo #home nel flusso delle pagine
+  if (stato.intro && stato.intro.testo) {
+    const pIntro = crea('div');
+    pIntro.className = 'page';
+    pIntro.id = 'intro-mobile';
+    pIntro.dataset.favicon = '∙';
+    pIntro.dataset.titolo = stato.intro.titolo || 'Introduzione';
+
+    const mpc = crea('div'); mpc.className = 'mobile-page-content';
+    const ph = crea('div'); ph.className = 'pagina-header';
+    ph.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
+    const pc = crea('div'); pc.className = 'pagina-corpo';
+    pc.innerHTML = `
+      <div class="introduzione-wrap">
+        <p class="capitolo-label">${stato.intro.titolo || 'Introduzione'}</p>
+        <p class="introduzione-testo">${stato.intro.testo.replace(/\n/g, '<br>')}</p>
+        <p class="introduzione-firma">${stato.intro.firma}<br><span>${stato.intro.anno}</span></p>
+      </div>
+    `;
+    mpc.appendChild(ph);
+    mpc.appendChild(pc);
+    pIntro.appendChild(mpc);
+
+    // Inserisce nel DOM dopo #home, dentro #main-content
+    const homeSection = document.querySelector('#main-content #home');
+    if (homeSection) homeSection.after(pIntro);
+  }
+  
   // Taccuino prima frase
   const taccuinoFrase = $('taccuino-mobile-frase');
   if (taccuinoFrase && stato.taccuino[0]) {
@@ -520,7 +552,6 @@ function costruisciMobile() {
     const ph = crea('div'); ph.className = 'pagina-header';
     ph.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
     p.appendChild(ph);
-
 
     const wrap = crea('div'); wrap.className = 'progetto-mobile-wrap';
     const imgDiv = crea('div'); imgDiv.className = 'progetto-mobile-img';

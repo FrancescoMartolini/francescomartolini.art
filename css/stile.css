@@ -12,7 +12,7 @@
   --grigio-testo: #5a5855;
   --font-titolo: 'Playfair Display', Georgia, serif;
   --font-testo: 'Inter', system-ui, sans-serif;
-  --font-taccuino: 'Caveat Brush', cursive;
+  --font-taccuino: 'Caveat Brush', cursive; /*var(--font-titolo); */
   --transizione: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --header-h: 60px;
   /* Colori inversione nella sezione progetti */
@@ -557,6 +557,43 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .desktop-section { display: none !important; }
   .desktop-chi-sono { display: none !important; }
   #site-footer-desktop { display: none; }
+
+  .introduzione-wrap {
+    max-width: 560px;
+    width: 100%;
+  }
+
+  .capitolo-label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--grigio-medio);
+    margin-bottom: 28px;
+  }
+
+  .introduzione-testo {
+    font-family: var(--font-titolo);
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.85;
+    color: var(--grigio-testo);
+    margin-bottom: 40px;
+  }
+
+  .introduzione-firma {
+    font-family: var(--font-testo);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--grigio-medio);
+    line-height: 1.8;
+  }
+
+  .introduzione-firma span {
+    color: var(--grigio-chiaro);
+  }
 
   .mobile-page-content { display: flex !important; }
   #mobile-nav { display: flex; }
