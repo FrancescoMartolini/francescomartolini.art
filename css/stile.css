@@ -573,9 +573,9 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 
   .introduzione-testo {
     font-family: var(--font-titolo);
-    font-size: clamp(16px, 2vw, 20px);
+    font-size: clamp(14px, 2vw, 20px);
     font-weight: 400;
-    font-style: italic;
+    /*font-style: italic;*/
     line-height: 1.85;
     color: var(--grigio-testo);
     margin-bottom: 40px;
