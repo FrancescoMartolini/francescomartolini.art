@@ -610,6 +610,49 @@ function costruisciMobile() {
     }
   });
 
+  // Pagine collaborazioni commerciali
+  const containerCollab = $('mobile-collaborazioni-container');
+  if (containerCollab && stato.collaborazioni.length > 0) {
+    
+    // Pagina indice collaborazioni
+    const pIndice = crea('div'); pIndice.className = 'page';
+    pIndice.dataset.favicon = 'F'; pIndice.dataset.titolo = 'Fotografie commerciali';
+    const mpcI = crea('div'); mpcI.className = 'mobile-page-content';
+    const phI = crea('div'); phI.className = 'pagina-header';
+    phI.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
+    const pcI = crea('div'); pcI.className = 'pagina-corpo';
+    pcI.innerHTML = `<div><p class="capitolo-label">Capitolo 03</p><h2 class="capitolo-titolo">Fotografie commerciali</h2><p class="capitolo-descrizione">Lavoro su progetti commerciali ed editoriali in ambiti diversi.</p></div>`;
+    mpcI.appendChild(phI); mpcI.appendChild(pcI); pIndice.appendChild(mpcI);
+    containerCollab.appendChild(pIndice);
+
+    /* Pagina per ogni collaborazione*/
+    stato.collaborazioni.forEach(cl => {
+      const p = crea('div'); p.className = 'page pagina-progetto-mobile';
+      p.dataset.favicon = cl.titolo[0].toUpperCase(); p.dataset.titolo = cl.titolo;
+
+      const ph = crea('div'); ph.className = 'pagina-header';
+      ph.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
+      p.appendChild(ph);
+
+      const wrap = crea('div'); wrap.className = 'progetto-mobile-wrap';
+      const imgDiv = crea('div'); imgDiv.className = 'progetto-mobile-img';
+      imgDiv.appendChild(creaImg(cl.foto, cl.titolo));
+
+      const testo = crea('div'); testo.className = 'progetto-mobile-testo';
+      testo.innerHTML = `
+        <p class="progetto-anno">${cl.anno}</p>
+        <h2 class="progetto-titolo">${cl.titolo}</h2>
+        <p class="capitolo-titolo">${cl.descrizione}</p>
+      `;
+
+      wrap.appendChild(imgDiv); wrap.appendChild(testo); p.appendChild(wrap);
+      containerCollab.appendChild(p);
+    });
+
+    //Da implementare un unica pagina con le collaborazioni e se clicco su un immagine apre l'immagine a schermo interno
+
+  }
+
   raccogliPagine();
 }
 

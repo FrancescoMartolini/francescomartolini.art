@@ -143,6 +143,7 @@ body.tema-scuro {
 .page-fin { display: none; }
 #mobile-progetti-container { display: none; }
 #mobile-intervalli-container { display: none; }
+#mobile-collaborazioni-container { display: none; }
 .desktop-hero { display: grid; }
 .desktop-section { display: flex; }
 
@@ -437,7 +438,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .chi-sono-esteso-testo p { font-size: 14px; font-weight: 300; line-height: 2; color: var(--grigio-testo); margin-bottom: 18px; }
 .chi-sono-esteso-img { position: sticky; top: 80px; aspect-ratio: 3/4; background: var(--grigio-chiaro); overflow: hidden; }
 .chi-sono-esteso-img img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-.chi-sono-contatti-esteso { margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--grigio-chiaro); display: flex; flex-direction: column; gap: 0; }
+.chi-sono-contatti-esteso { margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--grigio-chiaro); display: flex; flex-direction: column; gap: 0;}
 
 /* Collaborazioni */
 .collab-intro { font-size: 14px; font-weight: 300; line-height: 2; color: var(--grigio-testo); max-width: 560px; margin-bottom: 48px; }
@@ -601,6 +602,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .page-fin { display: flex !important; }
   #mobile-progetti-container { display: block; }
   #mobile-intervalli-container { display: block; }
+  #mobile-collaborazioni-container {display: block;}
 
   #main-content { padding-top: 0; position: fixed; inset: 0; bottom: 44px; overflow: hidden; }
 
@@ -663,7 +665,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .chi-sono-wrap { display: flex; flex-direction: column; gap: 20px; max-width: 100%; width: 100%; overflow-y: auto; }
   .chi-sono-testo h2 { font-family: var(--font-titolo); font-size: clamp(18px, 5vw, 26px); font-weight: 400; line-height: 1.25; margin-bottom: 14px; }
   .chi-sono-testo p { font-size: 12px; font-weight: 300; line-height: 1.9; color: var(--grigio-testo); margin-bottom: 10px; }
-  .chi-sono-contatti { display: flex; flex-direction: column; }
+  .chi-sono-contatti { display: flex; flex-direction: column; align-items: center; }
   .contatti-label { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--grigio-medio); margin-bottom: 6px; }
   .contatti-nota { font-size: 11px; font-weight: 300; line-height: 1.7; color: var(--grigio-testo); font-style: italic; margin-bottom: 12px; }
 
