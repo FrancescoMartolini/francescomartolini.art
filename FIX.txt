@@ -1,0 +1,7 @@
+Implementazioni da aggiungere:
+- La pagina ha scroll verticale interno per scorrere tutti i clienti, con immagine in aspect-ratio 3/2, titolo in Playfair e anno sotto. Un'unica pagina nel libro.
+- prima il testo, poi il titolo capitolo — così nel libro appaiono nell'ordine giusto: prima "Capitolo 0 — Introduzione" poi il testo con scroll.
+- Risalendo il DOM fino a 4 livelli, trova l'immagine anche quando il click arriva sull'overlay trasparente.
+- L'URL da Google My Maps lo trovi su My Maps → Condividi → Incorpora nella pagina — prendi il valore src dell'iframe che ti dà.
+- I progetti che non hanno contenuto continuano a funzionare esattamente come prima con testo_lungo + galleria.
+- script di generazione e il template statico ottimizzato per Kobo/e-ink.
