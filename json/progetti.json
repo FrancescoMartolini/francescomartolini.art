@@ -4,7 +4,31 @@
     "titolo": "La pelle della città",
     "anno": "2024 - 2025",
     "descrizione": "Ogni muro ha una storia. Basta avvicinarsi abbastanza.",
-    "testo_lungo": "Firenze è una città che conosciamo bene, ma spesso la osserviamo distrattamente. Eppure, ogni angolo, ogni muro, è una pagina della sua storia, scritta da chi l'ha attraversata, da chi ha lasciato un segno senza sapere che avrebbe parlato anche a chi sarebbe passato dopo. 'La Pelle Della Città' è il mio tentativo di restituire queste tracce, di fermare il tempo in un luogo dove il passato e il presente si incontrano ogni giorno. Ogni città ha una pelle, una superficie che racconta la sua storia attraverso i segni lasciati dal tempo e dalle persone. Firenze, con le sue strade intrise di arte e memoria, non è solo fatta di monumenti e architetture storiche, ma anche di dettagli nascosti che sfuggono alla vista distratta. Questo progetto fotografico si propone di esplorare questi segni, dando voce ai muri attraverso un'inedita lettura della città.",
+    "contenuto": [
+      {
+        "tipo": "testo",
+        "valore": "Firenze è una città che conosciamo bene, ma spesso la osserviamo distrattamente. Eppure, ogni angolo, ogni muro, è una pagina della sua storia, scritta da chi l'ha attraversata, da chi ha lasciato un segno senza sapere che avrebbe parlato anche a chi sarebbe passato dopo. 'La Pelle Della Città' è il mio tentativo di restituire queste tracce, di fermare il tempo in un luogo dove il passato e il presente si incontrano ogni giorno. Ogni città ha una pelle, una superficie che racconta la sua storia attraverso i segni lasciati dal tempo e dalle persone. Firenze, con le sue strade intrise di arte e memoria, non è solo fatta di monumenti e architetture storiche, ma anche di dettagli nascosti che sfuggono alla vista distratta. Questo progetto fotografico si propone di esplorare questi segni, dando voce ai muri attraverso un'inedita lettura della città."
+      },
+      {
+        "tipo": "immagine",
+        "valore": "images/progetti/la-pelle-della-citta/01.jpg"
+      },
+      {
+        "tipo": "testo",
+        "valore": "Muri che parlano, ombre che indicano, vuoti che raccontano più di qualsiasi presenza."
+      },
+      {
+        "tipo": "mappa"
+      },
+      {
+        "tipo": "testo",
+        "valore": "La pelle della città è un archivio in costruzione. Non cerca di essere esaustivo."
+      },
+      {
+        "tipo": "immagine",
+        "valore": "images/progetti/la-pelle-della-citta/02.jpg"
+      }
+    ],
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778416462/LaPelleDellaCitta40_ppttqh.jpg",
     "galleria": [
       "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778416455/LaPelleDellaCitta107_sh3xyv.jpg",
@@ -17,10 +41,8 @@
     ],
     "link_esterno": "",
     "mappa": {
-      "lat": 41.9028,
-      "lng": 12.4964,
-      "zoom": 13,
-      "label": "Roma — luoghi del progetto"
+      "url": "https://www.google.com/maps/d/embed?mid=XXXXX",
+      "label": "Luoghi del progetto"
     },
     "pagina_libro": 3
   },
