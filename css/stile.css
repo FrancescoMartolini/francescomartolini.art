@@ -273,6 +273,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .studio-img,
   .tutti-studio-img,
   .taccuino-voce-foto,
+  .mobile-only { display: none !important; }
   .intervallo-img {
     cursor: zoom-in;
   }
