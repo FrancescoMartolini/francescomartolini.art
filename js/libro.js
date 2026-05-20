@@ -416,13 +416,30 @@ function apriProgetto(id) {
     const linkEsterno = pr.link_esterno
       ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">Vedi online</a>` : '';
 
-    const mappaHTML = pr.mappa ? `
-      <div class="progetto-mappa-wrap">
-        <p class="progetto-mappa-label">${pr.mappa.label || 'Luogo'}</p>
-        <iframe class="progetto-mappa"
-          src="https://maps.google.com/maps?q=${pr.mappa.lat},${pr.mappa.lng}&z=${pr.mappa.zoom||13}&output=embed"
-          allowfullscreen loading="lazy"></iframe>
-      </div>` : '';
+    let mappaHTML = '';
+    if (pr.mappa) {
+      const label = pr.mappa.label || 'Luogo';
+      let iframeSrc = '';
+
+      if (pr.mappa.url) {
+        // Google My Maps — usa l'URL direttamente
+        iframeSrc = pr.mappa.url;
+      } else if (pr.mappa.lat && pr.mappa.lng) {
+        // Coordinate classiche
+        iframeSrc = `https://maps.google.com/maps?q=${pr.mappa.lat},${pr.mappa.lng}&z=${pr.mappa.zoom||13}&output=embed`;
+      }
+
+      if (iframeSrc) {
+        mappaHTML = `
+          <div class="progetto-mappa-wrap">
+            <p class="progetto-mappa-label">${label}</p>
+            <iframe class="progetto-mappa"
+              src="${iframeSrc}"
+              allowfullscreen loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>`;
+      }
+    }
 
     const galleriaHTML = pr.galleria.map(src =>
       `<div class="progetto-galleria-img">
@@ -434,13 +451,13 @@ function apriProgetto(id) {
     _cacheProgetti[id] = `
       <button class="progetto-torna" onclick="chiudiProgetto()">Torna</button>
       <div class="progetto-interno-header">
-        <div><h1 class="progetto-interno-titolo">${pr.titolo}</h1>
-        <p class="progetto-interno-anno">${pr.anno}</p></div>
+        <div>
+          <h1 class="progetto-interno-titolo">${pr.titolo}</h1>
+          <p class="progetto-interno-anno">${pr.anno}</p>
+        </div>
         <div class="progetto-interno-azioni">${linkEsterno}</div>
       </div>
-      <p class="progetto-interno-testo">${pr.testo_lungo}</p>
-      ${mappaHTML}
-      <div class="progetto-galleria">${galleriaHTML}</div>
+      ${generaContenutoProgetto(pr)}
     `;
   }
 
@@ -455,6 +472,73 @@ function apriProgetto(id) {
 
   el.classList.add('aperta');
   el.scrollTop = 0;
+}
+
+function generaContenutoProgetto(pr) {
+  // Fallback: struttura vecchia con testo_lungo + galleria
+  if (!pr.contenuto) {
+    const galleriaHTML = pr.galleria.map(src =>
+      `<div class="progetto-galleria-img">
+        <img src="${src}" alt="${pr.titolo}" draggable="false" loading="lazy">
+      </div>`
+    ).join('');
+
+    const mappaHTML = generaMappaHTML(pr);
+
+    return `
+      <p class="progetto-interno-testo">${pr.testo_lungo.replace(/\n/g, '<br>')}</p>
+      ${mappaHTML}
+      <div class="progetto-galleria">${galleriaHTML}</div>
+    `;
+  }
+
+  // Nuova struttura a blocchi
+  return pr.contenuto.map(blocco => {
+    switch (blocco.tipo) {
+      case 'testo':
+        return `<p class="progetto-interno-testo">${blocco.valore.replace(/\n/g, '<br>')}</p>`;
+
+      case 'immagine':
+        return `<div class="progetto-galleria-img">
+          <img src="${blocco.valore}" alt="${pr.titolo}" draggable="false" loading="lazy">
+        </div>`;
+
+      case 'galleria':
+        // Gruppo di immagini affiancate
+        const imgs = (Array.isArray(blocco.valore) ? blocco.valore : [blocco.valore])
+          .map(src => `<div class="progetto-galleria-img">
+            <img src="${src}" alt="${pr.titolo}" draggable="false" loading="lazy">
+          </div>`).join('');
+        return `<div class="progetto-galleria-gruppo">${imgs}</div>`;
+
+      case 'mappa':
+        return generaMappaHTML(pr);
+
+      case 'separatore':
+        return `<div class="progetto-separatore"></div>`;
+
+      default:
+        return '';
+    }
+  }).join('');
+}
+
+function generaMappaHTML(pr) {
+  if (!pr.mappa) return '';
+  const label = pr.mappa.label || 'Luogo';
+  let iframeSrc = '';
+  if (pr.mappa.url) {
+    iframeSrc = pr.mappa.url;
+  } else if (pr.mappa.lat && pr.mappa.lng) {
+    iframeSrc = `https://maps.google.com/maps?q=${pr.mappa.lat},${pr.mappa.lng}&z=${pr.mappa.zoom||13}&output=embed`;
+  }
+  if (!iframeSrc) return '';
+  return `<div class="progetto-mappa-wrap">
+    <p class="progetto-mappa-label">${label}</p>
+    <iframe class="progetto-mappa" src="${iframeSrc}"
+      allowfullscreen loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </div>`;
 }
 
 function chiudiProgetto() { $('pagina-progetto').classList.remove('aperta'); }
@@ -509,30 +593,49 @@ function costruisciMobile() {
 
   // Pagina introduzione — inserita dopo #home nel flusso delle pagine
   if (stato.intro && stato.intro.testo) {
+    // Pagina titolo capitolo 0
+    const pTitoloIntro = crea('div');
+    pTitoloIntro.className = 'page';
+    pTitoloIntro.dataset.favicon = '∙';
+    pTitoloIntro.dataset.titolo = 'Introduzione';
+
+    const mpcT = crea('div'); mpcT.className = 'mobile-page-content';
+    const phT = crea('div'); phT.className = 'pagina-header';
+    phT.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
+    const pcT = crea('div'); pcT.className = 'pagina-corpo';
+    pcT.innerHTML = `
+      <div>
+        <p class="capitolo-label">Capitolo 0</p>
+        <h2 class="capitolo-titolo">Introduzione</h2>
+      </div>
+    `;
+    mpcT.appendChild(phT); mpcT.appendChild(pcT);
+    pTitoloIntro.appendChild(mpcT);
+
+    // Pagina testo introduzione con scroll
     const pIntro = crea('div');
     pIntro.className = 'page';
     pIntro.id = 'intro-mobile';
     pIntro.dataset.favicon = '∙';
     pIntro.dataset.titolo = stato.intro.titolo || 'Introduzione';
 
-    const mpc = crea('div'); mpc.className = 'mobile-page-content';
     const ph = crea('div'); ph.className = 'pagina-header';
     ph.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
-    const pc = crea('div'); pc.className = 'pagina-corpo';
-    pc.innerHTML = `
-      <div class="introduzione-wrap">
-        <p class="capitolo-label">${stato.intro.titolo || 'Introduzione'}</p>
-        <p class="introduzione-testo">${stato.intro.testo.replace(/\n/g, '<br>')}</p>
-        <p class="introduzione-firma">${stato.intro.firma}<br><span>${stato.intro.anno}</span></p>
-      </div>
-    `;
-    mpc.appendChild(ph);
-    mpc.appendChild(pc);
-    pIntro.appendChild(mpc);
+    pIntro.appendChild(ph);
 
-    // Inserisce nel DOM dopo #home, dentro #main-content
+    const corpo = crea('div');
+    corpo.style.cssText = 'flex:1;overflow-y:auto;padding:20px;';
+    corpo.innerHTML = `
+      <p class="introduzione-testo">${stato.intro.testo.replace(/\n/g, '<br>')}</p>
+      <p class="introduzione-firma">${stato.intro.firma}<br><span>${stato.intro.anno}</span></p>
+    `;
+    pIntro.appendChild(corpo);
+
     const homeSection = document.querySelector('#main-content #home');
-    if (homeSection) homeSection.after(pIntro);
+    if (homeSection) {
+      homeSection.after(pIntro);
+      homeSection.after(pTitoloIntro);
+    }
   }
   
   // Taccuino prima frase
@@ -741,10 +844,16 @@ function protezioneImmagini() {
     if (isMobile()) return;
     if ($('lightbox')?.classList.contains('aperto')) return;
 
-    // Intercetta click sul div contenitore O sull'img direttamente
-    const img = e.target.tagName === 'IMG'
-      ? e.target
-      : e.target.querySelector('img');
+    // Risale fino a 3 livelli per trovare un'immagine
+    let img = null;
+    let el = e.target;
+    for (let i = 0; i < 4; i++) {
+      if (!el) break;
+      if (el.tagName === 'IMG') { img = el; break; }
+      const found = el.querySelector('img');
+      if (found) { img = found; break; }
+      el = el.parentElement;
+    }
 
     if (!img) return;
     if (img.closest('#lightbox')) return;
@@ -753,6 +862,7 @@ function protezioneImmagini() {
     if (img.closest('.tutti-card-img')) return;
     if (img.closest('.chi-sono-desktop-img')) return;
     if (img.closest('.collab-img')) return;
+    if (img.closest('#orologio-sticky')) return;
 
     const src = img.src;
     if (src && !src.endsWith('favicon.svg')) apriLightbox(src, img.alt || '');
