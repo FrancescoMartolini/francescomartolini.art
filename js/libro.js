@@ -595,7 +595,7 @@ function costruisciMobile() {
   if (stato.intro && stato.intro.testo) {
     // Pagina titolo capitolo 0
     const pTitoloIntro = crea('div');
-    pTitoloIntro.className = 'page';
+    pTitoloIntro.className = 'page mobile-only';
     pTitoloIntro.dataset.favicon = '∙';
     pTitoloIntro.dataset.titolo = 'Introduzione';
 
@@ -614,7 +614,7 @@ function costruisciMobile() {
 
     // Pagina testo introduzione con scroll
     const pIntro = crea('div');
-    pIntro.className = 'page';
+    pIntro.className = 'page mobile-only';
     pIntro.id = 'intro-mobile';
     pIntro.dataset.favicon = '∙';
     pIntro.dataset.titolo = stato.intro.titolo || 'Introduzione';
