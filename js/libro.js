@@ -255,8 +255,6 @@ function popolaDesktop() {
   if (annoEl) annoEl.textContent = new Date().getFullYear();
 }
 
-// listener lightbox spostato dentro protezioneImmagini()
-
 // ── Slider progetti ──
 function popolaSliderProgetti() {
   const griglia = $('progetti-griglia-desktop');
@@ -464,11 +462,11 @@ function apriProgetto(id) {
   interno.innerHTML = _cacheProgetti[id];
 
   // Aggiunge listener lightbox sulle immagini appena inserite
-  interno.querySelectorAll('.progetto-galleria-img img').forEach(img => {
+  /*interno.querySelectorAll('.progetto-galleria-img img').forEach(img => {
     img.addEventListener('click', () => {
       if (!isMobile()) apriLightbox(img.src, img.alt);
     });
-  });
+  });*/
 
   el.classList.add('aperta');
   el.scrollTop = 0;
@@ -713,47 +711,49 @@ function costruisciMobile() {
     }
   });
 
-  // Pagine collaborazioni commerciali
+  // Pagina unica collaborazioni commerciali
   const containerCollab = $('mobile-collaborazioni-container');
   if (containerCollab && stato.collaborazioni.length > 0) {
-    
-    // Pagina indice collaborazioni
-    const pIndice = crea('div'); pIndice.className = 'page';
-    pIndice.dataset.favicon = 'F'; pIndice.dataset.titolo = 'Fotografie commerciali';
-    const mpcI = crea('div'); mpcI.className = 'mobile-page-content';
-    const phI = crea('div'); phI.className = 'pagina-header';
-    phI.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
-    const pcI = crea('div'); pcI.className = 'pagina-corpo';
-    pcI.innerHTML = `<div><p class="capitolo-label">Capitolo 03</p><h2 class="capitolo-titolo">Fotografie commerciali</h2><p class="capitolo-descrizione">Lavoro su progetti commerciali ed editoriali in ambiti diversi.</p></div>`;
-    mpcI.appendChild(phI); mpcI.appendChild(pcI); pIndice.appendChild(mpcI);
-    containerCollab.appendChild(pIndice);
 
-    /* Pagina per ogni collaborazione*/
+    const p = crea('div'); p.className = 'page';
+    p.dataset.favicon = 'F'; p.dataset.titolo = 'Fotografie commerciali';
+
+    const ph = crea('div'); ph.className = 'pagina-header';
+    ph.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
+    p.appendChild(ph);
+
+    const corpo = crea('div');
+    corpo.style.cssText = 'flex:1;overflow-y:auto;padding:0 20px 20px;';
+
+    const label = crea('p'); label.className = 'capitolo-label';
+    label.style.marginBottom = '20px';
+    label.textContent = 'Fotografie commerciali';
+    corpo.appendChild(label);
+
     stato.collaborazioni.forEach(cl => {
-      const p = crea('div'); p.className = 'page pagina-progetto-mobile';
-      p.dataset.favicon = cl.titolo[0].toUpperCase(); p.dataset.titolo = cl.titolo;
+      const item = crea('div');
+      item.style.cssText = 'margin-bottom:32px;';
 
-      const ph = crea('div'); ph.className = 'pagina-header';
-      ph.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
-      p.appendChild(ph);
+      const img = crea('div');
+      img.style.cssText = 'width:100%;aspect-ratio:3/2;overflow:hidden;background:var(--grigio-chiaro);margin-bottom:10px;';
+      img.appendChild(creaImg(cl.foto, cl.titolo));
 
-      const wrap = crea('div'); wrap.className = 'progetto-mobile-wrap';
-      const imgDiv = crea('div'); imgDiv.className = 'progetto-mobile-img';
-      imgDiv.appendChild(creaImg(cl.foto, cl.titolo));
+      const titolo = crea('h2');
+      titolo.style.cssText = 'font-family:var(--font-titolo);font-size:clamp(16px,5vw,22px);font-weight:400;margin-bottom:4px;';
+      titolo.textContent = cl.titolo;
 
-      const testo = crea('div'); testo.className = 'progetto-mobile-testo';
-      testo.innerHTML = `
-        <p class="progetto-anno">${cl.anno}</p>
-        <h2 class="progetto-titolo">${cl.titolo}</h2>
-        <p class="capitolo-titolo">${cl.descrizione}</p>
-      `;
+      const anno = crea('p');
+      anno.style.cssText = 'font-size:11px;font-weight:300;letter-spacing:0.15em;color:var(--grigio-medio);';
+      anno.textContent = cl.anno;
 
-      wrap.appendChild(imgDiv); wrap.appendChild(testo); p.appendChild(wrap);
-      containerCollab.appendChild(p);
+      item.appendChild(img);
+      item.appendChild(titolo);
+      item.appendChild(anno);
+      corpo.appendChild(item);
     });
 
-    //Da implementare un unica pagina con le collaborazioni e se clicco su un immagine apre l'immagine a schermo interno
-
+    p.appendChild(corpo);
+    containerCollab.appendChild(p);
   }
 
   raccogliPagine();
@@ -840,7 +840,7 @@ function protezioneImmagini() {
   document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && ['s','u','p'].includes(e.key)) e.preventDefault(); });
 
   // Lightbox globale su desktop — unico listener
-  document.addEventListener('click', e => {
+  /*document.addEventListener('click', e => {
     if (isMobile()) return;
     if ($('lightbox')?.classList.contains('aperto')) return;
 
@@ -864,9 +864,9 @@ function protezioneImmagini() {
     if (img.closest('.collab-img')) return;
     if (img.closest('#orologio-sticky')) return;
 
-    const src = img.src;
-    if (src && !src.endsWith('favicon.svg')) apriLightbox(src, img.alt || '');
-  });
+    //const src = img.src;
+    //if (src && !src.endsWith('favicon.svg')) apriLightbox(src, img.alt || '');
+  });*/
 }
 
 // ── Input ──
@@ -952,12 +952,12 @@ window.chiudiTaccuino = chiudiTaccuino;
 window.apriTaccuino = apriTaccuino;
 window.apriPagina = apriPagina;
 window.chiudiPagina = chiudiPagina;
-window.apriLightbox = apriLightbox;
-window.chiudiLightbox = chiudiLightbox;
+//window.apriLightbox = apriLightbox;
+//window.chiudiLightbox = chiudiLightbox;
 
 // ── Init ──
 async function init() {
-  protezioneImmagini();
+  //protezioneImmagini();
   await caricaDati();
 
   if (isMobile()) {
