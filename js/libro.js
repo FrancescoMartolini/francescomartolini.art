@@ -1,20 +1,9 @@
 /* ============================================
-  LIBRO ENGINE v2 — Francesco Martolini .art
-   Implementazioni: con Google Sheets, protezione
-   immagini,cookie, mappa, link esterno, Caveat,
-   foto taccuino
-
-  LIBRO ENGINE v3 — Francesco Martolini .art
-   Layout: header / libro / footer
-   Favicon dinamica, tema scuro, Google Sheets
-
-  LIBRO ENGINE v4 — Francesco Martolini .art
+   LIBRO ENGINE v5 — Francesco Martolini .art
    Desktop: scroll editoriale
    Mobile: libro a pagine
-
-  LIBRO ENGINE v5 — Francesco Martolini .art
-   + cursore adattivo, slider progetti, 4 pagine overlay
-   + orologio sticky, tema scuro area progetti
+   + cursore adattivo, slider progetti, overlay pagine
+   + orologio sticky, favicon dinamica, Google Sheets
    ============================================ */
 
 'use strict';
@@ -28,8 +17,8 @@ const stato = {
   progetti: [],
   intervalli: [],
   taccuino: [],
-  collaborazioni:[],
-  intro:{},
+  collaborazioni: [],
+  intro: {},
   sliderIdx: 0
 };
 
@@ -40,8 +29,7 @@ const isMobile = () => window.innerWidth <= 768;
 function formatData(s) {
   if (!s) return '';
   const d = new Date(s);
-  if (isNaN(d)) return s;
-  return d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  return isNaN(d) ? s : d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
 function formatNum(n) { return String(n).padStart(2, '0'); }
@@ -70,16 +58,13 @@ function parseCsv(csv) {
 
 // ── Carica dati ──
 async function caricaDati() {
-  const [progetti, intervalli, collaborazioni,intro] = await Promise.all([
+  const [progetti, intervalli, collaborazioni, intro] = await Promise.all([
     fetch('json/progetti.json').then(r => r.json()),
     fetch('json/intervalli.json').then(r => r.json()),
     fetch('json/collaborazioni.json').then(r => r.json()),
     fetch('json/intro.json').then(r => r.json()).catch(() => ({ testo: '' }))
   ]);
-  stato.progetti = progetti;
-  stato.intervalli = intervalli;
-  stato.collaborazioni = collaborazioni;
-  stato.intro = intro;
+  Object.assign(stato, { progetti, intervalli, collaborazioni, intro });
 
   try {
     const r = await fetch(SHEETS_URL);
@@ -99,8 +84,7 @@ function avviaOrologio() {
     const o = new Date();
     const pad = n => String(n).padStart(2, '0');
     const oo = `${pad(o.getHours())}:${pad(o.getMinutes())}:${pad(o.getSeconds())}`;
-    const dd = `${pad(o.getDate())}.${pad(o.getMonth()+1)}.${o.getFullYear()}`;
-    // Aggiorna solo elementi visibili per non sprecare risorse
+    const dd = `${pad(o.getDate())}.${pad(o.getMonth() + 1)}.${o.getFullYear()}`;
     document.querySelectorAll('.ora-live').forEach(el => {
       if (el.offsetParent !== null || el.closest('#orologio-sticky')) el.textContent = oo;
     });
@@ -117,8 +101,6 @@ function avviaOrologioSticky() {
   const wrap = crea('div'); wrap.id = 'orologio-sticky';
   wrap.innerHTML = `<div class="data-live"></div><div class="ora-live"></div><span class="ora-label-small">ora corrente</span>`;
   document.body.appendChild(wrap);
-
-  // Nasconde quando entra nell'hero (che ha già il proprio orologio)
   const hero = document.querySelector('.desktop-hero');
   if (!hero) return;
   const obs = new IntersectionObserver(entries => {
@@ -130,63 +112,98 @@ function avviaOrologioSticky() {
 // ── Immagine protetta ──
 function creaImg(src, alt, eager) {
   const wrap = crea('div');
-  wrap.style.cssText = 'width:100%;height:100%;overflow:hidden;position:relative;background:var(--grigio-chiaro);';
+  wrap.className = 'img-wrap';
   if (src) {
     const img = crea('img');
     img.src = src; img.alt = alt || ''; img.draggable = false;
     img.loading = eager ? 'eager' : 'lazy';
-    img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none;';
+    const overlay = crea('div'); overlay.className = 'img-overlay';
+    wrap.appendChild(img); wrap.appendChild(overlay);
     img.onerror = () => {
-      img.remove();
-      wrap.style.cssText += 'display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--grigio-medio);';
+      img.remove(); overlay.remove();
+      wrap.classList.add('img-wrap--vuota');
       wrap.textContent = alt || '';
     };
-    const overlay = crea('div'); overlay.style.cssText = 'position:absolute;inset:0;z-index:1;';
-    wrap.appendChild(img); wrap.appendChild(overlay);
   } else {
-    wrap.style.cssText += 'display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--grigio-medio);';
+    wrap.classList.add('img-wrap--vuota');
     wrap.textContent = alt || '';
   }
   return wrap;
 }
 
+// ── Header data/ora mobile (riutilizzato ovunque) ──
+function creaHeader() {
+  const ph = crea('div'); ph.className = 'pagina-header';
+  ph.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
+  return ph;
+}
+
+// ── Pagina mobile generica con header ──
+function creaPaginaMobile(favicon, titolo) {
+  const p = crea('div'); p.className = 'page pagina-progetto-mobile';
+  p.dataset.favicon = favicon; p.dataset.titolo = titolo;
+  return p;
+}
+
+// ── Wrapper mobile-page-content con header ──
+function creaMobilePageContent() {
+  const mpc = crea('div'); mpc.className = 'mobile-page-content';
+  mpc.appendChild(creaHeader());
+  const pc = crea('div'); pc.className = 'pagina-corpo';
+  mpc.appendChild(pc);
+  return { mpc, pc };
+}
+
+// ── Voce taccuino mobile ──
+function creaPaginaTaccuinoMobile(v) {
+  const pt = creaPaginaMobile('T', 'Taccuino');
+  const { mpc, pc } = creaMobilePageContent();
+  const tw = crea('div'); tw.className = 'taccuino-wrap';
+  if (v.foto) {
+    const fw = crea('div'); fw.className = 'taccuino-foto';
+    const img = crea('img'); img.src = v.foto; img.alt = ''; img.draggable = false;
+    fw.appendChild(img); tw.appendChild(fw);
+  }
+  tw.innerHTML += `<p class="taccuino-frase">${v.testo}</p><p class="taccuino-data">${formatData(v.data)}</p>`;
+  pc.appendChild(tw); pt.appendChild(mpc);
+  return pt;
+}
+
+// ── Inserisci voce taccuino intercalata ──
+function inserisciTaccuinoSeDisponibile(container, tIdx) {
+  if (stato.taccuino[tIdx]) {
+    container.appendChild(creaPaginaTaccuinoMobile(stato.taccuino[tIdx]));
+    return tIdx + 1;
+  }
+  return tIdx;
+}
+
 // ════════════════════════════════
 // CURSORE ADATTIVO
-// Diventa bianco quando sopra area scura
 // ════════════════════════════════
 function avviaCursore() {
   if (!window.matchMedia('(hover: hover)').matches) return;
-
   const c = crea('div'); c.id = 'cursore';
   const r = crea('div'); r.id = 'cursore-ring';
   document.body.appendChild(c); document.body.appendChild(r);
-
   let rx = 0, ry = 0, mx = 0, my = 0;
 
   document.addEventListener('mousemove', e => {
     mx = e.clientX; my = e.clientY;
     c.style.left = mx + 'px'; c.style.top = my + 'px';
-
-    // Throttle: controlla sfondo solo ogni 100ms
     if (!avviaCursore._t) {
       avviaCursore._t = setTimeout(() => {
         avviaCursore._t = null;
-        c.style.visibility = 'hidden';
-        r.style.visibility = 'hidden';
+        c.style.visibility = 'hidden'; r.style.visibility = 'hidden';
         const elSotto = document.elementFromPoint(mx, my);
-        c.style.visibility = '';
-        r.style.visibility = '';
-        if (elSotto) {
-          const bg = trovaBgReale(elSotto);
-          document.body.classList.toggle('cursore-invertito', isColorDark(bg));
-        }
+        c.style.visibility = ''; r.style.visibility = '';
+        if (elSotto) document.body.classList.toggle('cursore-invertito', isColorDark(trovaBgReale(elSotto)));
       }, 100);
     }
   });
 
   function animaRing() {
-    rx += (mx - rx) * 0.1;
-    ry += (my - ry) * 0.1;
+    rx += (mx - rx) * 0.1; ry += (my - ry) * 0.1;
     r.style.left = rx + 'px'; r.style.top = ry + 'px';
     requestAnimationFrame(animaRing);
   }
@@ -208,9 +225,8 @@ function isColorDark(colorStr) {
   const match = colorStr.match(/rgba?\((\d+),\s*(\d+),\s*(\d+),?\s*([\d.]*)/);
   if (!match) return false;
   const [, r, g, b, a] = match;
-  if (parseFloat(a) === 0) return false; // trasparente
-  const luminanza = (0.299 * +r + 0.587 * +g + 0.114 * +b) / 255;
-  return luminanza < 0.4;
+  if (parseFloat(a) === 0) return false;
+  return (0.299 * +r + 0.587 * +g + 0.114 * +b) / 255 < 0.4;
 }
 
 // ════════════════════════════════
@@ -223,7 +239,6 @@ function popolaDesktop() {
     heroImg.appendChild(creaImg(stato.progetti[0].immagine_copertina, stato.progetti[0].titolo, true));
   }
 
-  // Slider progetti
   popolaSliderProgetti();
 
   // Taccuino colonne
@@ -240,17 +255,16 @@ function popolaDesktop() {
     });
   }
 
-  // Studi griglia (prime 5 immagini)
+  // Studi griglia
   const studiGriglia = $('studi-griglia-desktop');
   if (studiGriglia) {
     stato.intervalli.flatMap(iv => iv.immagini).slice(0, 5).forEach((src, i) => {
       const cell = crea('div'); cell.className = 'studio-img';
-      cell.appendChild(creaImg(src, `Studio ${i+1}`));
+      cell.appendChild(creaImg(src, `Studio ${i + 1}`));
       studiGriglia.appendChild(cell);
     });
   }
 
-  // Footer anno
   const annoEl = $('footer-anno');
   if (annoEl) annoEl.textContent = new Date().getFullYear();
 }
@@ -264,7 +278,7 @@ function popolaSliderProgetti() {
     const card = crea('div'); card.className = 'progetto-card';
     card.innerHTML = `
       <div class="progetto-card-img"></div>
-      <p class="progetto-card-num">0${i+1}</p>
+      <p class="progetto-card-num">0${i + 1}</p>
       <p class="progetto-card-titolo">${pr.titolo.toUpperCase()}</p>
       <p class="progetto-card-anno">${pr.anno}</p>
     `;
@@ -273,25 +287,18 @@ function popolaSliderProgetti() {
     griglia.appendChild(card);
   });
 
-  // Slider frecce — mostrale solo se ci sono più di 4 progetti
   const sx = $('proj-sx'), dx = $('proj-dx');
   if (!sx || !dx) return;
-
-  const visibili = 4;
-  const tot = stato.progetti.length;
-
+  const visibili = 4, tot = stato.progetti.length;
   if (tot <= visibili) { sx.hidden = true; dx.hidden = true; return; }
-
-  sx.hidden = true; // inizia a sinistra, nascondi freccia sx
+  sx.hidden = true;
 
   function aggiorna() {
     const larghezzaCard = griglia.querySelector('.progetto-card')?.offsetWidth || 0;
-    const gap = 24;
-    griglia.style.transform = `translateX(-${stato.sliderIdx * (larghezzaCard + gap)}px)`;
+    griglia.style.transform = `translateX(-${stato.sliderIdx * (larghezzaCard + 24)}px)`;
     sx.hidden = stato.sliderIdx === 0;
     dx.hidden = stato.sliderIdx >= tot - visibili;
   }
-
   sx.addEventListener('click', () => { stato.sliderIdx = Math.max(0, stato.sliderIdx - 1); aggiorna(); });
   dx.addEventListener('click', () => { stato.sliderIdx = Math.min(tot - visibili, stato.sliderIdx + 1); aggiorna(); });
 }
@@ -308,35 +315,38 @@ function apriPagina(tipo) {
 
     case 'tutti-progetti':
       contenuto.innerHTML = `<h1 class="overlay-titolo">Tutti i progetti</h1><div class="tutti-progetti-griglia" id="tutti-proj-grid"></div>`;
-      overlay.classList.add('aperta');
-      overlay.scrollTop = 0;
       stato.progetti.forEach((pr, i) => {
         const card = crea('div'); card.className = 'tutti-card';
         card.innerHTML = `
           <div class="tutti-card-img"></div>
-          <p class="tutti-card-num">0${i+1}</p>
+          <p class="tutti-card-num">0${i + 1}</p>
           <h2 class="tutti-card-titolo">${pr.titolo}</h2>
           <p class="tutti-card-anno">${pr.anno}</p>
           <p class="tutti-card-desc">${pr.descrizione}</p>
         `;
         card.querySelector('.tutti-card-img').appendChild(creaImg(pr.immagine_copertina, pr.titolo));
         card.addEventListener('click', () => apriProgetto(pr.id));
-        document.getElementById('tutti-proj-grid').appendChild(card);
+        $('tutti-proj-grid').appendChild(card);
       });
       break;
 
     case 'tutti-studi':
-      contenuto.innerHTML = `<h1 class="overlay-titolo">Intervalli</h1><p style="font-size:13px;font-weight:300;color:var(--grigio-testo);margin-bottom:40px;line-height:1.8;">Fotografie che non appartengono a un progetto, ma al mio modo di guardare.</p><div class="tutti-studi-griglia" id="tutti-studi-grid"></div>`;
-      overlay.classList.add('aperta');
-      overlay.scrollTop = 0;
+      contenuto.innerHTML = `
+        <h1 class="overlay-titolo">Intervalli</h1>
+        <p class="overlay-sottotitolo">Fotografie che non appartengono a un progetto, ma al mio modo di guardare.</p>
+        <div class="tutti-studi-griglia" id="tutti-studi-grid"></div>
+      `;
       stato.intervalli.flatMap(iv => iv.immagini).forEach((src, i) => {
         const cell = crea('div'); cell.className = 'tutti-studio-img';
-        cell.appendChild(creaImg(src, `Studio ${i+1}`));
-        document.getElementById('tutti-studi-grid').appendChild(cell);
+        cell.appendChild(creaImg(src, `Studio ${i + 1}`));
+        $('tutti-studi-grid').appendChild(cell);
       });
       break;
 
-    case 'chi-sono-pagina':
+    case 'chi-sono-pagina': {
+      const SVG_MAIL = `<svg viewBox="0 0 24 24" class="contatto-icon"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>`;
+      const SVG_IG = `<svg viewBox="0 0 24 24" class="contatto-icon"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/></svg>`;
+      const SVG_TEL = `<svg viewBox="0 0 24 24" class="contatto-icon"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.09 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7a2 2 0 011.72 2.03z"/></svg>`;
       contenuto.innerHTML = `
         <h1 class="overlay-titolo">Chi sono</h1>
         <div class="chi-sono-esteso">
@@ -347,57 +357,50 @@ function apriPagina(tipo) {
             <p>Basato tra Roma e Milano, lavoro su progetti a lungo termine alternati a commissioni commerciali selezionate.</p>
             <div class="chi-sono-contatti-esteso">
               <p class="contatti-label" style="margin-bottom:4px;">Contatti</p>
-              <p style="font-size:12px;font-weight:300;line-height:1.7;color:var(--grigio-testo);font-style:italic;margin-bottom:16px;">Non offro servizi di shooting su richiesta. Scrivimi se sei interessato a un'opera o vuoi costruire qualcosa insieme.</p>
-              <a class="contatto-btn" href="mailto:info@francescomartolini.art"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;flex-shrink:0;"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>info@francescomartolini.art</a>
-              <a class="contatto-btn" href="https://instagram.com/francescomartolini" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;flex-shrink:0;"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/></svg>@francescomartolini</a>
-              <a class="contatto-btn" href="tel:+39XXXXXXXXXX"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;flex-shrink:0;"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.09 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7a2 2 0 011.72 2.03z"/></svg>+39 XXX XXX XXXX</a>
+              <p class="overlay-nota-contatti">Non offro servizi di shooting su richiesta. Scrivimi se sei interessato a un'opera o vuoi costruire qualcosa insieme.</p>
+              <a class="contatto-btn" href="mailto:info@francescomartolini.art">${SVG_MAIL}info@francescomartolini.art</a>
+              <a class="contatto-btn" href="https://instagram.com/francescomartolini" target="_blank" rel="noopener">${SVG_IG}@francescomartolini</a>
+              <a class="contatto-btn" href="tel:+39XXXXXXXXXX">${SVG_TEL}+39 XXX XXX XXXX</a>
             </div>
           </div>
           <div class="chi-sono-esteso-img" id="chi-sono-overlay-img"></div>
         </div>
       `;
-      overlay.classList.add('aperta');
-      overlay.scrollTop = 0;
-      // Immagine placeholder o dal primo progetto
       const imgWrap = $('chi-sono-overlay-img');
       if (imgWrap && stato.progetti[0]) {
         imgWrap.appendChild(creaImg(stato.progetti[0].immagine_copertina, 'Francesco Martolini'));
       }
       break;
+    }
 
     case 'collaborazioni-pagina':
       contenuto.innerHTML = `
         <h1 class="overlay-titolo">Collaborazioni fotografiche</h1>
         <p class="collab-intro">Lavoro su progetti commerciali ed editoriali in ambiti diversi — architettura, ritratto, still life, reportage aziendale. Ogni collaborazione è un progetto su misura.</p>
         <div class="collab-griglia" id="collab-grid"></div>
-        <div style="border-top:1px solid var(--grigio-chiaro);padding-top:40px;">
-          <p style="font-size:13px;font-weight:300;color:var(--grigio-testo);margin-bottom:20px;">Per collaborazioni e commissioni:</p>
+        <div class="collab-footer">
+          <p class="overlay-sottotitolo">Per collaborazioni e commissioni:</p>
           <a href="mailto:info@francescomartolini.art" class="section-link">info@francescomartolini.art →</a>
         </div>
       `;
-      overlay.classList.add('aperta');
-      overlay.scrollTop = 0;
-      // Placeholder collaborazioni (da riempire con dati reali)
-      const grid = $('collab-grid');
-      if (grid) {
-        stato.collaborazioni.forEach(v => {
-          const item = crea('div'); item.className = 'collab-item';
-          item.innerHTML = `
-            <div class="collab-img"></div>
-            <p class="collab-cliente">${v.titolo}</p>
-            <p class="collab-anno">${v.anno}</p>
-          `;
-          item.querySelector('.collab-img').appendChild(creaImg(v.foto, v.titolo));
-          grid.appendChild(item);
-        });
-      }
+      stato.collaborazioni.forEach(v => {
+        const item = crea('div'); item.className = 'collab-item';
+        item.innerHTML = `
+          <div class="collab-img"></div>
+          <p class="collab-cliente">${v.titolo}</p>
+          <p class="collab-anno">${v.anno}</p>
+        `;
+        item.querySelector('.collab-img').appendChild(creaImg(v.foto, v.titolo));
+        $('collab-grid').appendChild(item);
+      });
       break;
   }
+
+  overlay.classList.add('aperta');
+  overlay.scrollTop = 0;
 }
 
-function chiudiPagina() {
-  $('overlay-pagina').classList.remove('aperta');
-}
+function chiudiPagina() { $('overlay-pagina').classList.remove('aperta'); }
 
 // ── Progetto dettaglio ──
 const _cacheProgetti = {};
@@ -405,47 +408,12 @@ const _cacheProgetti = {};
 function apriProgetto(id) {
   const pr = stato.progetti.find(p => p.id === id);
   if (!pr) return;
-
   const el = $('pagina-progetto');
   const interno = el.querySelector('.progetto-interno');
 
-  // Costruisce una sola volta, poi riusa
   if (!_cacheProgetti[id]) {
     const linkEsterno = pr.link_esterno
       ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">Vedi online</a>` : '';
-
-    let mappaHTML = '';
-    if (pr.mappa) {
-      const label = pr.mappa.label || 'Luogo';
-      let iframeSrc = '';
-
-      if (pr.mappa.url) {
-        // Google My Maps — usa l'URL direttamente
-        iframeSrc = pr.mappa.url;
-      } else if (pr.mappa.lat && pr.mappa.lng) {
-        // Coordinate classiche
-        iframeSrc = `https://maps.google.com/maps?q=${pr.mappa.lat},${pr.mappa.lng}&z=${pr.mappa.zoom||13}&output=embed`;
-      }
-
-      if (iframeSrc) {
-        mappaHTML = `
-          <div class="progetto-mappa-wrap">
-            <p class="progetto-mappa-label">${label}</p>
-            <iframe class="progetto-mappa"
-              src="${iframeSrc}"
-              allowfullscreen loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"></iframe>
-          </div>`;
-      }
-    }
-
-    const galleriaHTML = pr.galleria.map(src =>
-      `<div class="progetto-galleria-img">
-        <img src="${src}" alt="${pr.titolo}" draggable="false"
-          loading="lazy" oncontextmenu="return false">
-      </div>`
-    ).join('');
-
     _cacheProgetti[id] = `
       <button class="progetto-torna" onclick="chiudiProgetto()">Torna</button>
       <div class="progetto-interno-header">
@@ -460,61 +428,38 @@ function apriProgetto(id) {
   }
 
   interno.innerHTML = _cacheProgetti[id];
-
-  // Aggiunge listener lightbox sulle immagini appena inserite
-  /*interno.querySelectorAll('.progetto-galleria-img img').forEach(img => {
-    img.addEventListener('click', () => {
-      if (!isMobile()) apriLightbox(img.src, img.alt);
-    });
-  });*/
-
   el.classList.add('aperta');
   el.scrollTop = 0;
 }
 
+function generaImgHTML(src, titolo) {
+  return `<div class="progetto-galleria-img"><img src="${src}" alt="${titolo}" draggable="false" loading="lazy"></div>`;
+}
+
 function generaContenutoProgetto(pr) {
-  // Fallback: struttura vecchia con testo_lungo + galleria
   if (!pr.contenuto) {
-    const galleriaHTML = pr.galleria.map(src =>
-      `<div class="progetto-galleria-img">
-        <img src="${src}" alt="${pr.titolo}" draggable="false" loading="lazy">
-      </div>`
-    ).join('');
-
-    const mappaHTML = generaMappaHTML(pr);
-
+    const galleria = pr.galleria.map(src => generaImgHTML(src, pr.titolo)).join('');
     return `
       <p class="progetto-interno-testo">${pr.testo_lungo.replace(/\n/g, '<br>')}</p>
-      ${mappaHTML}
-      <div class="progetto-galleria">${galleriaHTML}</div>
+      ${generaMappaHTML(pr)}
+      <div class="progetto-galleria">${galleria}</div>
     `;
   }
-
-  // Nuova struttura a blocchi
   return pr.contenuto.map(blocco => {
     switch (blocco.tipo) {
       case 'testo':
         return `<p class="progetto-interno-testo">${blocco.valore.replace(/\n/g, '<br>')}</p>`;
-
       case 'immagine':
-        return `<div class="progetto-galleria-img">
-          <img src="${blocco.valore}" alt="${pr.titolo}" draggable="false" loading="lazy">
-        </div>`;
-
-      case 'galleria':
-        // Gruppo di immagini affiancate
+        return generaImgHTML(blocco.valore, pr.titolo);
+      case 'galleria': {
         const imgs = (Array.isArray(blocco.valore) ? blocco.valore : [blocco.valore])
-          .map(src => `<div class="progetto-galleria-img">
-            <img src="${src}" alt="${pr.titolo}" draggable="false" loading="lazy">
-          </div>`).join('');
+          .map(src => generaImgHTML(src, pr.titolo)).join('');
         return `<div class="progetto-galleria-gruppo">${imgs}</div>`;
-
+      }
       case 'mappa':
         return generaMappaHTML(pr);
-
       case 'separatore':
         return `<div class="progetto-separatore"></div>`;
-
       default:
         return '';
     }
@@ -528,15 +473,16 @@ function generaMappaHTML(pr) {
   if (pr.mappa.url) {
     iframeSrc = pr.mappa.url;
   } else if (pr.mappa.lat && pr.mappa.lng) {
-    iframeSrc = `https://maps.google.com/maps?q=${pr.mappa.lat},${pr.mappa.lng}&z=${pr.mappa.zoom||13}&output=embed`;
+    iframeSrc = `https://maps.google.com/maps?q=${pr.mappa.lat},${pr.mappa.lng}&z=${pr.mappa.zoom || 13}&output=embed`;
   }
   if (!iframeSrc) return '';
-  return `<div class="progetto-mappa-wrap">
-    <p class="progetto-mappa-label">${label}</p>
-    <iframe class="progetto-mappa" src="${iframeSrc}"
-      allowfullscreen loading="lazy"
-      referrerpolicy="no-referrer-when-downgrade"></iframe>
-  </div>`;
+  return `
+    <div class="progetto-mappa-wrap">
+      <p class="progetto-mappa-label">${label}</p>
+      <iframe class="progetto-mappa" src="${iframeSrc}"
+        allowfullscreen loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>`;
 }
 
 function chiudiProgetto() { $('pagina-progetto').classList.remove('aperta'); }
@@ -550,10 +496,10 @@ function apriTaccuino() {
 
   if (!_cacheTaccuino) {
     const voci = stato.taccuino.map(v => {
-      const foto = v.foto ? `<div class="taccuino-voce-foto"><img src="${v.foto}" alt="" draggable="false" loading="lazy"></div>` : '';
+      const foto = v.foto
+        ? `<div class="taccuino-voce-foto"><img src="${v.foto}" alt="" draggable="false" loading="lazy"></div>` : '';
       return `<div class="taccuino-voce" data-testo="${v.testo.toLowerCase()}">${foto}<p class="taccuino-voce-frase">${v.testo}</p><p class="taccuino-voce-data">${formatData(v.data)}</p></div>`;
     }).join('');
-
     _cacheTaccuino = `
       <button class="progetto-torna" onclick="chiudiTaccuino()">Chiudi</button>
       <h1>Taccuino</h1>
@@ -567,17 +513,16 @@ function apriTaccuino() {
   }
 
   interno.innerHTML = _cacheTaccuino;
-
   const input = $('taccuino-cerca'), lista = $('taccuino-lista'), risultati = $('taccuino-risultati');
   input.addEventListener('input', () => {
     const q = input.value.toLowerCase().trim(); let vis = 0;
     lista.querySelectorAll('.taccuino-voce').forEach(v => {
       const match = !q || v.dataset.testo.includes(q);
-      v.style.display = match ? '' : 'none'; if (match) vis++;
+      v.style.display = match ? '' : 'none';
+      if (match) vis++;
     });
     risultati.textContent = q ? `${vis} risultat${vis === 1 ? 'o' : 'i'}` : '';
   });
-
   setTimeout(() => input.focus(), 300);
   el.classList.add('aperta'); el.scrollTop = 0;
 }
@@ -589,40 +534,20 @@ function chiudiTaccuino() { $('pagina-taccuino-archivio').classList.remove('aper
 // ════════════════════════════════
 function costruisciMobile() {
 
-  // Pagina introduzione — inserita dopo #home nel flusso delle pagine
-  if (stato.intro && stato.intro.testo) {
-    // Pagina titolo capitolo 0
+  // Pagina introduzione
+  if (stato.intro?.testo) {
     const pTitoloIntro = crea('div');
     pTitoloIntro.className = 'page mobile-only';
-    pTitoloIntro.dataset.favicon = '∙';
-    pTitoloIntro.dataset.titolo = 'Introduzione';
-
-    const mpcT = crea('div'); mpcT.className = 'mobile-page-content';
-    const phT = crea('div'); phT.className = 'pagina-header';
-    phT.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
-    const pcT = crea('div'); pcT.className = 'pagina-corpo';
-    pcT.innerHTML = `
-      <div>
-        <p class="capitolo-label">Capitolo 0</p>
-        <h2 class="capitolo-titolo">Introduzione</h2>
-      </div>
-    `;
-    mpcT.appendChild(phT); mpcT.appendChild(pcT);
+    pTitoloIntro.dataset.favicon = '∙'; pTitoloIntro.dataset.titolo = 'Introduzione';
+    const { mpc: mpcT, pc: pcT } = creaMobilePageContent();
+    pcT.innerHTML = `<div><p class="capitolo-label">Capitolo 0</p><h2 class="capitolo-titolo">Introduzione</h2></div>`;
     pTitoloIntro.appendChild(mpcT);
 
-    // Pagina testo introduzione con scroll
     const pIntro = crea('div');
-    pIntro.className = 'page mobile-only';
-    pIntro.id = 'intro-mobile';
-    pIntro.dataset.favicon = '∙';
-    pIntro.dataset.titolo = stato.intro.titolo || 'Introduzione';
-
-    const ph = crea('div'); ph.className = 'pagina-header';
-    ph.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
-    pIntro.appendChild(ph);
-
-    const corpo = crea('div');
-    corpo.style.cssText = 'flex:1;overflow-y:auto;padding:20px;';
+    pIntro.className = 'page mobile-only'; pIntro.id = 'intro-mobile';
+    pIntro.dataset.favicon = '∙'; pIntro.dataset.titolo = stato.intro.titolo || 'Introduzione';
+    pIntro.appendChild(creaHeader());
+    const corpo = crea('div'); corpo.className = 'intro-mobile-corpo';
     corpo.innerHTML = `
       <p class="introduzione-testo">${stato.intro.testo.replace(/\n/g, '<br>')}</p>
       <p class="introduzione-firma">${stato.intro.firma}<br><span>${stato.intro.anno}</span></p>
@@ -630,125 +555,79 @@ function costruisciMobile() {
     pIntro.appendChild(corpo);
 
     const homeSection = document.querySelector('#main-content #home');
-    if (homeSection) {
-      homeSection.after(pIntro);
-      homeSection.after(pTitoloIntro);
-    }
+    if (homeSection) { homeSection.after(pIntro); homeSection.after(pTitoloIntro); }
   }
-  
+
   // Taccuino prima frase
   const taccuinoFrase = $('taccuino-mobile-frase');
   if (taccuinoFrase && stato.taccuino[0]) {
     taccuinoFrase.innerHTML = `<p class="taccuino-frase">${stato.taccuino[0].testo}</p><p class="taccuino-data">${formatData(stato.taccuino[0].data)}</p>`;
   }
 
-  const containerProgetti = $('mobile-progetti-container');
   let tIdx = 0;
+  const containerProgetti = $('mobile-progetti-container');
 
   stato.progetti.forEach(pr => {
-    const p = crea('div'); p.className = 'page pagina-progetto-mobile';
-    p.dataset.favicon = pr.titolo[0].toUpperCase(); p.dataset.titolo = pr.titolo;
-
-    //data/ora
-    const ph = crea('div'); ph.className = 'pagina-header';
-    ph.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
-    p.appendChild(ph);
+    const p = creaPaginaMobile(pr.titolo[0].toUpperCase(), pr.titolo);
+    p.appendChild(creaHeader());
 
     const wrap = crea('div'); wrap.className = 'progetto-mobile-wrap';
     const imgDiv = crea('div'); imgDiv.className = 'progetto-mobile-img';
     imgDiv.appendChild(creaImg(pr.immagine_copertina, pr.titolo));
 
     const testo = crea('div'); testo.className = 'progetto-mobile-testo';
-    const linkEsterno = pr.link_esterno ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">Vedi online</a>` : '';
-    testo.innerHTML = `<p class="progetto-anno">${pr.anno}</p><h2 class="progetto-titolo">${pr.titolo}</h2> <p class="progetto-anno">${pr.descrizione}</p> <button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>${linkEsterno}`;
+    const linkEsterno = pr.link_esterno
+      ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">Vedi online</a>` : '';
+    testo.innerHTML = `
+      <p class="progetto-anno">${pr.anno}</p>
+      <h2 class="progetto-titolo">${pr.titolo}</h2>
+      <p class="progetto-anno">${pr.descrizione}</p>
+      <button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>
+      ${linkEsterno}
+    `;
     testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(pr.id));
 
     wrap.appendChild(imgDiv); wrap.appendChild(testo); p.appendChild(wrap);
     containerProgetti.appendChild(p);
-
-    if (stato.taccuino[tIdx]) {
-      const v = stato.taccuino[tIdx++];
-      const pt = crea('div'); pt.className = 'page pagina-progetto-mobile';
-      pt.dataset.favicon = 'T'; pt.dataset.titolo = 'Taccuino';
-      const mpc = crea('div'); mpc.className = 'mobile-page-content';
-      const ph = crea('div'); ph.className = 'pagina-header';
-      ph.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
-      const pc = crea('div'); pc.className = 'pagina-corpo';
-      const tw = crea('div'); tw.className = 'taccuino-wrap';
-      if (v.foto) { const fw = crea('div'); fw.className = 'taccuino-foto'; const img = crea('img'); img.src = v.foto; img.alt = ''; img.draggable = false; fw.appendChild(img); tw.appendChild(fw); }
-      tw.innerHTML += `<p class="taccuino-frase">${v.testo}</p><p class="taccuino-data">${formatData(v.data)}</p>`;
-      pc.appendChild(tw); mpc.appendChild(ph); mpc.appendChild(pc); pt.appendChild(mpc);
-      containerProgetti.appendChild(pt);
-    }
+    tIdx = inserisciTaccuinoSeDisponibile(containerProgetti, tIdx);
   });
 
   const containerIntervalli = $('mobile-intervalli-container');
   stato.intervalli.forEach(iv => {
-    const p = crea('div'); p.className = 'page pagina-progetto-mobile';
-    p.dataset.favicon = 'I'; p.dataset.titolo = iv.titolo;
-    const mpc = crea('div'); mpc.className = 'mobile-page-content';
-    const ph = crea('div'); ph.className = 'pagina-header';
-    ph.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
-    const pc = crea('div'); pc.className = 'pagina-corpo';
-    const wrap = crea('div'); wrap.style.cssText = 'width:100%;max-width:680px;';
-    wrap.innerHTML = `<p class="capitolo-label">Studi</p><h2 class="capitolo-titolo" style="margin-bottom:6px;">${iv.titolo}</h2><p class="capitolo-descrizione" style="margin-bottom:14px;">${iv.descrizione}</p>`;
-    const gr = crea('div'); gr.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:8px;';
-    iv.immagini.forEach((src, i) => { const cell = crea('div'); cell.style.cssText = 'aspect-ratio:2/3;background:var(--grigio-chiaro);overflow:hidden;'; cell.appendChild(creaImg(src, `${iv.titolo} ${i+1}`)); gr.appendChild(cell); });
-    wrap.appendChild(gr); pc.appendChild(wrap); mpc.appendChild(ph); mpc.appendChild(pc); p.appendChild(mpc);
+    const p = creaPaginaMobile('I', iv.titolo);
+    const { mpc, pc } = creaMobilePageContent();
+    const wrap = crea('div'); wrap.className = 'intervallo-mobile-wrap';
+    wrap.innerHTML = `<p class="capitolo-label">Studi</p><h2 class="capitolo-titolo">${iv.titolo}</h2><p class="capitolo-descrizione">${iv.descrizione}</p>`;
+    const gr = crea('div'); gr.className = 'intervallo-mobile-griglia';
+    iv.immagini.forEach((src, i) => {
+      const cell = crea('div'); cell.className = 'intervallo-mobile-cella';
+      cell.appendChild(creaImg(src, `${iv.titolo} ${i + 1}`));
+      gr.appendChild(cell);
+    });
+    wrap.appendChild(gr); pc.appendChild(wrap); p.appendChild(mpc);
     containerIntervalli.appendChild(p);
-
-    if (stato.taccuino[tIdx]) {
-      const v = stato.taccuino[tIdx++];
-      const pt = crea('div'); pt.className = 'page pagina-progetto-mobile';
-      pt.dataset.favicon = 'T'; pt.dataset.titolo = 'Taccuino';
-      const mpc2 = crea('div'); mpc2.className = 'mobile-page-content';
-      const ph2 = crea('div'); ph2.className = 'pagina-header';
-      ph2.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
-      const pc2 = crea('div'); pc2.className = 'pagina-corpo';
-      pc2.innerHTML = `<div class="taccuino-wrap"><p class="taccuino-frase">${v.testo}</p><p class="taccuino-data">${formatData(v.data)}</p></div>`;
-      mpc2.appendChild(ph2); mpc2.appendChild(pc2); pt.appendChild(mpc2);
-      containerIntervalli.appendChild(pt);
-    }
+    tIdx = inserisciTaccuinoSeDisponibile(containerIntervalli, tIdx);
   });
 
-  // Pagina unica collaborazioni commerciali
+  // Collaborazioni commerciali
   const containerCollab = $('mobile-collaborazioni-container');
   if (containerCollab && stato.collaborazioni.length > 0) {
-
     const p = crea('div'); p.className = 'page';
     p.dataset.favicon = 'F'; p.dataset.titolo = 'Fotografie commerciali';
+    p.appendChild(creaHeader());
 
-    const ph = crea('div'); ph.className = 'pagina-header';
-    ph.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
-    p.appendChild(ph);
-
-    const corpo = crea('div');
-    corpo.style.cssText = 'flex:1;overflow-y:auto;padding:0 20px 20px;';
-
-    const label = crea('p'); label.className = 'capitolo-label';
-    label.style.marginBottom = '20px';
+    const corpo = crea('div'); corpo.className = 'collab-mobile-corpo';
+    const label = crea('p'); label.className = 'capitolo-label collab-mobile-label';
     label.textContent = 'Fotografie commerciali';
     corpo.appendChild(label);
 
     stato.collaborazioni.forEach(cl => {
-      const item = crea('div');
-      item.style.cssText = 'margin-bottom:32px;';
-
-      const img = crea('div');
-      img.style.cssText = 'width:100%;aspect-ratio:3/2;overflow:hidden;background:var(--grigio-chiaro);margin-bottom:10px;';
+      const item = crea('div'); item.className = 'collab-mobile-item';
+      const img = crea('div'); img.className = 'collab-mobile-img';
       img.appendChild(creaImg(cl.foto, cl.titolo));
-
-      const titolo = crea('h2');
-      titolo.style.cssText = 'font-family:var(--font-titolo);font-size:clamp(16px,5vw,22px);font-weight:400;margin-bottom:4px;';
-      titolo.textContent = cl.titolo;
-
-      const anno = crea('p');
-      anno.style.cssText = 'font-size:11px;font-weight:300;letter-spacing:0.15em;color:var(--grigio-medio);';
-      anno.textContent = cl.anno;
-
-      item.appendChild(img);
-      item.appendChild(titolo);
-      item.appendChild(anno);
+      const titolo = crea('h2'); titolo.className = 'collab-mobile-titolo'; titolo.textContent = cl.titolo;
+      const anno = crea('p'); anno.className = 'collab-mobile-anno'; anno.textContent = cl.anno;
+      item.appendChild(img); item.appendChild(titolo); item.appendChild(anno);
       corpo.appendChild(item);
     });
 
@@ -769,8 +648,10 @@ function costruisciIndicatore(tot) {
   const ind = $('indicatore'); if (!ind) return;
   ind.innerHTML = '';
   for (let i = 0; i < tot; i++) {
-    const dot = crea('div'); dot.className = 'indicatore-dot' + (i === 0 ? ' attivo' : '');
-    dot.addEventListener('click', () => navigaA(i)); ind.appendChild(dot);
+    const dot = crea('div');
+    dot.className = 'indicatore-dot' + (i === 0 ? ' attivo' : '');
+    dot.addEventListener('click', () => navigaA(i));
+    ind.appendChild(dot);
   }
 }
 
@@ -778,7 +659,6 @@ function costruisciIndicatore(tot) {
 function navigaA(idx) {
   if (!isMobile()) return;
   if (stato.inTransizione || idx < 0 || idx >= stato.totPagine || idx === stato.paginaCorrente) return;
-
   stato.inTransizione = true;
   const pagine = document.querySelectorAll('.page, .pagina-progetto-mobile');
   pagine[stato.paginaCorrente].classList.remove('attiva');
@@ -806,9 +686,16 @@ function aggiornaUI() {
   if (dx) { dx.style.display = isUltima ? 'none' : ''; dx.toggleAttribute('disabled', isUltima); }
   let tornaBtn = $('torna-inizio-nav');
   if (isUltima) {
-    if (!tornaBtn) { tornaBtn = crea('button'); tornaBtn.id = 'torna-inizio-nav'; tornaBtn.textContent = '← Inizio'; tornaBtn.addEventListener('click', () => navigaA(0)); $('mobile-nav').appendChild(tornaBtn); }
+    if (!tornaBtn) {
+      tornaBtn = crea('button'); tornaBtn.id = 'torna-inizio-nav';
+      tornaBtn.textContent = '← Inizio';
+      tornaBtn.addEventListener('click', () => navigaA(0));
+      $('mobile-nav').appendChild(tornaBtn);
+    }
     tornaBtn.style.display = '';
-  } else { if (tornaBtn) tornaBtn.style.display = 'none'; }
+  } else {
+    if (tornaBtn) tornaBtn.style.display = 'none';
+  }
   if (pCorrente) {
     aggiorneFavicon(pCorrente.dataset.favicon || 'f');
     document.title = `${pCorrente.dataset.titolo || 'Francesco Martolini .art'} — Francesco Martolini .art`;
@@ -837,36 +724,7 @@ function avviaCookie() {
 function protezioneImmagini() {
   document.addEventListener('contextmenu', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
   document.addEventListener('dragstart', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
-  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && ['s','u','p'].includes(e.key)) e.preventDefault(); });
-
-  // Lightbox globale su desktop — unico listener
-  /*document.addEventListener('click', e => {
-    if (isMobile()) return;
-    if ($('lightbox')?.classList.contains('aperto')) return;
-
-    // Risale fino a 3 livelli per trovare un'immagine
-    let img = null;
-    let el = e.target;
-    for (let i = 0; i < 4; i++) {
-      if (!el) break;
-      if (el.tagName === 'IMG') { img = el; break; }
-      const found = el.querySelector('img');
-      if (found) { img = found; break; }
-      el = el.parentElement;
-    }
-
-    if (!img) return;
-    if (img.closest('#lightbox')) return;
-    if (img.closest('.progetto-card-img')) return;
-    if (img.closest('.hero-immagine')) return;
-    if (img.closest('.tutti-card-img')) return;
-    if (img.closest('.chi-sono-desktop-img')) return;
-    if (img.closest('.collab-img')) return;
-    if (img.closest('#orologio-sticky')) return;
-
-    //const src = img.src;
-    //if (src && !src.endsWith('favicon.svg')) apriLightbox(src, img.alt || '');
-  });*/
+  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && ['s', 'u', 'p'].includes(e.key)) e.preventDefault(); });
 }
 
 // ── Input ──
@@ -916,35 +774,6 @@ function inizializzaScrollDesktop() {
   });
 }
 
-function apriLightbox(src, alt) {
-  let lb = $('lightbox');
-  if (!lb) {
-    lb = crea('div'); lb.id = 'lightbox';
-    lb.innerHTML = `
-      <div id="lightbox-overlay"></div>
-      <div id="lightbox-wrap">
-        <img id="lightbox-img" src="" alt="">
-        <button id="lightbox-chiudi">
-          <svg viewBox="0 0 24 24" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-    `;
-    document.body.appendChild(lb);
-    $('lightbox-overlay').addEventListener('click', chiudiLightbox);
-    $('lightbox-chiudi').addEventListener('click', chiudiLightbox);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') chiudiLightbox(); });
-  }
-  $('lightbox-img').src = src;
-  $('lightbox-img').alt = alt || '';
-  lb.classList.add('aperto');
-  document.body.style.overflow = 'hidden';
-}
-
-function chiudiLightbox() {
-  $('lightbox')?.classList.remove('aperto');
-  document.body.style.overflow = '';
-}
-
 // ── Esponi globali ──
 window.navigaA = navigaA;
 window.chiudiProgetto = chiudiProgetto;
@@ -952,12 +781,9 @@ window.chiudiTaccuino = chiudiTaccuino;
 window.apriTaccuino = apriTaccuino;
 window.apriPagina = apriPagina;
 window.chiudiPagina = chiudiPagina;
-//window.apriLightbox = apriLightbox;
-//window.chiudiLightbox = chiudiLightbox;
 
 // ── Init ──
 async function init() {
-  //protezioneImmagini();
   await caricaDati();
 
   if (isMobile()) {
