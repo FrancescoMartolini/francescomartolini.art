@@ -143,7 +143,7 @@ body.tema-scuro {
 .page-fin { display: none; }
 #mobile-progetti-container { display: none; }
 #mobile-intervalli-container { display: none; }
-#mobile-collaborazioni-container { display: none; }
+/*#mobile-collaborazioni-container { display: none; }*/
 .desktop-hero { display: grid; }
 .desktop-section { display: flex; }
 
@@ -270,8 +270,8 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 
 @media (min-width: 769px) {
   .progetto-galleria-img,
-  .studio-img,
-  .tutti-studio-img,
+  .studio-griglia,
+  .tutti-studio-griglia,
   .taccuino-voce-foto,
   .mobile-only { display: none !important; }
   .intervallo-img {
@@ -559,10 +559,20 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .desktop-section { display: none !important; }
   .desktop-chi-sono { display: none !important; }
   #site-footer-desktop { display: none; }
+  #mobile-collaborazioni-container { display: block; }
 
   .introduzione-wrap {
     max-width: 560px;
     width: 100%;
+  }
+
+  .contenitore {
+  display: flex;
+  gap: 20px; /* spazio tra i div */
+  }
+
+  .box {
+    flex: 1;
   }
 
   .capitolo-label {
