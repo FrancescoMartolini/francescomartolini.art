@@ -655,7 +655,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .data-ora { text-align: center; font-size: 11px; font-weight: 300; color: var(--grigio-medio); line-height: 1.6; letter-spacing: 0.06em; }
   .ora-live { font-variant-numeric: tabular-nums; }
   .ora-label { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--grigio-medio); margin-top: 2px; }
-  .pagina-corpo { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0; overflow-y: auto; width: 100%; padding: 52px 0;}
+  .pagina-corpo { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0; overflow-y: auto; width: 100%;}
 
   .titolo-principale { font-family: var(--font-titolo); font-size: clamp(36px, 10vw, 56px); font-weight: 400; line-height: 1.1; letter-spacing: -0.02em; }
   .titolo-principale em { font-style: italic; color: var(--grigio-testo); }
