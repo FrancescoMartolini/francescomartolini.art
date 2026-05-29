@@ -613,13 +613,33 @@ function costruisciMobile() {
   const containerCollab = $('mobile-collaborazioni-container');
   if (containerCollab && stato.collaborazioni.length > 0) {
     const p = crea('div'); p.className = 'page';
-    p.dataset.favicon = 'F'; p.dataset.titolo = 'Commercial';
+    p.dataset.favicon = 'F'; p.dataset.titolo = 'commercial';
     p.appendChild(creaHeader());
 
     const corpo = crea('div'); corpo.className = 'collab-mobile-corpo';
     const label = crea('p'); label.className = 'capitolo-label collab-mobile-label';
-    label.textContent = 'Fotografie commerciali';
+    label.textContent = 'Commercial';
     corpo.appendChild(label);
+
+    // Collaborazioni commerciali
+    const containerCollab = $('mobile-collaborazioni-container');
+    if (containerCollab && stato.collaborazioni.length > 0) {
+
+      // ← PAGINA TITOLO CAPITOLO (mancante)
+      const pTitolo = crea('div');
+      pTitolo.className = 'page';
+      pTitolo.dataset.favicon = 'F';
+      pTitolo.dataset.titolo = 'Commercial';
+      const { mpc: mpcT, pc: pcT } = creaMobilePageContent();
+      pcT.innerHTML = `<div>
+        <p class="capitolo-label">Fotografie commerciali</p>
+        <h2 class="capitolo-titolo">Collaborazioni</h2>
+      </div>`;
+      pTitolo.appendChild(mpcT);
+      containerCollab.appendChild(pTitolo);  // ← aggiunta prima delle foto
+
+      const p = crea('div'); p.className = 'page';
+    }
 
     stato.collaborazioni.forEach(cl => {
       const item = crea('div'); item.className = 'collab-mobile-item';
