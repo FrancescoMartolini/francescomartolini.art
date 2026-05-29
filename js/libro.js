@@ -613,7 +613,7 @@ function costruisciMobile() {
   const containerCollab = $('mobile-collaborazioni-container');
   if (containerCollab && stato.collaborazioni.length > 0) {
     const p = crea('div'); p.className = 'page';
-    p.dataset.favicon = 'F'; p.dataset.titolo = 'Fotografie commerciali';
+    p.dataset.favicon = 'F'; p.dataset.titolo = 'Commercial';
     p.appendChild(creaHeader());
 
     const corpo = crea('div'); corpo.className = 'collab-mobile-corpo';
