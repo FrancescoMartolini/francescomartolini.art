@@ -764,8 +764,19 @@ function gestisciTouchEnd(e) {
   if (!isMobile()) return;
   if ($('pagina-progetto').classList.contains('aperta')) return;
   if ($('pagina-taccuino-archivio').classList.contains('aperta')) return;
-  const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
-  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+
+  const dx = e.changedTouches[0].clientX - tx;
+  const dy = e.changedTouches[0].clientY - ty;
+
+  // Se il gesto è prevalentemente verticale, non fare nulla — lascia scrollare
+  if (Math.abs(dy) > Math.abs(dx)) return;
+
+  // Controlla se il touch è partito da dentro un elemento scrollabile
+  const target = e.target;
+  const scrollabile = target.closest('.pagina-corpo, .chi-sono-wrap');
+  if (scrollabile && scrollabile.scrollHeight > scrollabile.clientHeight) return;
+
+  if (Math.abs(dx) > 40) {
     const isUltima = stato.paginaCorrente === stato.totPagine - 1;
     if (dx < 0) paginaSuccessiva();
     else if (isUltima) navigaA(0);
