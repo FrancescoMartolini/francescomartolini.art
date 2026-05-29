@@ -624,6 +624,8 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
       transition: opacity 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     will-change: transform, opacity;
+    display: flex;
+    flex-direction: column; 
   }
 
   .page.attiva { opacity: 1; pointer-events: all; transform: translateX(0); z-index: 2; }
@@ -649,21 +651,11 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .progetto-mobile-img > div, .progetto-mobile-img img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
   .progetto-mobile-testo { padding: 0; display: flex; flex-direction: column; justify-content: flex-start;}
 
-  .pagina-header { display: flex; justify-content: center; margin-bottom: 12px; flex-shrink: 0; }
+  .pagina-header { display: flex; justify-content: center; margin: 12px; flex-shrink: 0; }
   .data-ora { text-align: center; font-size: 11px; font-weight: 300; color: var(--grigio-medio); line-height: 1.6; letter-spacing: 0.06em; }
   .ora-live { font-variant-numeric: tabular-nums; }
   .ora-label { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--grigio-medio); margin-top: 2px; }
-  .pagina-corpo { 
-    flex: 1; 
-    display: flex; 
-    align-items: flex-start; 
-    justify-content: center; 
-    min-height: 0; 
-    overflow-y: scroll;
-    -webkit-overflow-scrolling: touch;
-    width: 100%; 
-    padding-top: 52px; 
-  }
+  .pagina-corpo { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0; overflow-y: auto; width: 100%; padding: 52px 0;}
 
   .titolo-principale { font-family: var(--font-titolo); font-size: clamp(36px, 10vw, 56px); font-weight: 400; line-height: 1.1; letter-spacing: -0.02em; }
   .titolo-principale em { font-style: italic; color: var(--grigio-testo); }
@@ -683,16 +675,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .taccuino-foto { width: 100%; max-width: 360px; aspect-ratio: 4/3; overflow: hidden; background: var(--grigio-chiaro); }
   .taccuino-foto img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 
-  .chi-sono-wrap { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 20px; 
-    max-width: 100%; 
-    width: 100%; 
-    overflow-y: scroll;
-    -webkit-overflow-scrolling: touch;
-    max-height: 100%; 
-  }
+  .chi-sono-wrap { display: flex; flex-direction: column; gap: 20px; max-width: 100%; width: 100%; overflow-y: auto; max-height: 100%;}
   .chi-sono-testo h2 { font-family: var(--font-titolo); font-size: clamp(18px, 5vw, 26px); font-weight: 400; line-height: 1.25; margin-bottom: 14px; }
   .chi-sono-testo p { font-size: 12px; font-weight: 300; line-height: 1.9; color: var(--grigio-testo); margin-bottom: 10px; }
   .chi-sono-contatti { display: flex; flex-direction: column; align-items: center; }
@@ -770,7 +753,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 
 /* Mobile — intro corpo */
 .intro-mobile-corpo {
-  width:100%;max-width:560px;padding:20px;padding-bottom:40px;overflow-y:scroll;-webkit-overflow-scrolling:touch;
+  flex: 1; overflow-y: auto; padding: 20px;
 }
 
 /* Mobile — intervalli */
