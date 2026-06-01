@@ -398,16 +398,31 @@ function apriPagina(tipo) {
           <a href="mailto:info@francescomartolini.art" class="section-link">info@francescomartolini.art →</a>
         </div>
       `;
-      stato.collaborazioni.forEach(v => {
-        const item = crea('div'); item.className = 'collab-item';
-        item.innerHTML = `
-          <div class="collab-img"></div>
-          <p class="collab-cliente">${v.titolo}</p>
-          <p class="collab-anno">${v.anno}</p>
-        `;
-        item.querySelector('.collab-img').appendChild(creaImg(v.foto, v.titolo));
-        $('collab-grid').appendChild(item);
-      });
+      overlay.classList.add('aperta');
+      overlay.scrollTop = 0;
+      (function inserisciCollabABlocchi() {
+        const voci = stato.collaborazioni;
+        const grid = $('collab-grid');
+        let i = 0;
+        const BLOCCO = 4;
+        function step() {
+          const fine = Math.min(i + BLOCCO, voci.length);
+          for (; i < fine; i++) {
+            const v = voci[i];
+            const item = crea('div'); item.className = 'collab-item';
+            item.innerHTML = `
+              <div class="collab-img"></div>
+              <p class="collab-cliente">${v.titolo}</p>
+              <p class="collab-anno">${v.anno}</p>
+            `;
+            item.querySelector('.collab-img').appendChild(creaImg(v.foto, v.titolo));
+            grid.appendChild(item);
+          }
+          if (i < voci.length) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      })();
+      return;
       break;
   }
 
