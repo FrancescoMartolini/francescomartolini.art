@@ -269,7 +269,6 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .section-link:hover { color: var(--nero); border-color: var(--nero); }
 
 @media (min-width: 769px) {
-  .progetto-galleria-img,
   .studio-griglia,
   .tutti-studio-griglia,
   .taccuino-voce-foto,
