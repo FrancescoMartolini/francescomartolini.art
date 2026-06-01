@@ -336,11 +336,26 @@ function apriPagina(tipo) {
         <p class="overlay-sottotitolo">Fotografie che non appartengono a un progetto, ma al mio modo di guardare.</p>
         <div class="tutti-studi-griglia" id="tutti-studi-grid"></div>
       `;
-      stato.intervalli.flatMap(iv => iv.immagini).forEach((src, i) => {
-        const cell = crea('div'); cell.className = 'tutti-studio-img';
-        cell.appendChild(creaImg(src, `Studio ${i + 1}`));
-        $('tutti-studi-grid').appendChild(cell);
-      });
+      // Apri subito l'overlay, poi inserisci le immagini a blocchi
+      overlay.classList.add('aperta');
+      overlay.scrollTop = 0;
+      (function inserisciABlocchi() {
+        const immagini = stato.intervalli.flatMap(iv => iv.immagini);
+        const grid = $('tutti-studi-grid');
+        let i = 0;
+        const BLOCCO = 6; // quante immagini per frame
+        function step() {
+          const fine = Math.min(i + BLOCCO, immagini.length);
+          for (; i < fine; i++) {
+            const cell = crea('div'); cell.className = 'tutti-studio-img';
+            cell.appendChild(creaImg(immagini[i], `Studio ${i + 1}`));
+            grid.appendChild(cell);
+          }
+          if (i < immagini.length) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      })();
+      return; // già aperto sopra, salta il codice finale
       break;
 
     case 'chi-sono-pagina': {
@@ -805,6 +820,154 @@ function inizializzaScrollDesktop() {
   });
 }
 
+// ════════════════════════════════
+// LIGHTBOX
+// ════════════════════════════════
+const lightbox = (() => {
+  let galleria = [];  // array di src corrente
+  let idx = 0;
+
+  const el       = () => $('lightbox');
+  const imgEl    = () => $('lightbox-img');
+  const counter  = () => $('lightbox-counter');
+  const prev     = () => $('lightbox-prev');
+  const next     = () => $('lightbox-next');
+
+  // Selettori da cui raccogliere le immagini del gruppo
+  const SELETTORI_GRUPPO = [
+    '.progetto-galleria',
+    '.progetto-galleria-gruppo',
+    '.studi-griglia',
+    '.tutti-studi-griglia',
+    '.intervallo-mobile-griglia',
+    '.collab-griglia',
+    '.collab-mobile-corpo',
+    '.progetto-mobile-img',   // singola immagine copertina mobile
+  ];
+
+  function raccogliGalleria(imgCliccata) {
+    // Cerca il contenitore gruppo più vicino
+    const contenitore = SELETTORI_GRUPPO
+      .map(s => imgCliccata.closest(s))
+      .find(Boolean);
+
+    if (contenitore) {
+      // Tutte le img nel gruppo (anche dentro .img-wrap)
+      return Array.from(contenitore.querySelectorAll('img'))
+        .filter(i => !i.classList.contains('img-overlay') && i.src)
+        .map(i => ({ src: i.src, alt: i.alt || '' }));
+    }
+
+    // Fallback: solo l'immagine cliccata
+    return [{ src: imgCliccata.src, alt: imgCliccata.alt || '' }];
+  }
+
+  function mostraImg(i) {
+    if (!galleria[i]) return;
+    idx = i;
+    const lb = el(), image = imgEl();
+
+    image.classList.add('caricando');
+    const nuova = new Image();
+    nuova.onload = () => {
+      image.src = nuova.src;
+      image.alt = galleria[i].alt;
+      image.classList.remove('caricando');
+    };
+    nuova.src = galleria[i].src;
+
+    // Counter
+    if (galleria.length > 1) {
+      counter().textContent = `${i + 1} / ${galleria.length}`;
+      counter().style.display = '';
+    } else {
+      counter().style.display = 'none';
+    }
+
+    // Frecce
+    prev().hidden = i === 0;
+    next().hidden = i === galleria.length - 1;
+  }
+
+  function apri(imgEl) {
+    galleria = raccogliGalleria(imgEl);
+    const srcCliccata = imgEl.src;
+    idx = galleria.findIndex(g => g.src === srcCliccata);
+    if (idx < 0) idx = 0;
+
+    el().classList.add('aperto');
+    document.body.style.overflow = 'hidden';
+    mostraImg(idx);
+  }
+
+  function chiudi() {
+    el().classList.remove('aperto');
+    document.body.style.overflow = '';
+    galleria = [];
+  }
+
+  function precedente() { if (idx > 0) mostraImg(idx - 1); }
+  function successiva()  { if (idx < galleria.length - 1) mostraImg(idx + 1); }
+
+  // ── Swipe su mobile ──
+  let _tx = 0;
+
+  function init() {
+    const lb = el();
+    if (!lb) return;
+
+    // Chiudi cliccando fuori dall'immagine
+    lb.addEventListener('click', e => {
+      if (e.target === lb || e.target === $('lightbox-stage')) chiudi();
+    });
+    $('lightbox-chiudi').addEventListener('click', chiudi);
+    prev().addEventListener('click', precedente);
+    next().addEventListener('click', successiva);
+
+    // Swipe
+    lb.addEventListener('touchstart', e => { _tx = e.touches[0].clientX; }, { passive: true });
+    lb.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - _tx;
+      if (Math.abs(dx) > 40) { dx < 0 ? successiva() : precedente(); }
+    }, { passive: true });
+
+    // Tastiera
+    document.addEventListener('keydown', e => {
+      if (!lb.classList.contains('aperto')) return;
+      if (e.key === 'Escape') chiudi();
+      if (e.key === 'ArrowRight') successiva();
+      if (e.key === 'ArrowLeft') precedente();
+    });
+
+    // ── Event delegation: intercetta click su qualsiasi immagine ──
+    document.addEventListener('click', e => {
+      // Cerca un img dentro un .img-wrap o .progetto-galleria-img
+      const img = e.target.closest(
+        '.img-wrap, .progetto-galleria-img, .progetto-mobile-img, ' +
+        '.intervallo-mobile-cella, .tutti-studio-img, .studio-img, ' +
+        '.taccuino-voce-foto, .collab-img, .collab-mobile-img, ' +
+        '.chi-sono-esteso-img, .chi-sono-desktop-img'
+      )?.querySelector('img');
+
+      if (!img || !img.src || img.src.endsWith('favicon.svg')) return;
+
+      // Le card progetto (slider desktop e griglia "tutti i progetti") aprono il progetto, non il lightbox
+      if (e.target.closest('.progetto-card, .tutti-card')) return;
+
+      // Non aprire se si sta navigando tra pagine mobile
+      if (stato.inTransizione) return;
+
+      e.stopPropagation();
+      apri(img);
+    });
+  }
+
+  return { init, chiudi, apri };
+})();
+
+// Esponi globale se necessario
+window.chiudiLightbox = lightbox.chiudi;
+
 // ── Esponi globali ──
 window.navigaA = navigaA;
 window.chiudiProgetto = chiudiProgetto;
@@ -838,6 +1001,7 @@ async function init() {
   avviaTema();
   avviaCookie();
   avviaCursore();
+  lightbox.init();
 }
 
 document.addEventListener('DOMContentLoaded', init);
