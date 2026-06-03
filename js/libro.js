@@ -368,16 +368,16 @@ function apriPagina(tipo) {
         <h1 class="overlay-titolo">Chi sono</h1>
         <div class="chi-sono-esteso">
           <div class="chi-sono-esteso-testo">
-            <h2>Francesco Martolini</h2>
+            <h2>Un ritratto essenziale.<br><em>Parole e immagini che raccontano il percorso.</em></h2>
             <p>Fotografo italiano. Il mio lavoro esplora il rapporto tra spazio, tempo e memoria — cercando nelle immagini le tracce di ciò che resta.</p>
             <p>Sono interessato alla fotografia come strumento di indagine, non di rappresentazione. Ogni progetto nasce da una domanda che il tempo continua a restituirmi.</p>
-            <p>Basato tra Roma e Milano, lavoro su progetti a lungo termine alternati a commissioni commerciali selezionate.</p>
+            <p>Basato in un paesino vinico Firenze, lavoro su progetti a lungo termine alternati a commissioni commerciali selezionate.</p>
             <div class="chi-sono-contatti-esteso">
               <p class="contatti-label" style="margin-bottom:4px;">Contatti</p>
               <p class="overlay-nota-contatti">Non offro servizi di shooting su richiesta. Scrivimi se sei interessato a un'opera o vuoi costruire qualcosa insieme.</p>
               <a class="contatto-btn" href="mailto:info@francescomartolini.art">${SVG_MAIL}info@francescomartolini.art</a>
-              <a class="contatto-btn" href="https://instagram.com/francescomartolini" target="_blank" rel="noopener">${SVG_IG}@francescomartolini</a>
-              <a class="contatto-btn" href="tel:+39XXXXXXXXXX">${SVG_TEL}+39 XXX XXX XXXX</a>
+              <a class="contatto-btn" href="https://instagram.com/francesco_martolini_ph" target="_blank" rel="noopener">${SVG_IG}@francesco_martolini_ph</a>
+              <a class="contatto-btn" href="tel:+393930336642">${SVG_TEL}+39 393 033 6642</a>
             </div>
           </div>
           <div class="chi-sono-esteso-img" id="chi-sono-overlay-img"></div>
@@ -385,7 +385,7 @@ function apriPagina(tipo) {
       `;
       const imgWrap = $('chi-sono-overlay-img');
       if (imgWrap && stato.progetti[0]) {
-        imgWrap.appendChild(creaImg(stato.progetti[0].immagine_copertina, 'Francesco Martolini'));
+        imgWrap.appendChild(creaImg("/images/chi-sono-img.jpg", 'Francesco Martolini'));
       }
       break;
     }
@@ -675,8 +675,8 @@ function costruisciMobile() {
       pTitolo.dataset.titolo = 'Commercial';
       const { mpc: mpcT, pc: pcT } = creaMobilePageContent();
       pcT.innerHTML = `<div>
-        <p class="capitolo-label">Fotografie commerciali</p>
-        <h2 class="capitolo-titolo">Collaborazioni</h2>
+        <p class="capitolo-label">Capitolo 04</p>
+        <h2 class="capitolo-titolo">Commercial</h2>
       </div>`;
       pTitolo.appendChild(mpcT);
       containerCollab.appendChild(pTitolo);  // ← aggiunta prima delle foto
