@@ -470,7 +470,7 @@ function generaContenutoProgetto(pr) {
   if (!pr.contenuto) {
     const galleria = pr.galleria.map(src => generaImgHTML(src, pr.titolo)).join('');
     return `
-      <p class="progetto-interno-testo">${pr.testo_lungo.replace(/\n/g, '<br>')}</p>
+      <p class="progetto-interno-testo">${(pr.testo_lungo || '').replace(/\n/g, '<br>')}</p>
       ${generaMappaHTML(pr)}
       <div class="progetto-galleria">${galleria}</div>
     `;
