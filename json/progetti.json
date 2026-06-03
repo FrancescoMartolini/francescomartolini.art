@@ -70,7 +70,8 @@
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778787008/cover_z6yvxm.jpg",
     "galleria": [
     ],
-    "pagina_libro": 7
+    "pagina_libro": 7,
+    "pubblicato": false
   },
   {
     "id": "PLAYLIST.01",
@@ -82,7 +83,8 @@
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778786521/Scan_20260416_aijdfw.png",
     "galleria": [
     ],
-    "pagina_libro": 9
+    "pagina_libro": 9,
+    "pubblicato": false
   },
   {
     "id": "anatomia-degli-alberi",
@@ -94,7 +96,8 @@
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778787290/pinterest_uobvby.jpg",
     "galleria": [
     ],
-    "pagina_libro": 11
+    "pagina_libro": 11,
+    "pubblicato": false
   },
   {
     "id": "PROGETTO-3.3",
@@ -106,6 +109,7 @@
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778787452/inspo_emmyoy.jpg",
     "galleria": [
     ],
-    "pagina_libro": 13
+    "pagina_libro": 13,
+    "pubblicato": false
   }  
 ]

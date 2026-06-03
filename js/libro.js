@@ -275,7 +275,7 @@ function popolaSliderProgetti() {
   if (!griglia) return;
 
   stato.progetti.forEach((pr, i) => {
-    const card = crea('div'); card.className = 'progetto-card';
+    const card = crea('div'); card.className = 'progetto-card' + (pr.pubblicato === false ? ' in-lavorazione' : '');
     card.innerHTML = `
       <div class="progetto-card-img"></div>
       <p class="progetto-card-num">0${i + 1}</p>
@@ -283,7 +283,8 @@ function popolaSliderProgetti() {
       <p class="progetto-card-anno">${pr.anno}</p>
     `;
     card.querySelector('.progetto-card-img').appendChild(creaImg(pr.immagine_copertina, pr.titolo));
-    card.addEventListener('click', () => apriProgetto(pr.id));
+    if (pr.pubblicato === false) card.querySelector('.progetto-card-img').style.opacity = '0.4';
+    card.addEventListener('click', () => { if (pr.pubblicato !== false) apriProgetto(pr.id); });
     griglia.appendChild(card);
   });
 
@@ -325,7 +326,8 @@ function apriPagina(tipo) {
           <p class="tutti-card-desc">${pr.descrizione}</p>
         `;
         card.querySelector('.tutti-card-img').appendChild(creaImg(pr.immagine_copertina, pr.titolo));
-        card.addEventListener('click', () => apriProgetto(pr.id));
+        if (pr.pubblicato === false) card.querySelector('.tutti-card-img').style.opacity = '0.4';
+        card.addEventListener('click', () => { if (pr.pubblicato !== false) apriProgetto(pr.id); });
         $('tutti-proj-grid').appendChild(card);
       });
       break;
@@ -437,7 +439,16 @@ const _cacheProgetti = {};
 
 function apriProgetto(id) {
   const pr = stato.progetti.find(p => p.id === id);
-  if (!pr) return;
+    if (!pr) return;
+
+    if (pr.pubblicato === false) {
+      contenuto.innerHTML = `
+        <h1 class="overlay-titolo">${pr.titolo}</h1>
+        <p class="progetto-interno-testo">Questo progetto è in lavorazione.</p>
+      `;
+      return;
+    }
+
   const el = $('pagina-progetto');
   const interno = el.querySelector('.progetto-interno');
 
@@ -603,6 +614,7 @@ function costruisciMobile() {
 
     const wrap = crea('div'); wrap.className = 'progetto-mobile-wrap';
     const imgDiv = crea('div'); imgDiv.className = 'progetto-mobile-img';
+    if (pr.pubblicato === false) imgDiv.style.opacity = '0.4';
     imgDiv.appendChild(creaImg(pr.immagine_copertina, pr.titolo));
 
     const testo = crea('div'); testo.className = 'progetto-mobile-testo';
@@ -612,11 +624,12 @@ function costruisciMobile() {
       <p class="progetto-anno">${pr.anno}</p>
       <h2 class="progetto-titolo">${pr.titolo}</h2>
       <p class="progetto-anno">${pr.descrizione}</p>
-      <button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>
+      ${pr.pubblicato === false ? '' : `<button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>`}
       ${linkEsterno}
     `;
-    testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(pr.id));
-
+    if (pr.pubblicato !== false) {
+      testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(pr.id));
+    }
     wrap.appendChild(imgDiv); wrap.appendChild(testo); p.appendChild(wrap);
     containerProgetti.appendChild(p);
     tIdx = inserisciTaccuinoSeDisponibile(containerProgetti, tIdx);

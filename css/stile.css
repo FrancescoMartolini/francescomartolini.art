@@ -574,6 +574,10 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
     flex: 1;
   }
 
+  .progetto-card.in-lavorazione {
+    opacity: 0.4;
+  }
+
   .capitolo-label {
     font-size: 10px;
     letter-spacing: 0.3em;
