@@ -4,41 +4,41 @@
         "titolo": "Maison Nencioni",
         "descrizione":"",
         "anno":"2025",
-        "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1780510369/Lucy_pi3d0c.jpg"
+        "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1780510369/Lucy_pi3d0c.jpg"
     },
     {
         "id": "Cliente2",
         "titolo": "Il Poggio - Ortimino",
         "descrizione":"",
         "anno":"2024",
-        "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778782128/ilPoggio-Piatti-16_ieyoai.jpg"
+        "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778782128/ilPoggio-Piatti-16_ieyoai.jpg"
     },
     {
         "id": "Cliente3",
         "titolo": "Bar Campiglia",
         "descrizione":"",
         "anno":"2025",
-        "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778782127/BarCampiglia04102024-83_ygo0b0.jpg"
+        "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778782127/BarCampiglia04102024-83_ygo0b0.jpg"
     },
     {
         "id": "Cliente4",
         "titolo": "Elia Marmugi Barber",
         "descrizione":"",
         "anno":"2025",
-        "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778782127/EliaMarmugiBarber-46_nbcapd.jpg"
+        "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778782127/EliaMarmugiBarber-46_nbcapd.jpg"
     },
     {
         "id": "Cliente5",
         "titolo": "MilanLoveSeoul",
         "descrizione":"",
         "anno":"2025",
-        "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778782138/MilanoLoveSeoul-25_u2fnp3.jpg"
+        "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778782138/MilanoLoveSeoul-25_u2fnp3.jpg"
     },
     {
         "id": "Cliente6",
         "titolo": "Shonora - Certaldo In Fermento",
         "descrizione":"",
         "anno":"2024",
-        "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778782127/Sonhora-11_fnhcpr.jpg"
+        "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778782127/Sonhora-11_fnhcpr.jpg"
     }
 ]
