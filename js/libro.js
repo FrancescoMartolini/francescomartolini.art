@@ -8,7 +8,7 @@
 
 'use strict';
 
-const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?gid=1174325309&single=true&output=csv';
+const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/XXXXXXXXXXXXXXXX/pub?output=csv';
 
 const stato = {
   paginaCorrente: 0,
@@ -275,7 +275,7 @@ function popolaSliderProgetti() {
   if (!griglia) return;
 
   stato.progetti.forEach((pr, i) => {
-    const card = crea('div'); card.className = 'progetto-card' + (pr.pubblicato === false ? ' in-lavorazione' : '');
+    const card = crea('div'); card.className = 'progetto-card';
     card.innerHTML = `
       <div class="progetto-card-img"></div>
       <p class="progetto-card-num">0${i + 1}</p>
@@ -283,8 +283,7 @@ function popolaSliderProgetti() {
       <p class="progetto-card-anno">${pr.anno}</p>
     `;
     card.querySelector('.progetto-card-img').appendChild(creaImg(pr.immagine_copertina, pr.titolo));
-    if (pr.pubblicato === false) card.querySelector('.progetto-card-img').style.opacity = '0.4';
-    card.addEventListener('click', () => { if (pr.pubblicato !== false) apriProgetto(pr.id); });
+    card.addEventListener('click', () => apriProgetto(pr.id));
     griglia.appendChild(card);
   });
 
@@ -326,8 +325,7 @@ function apriPagina(tipo) {
           <p class="tutti-card-desc">${pr.descrizione}</p>
         `;
         card.querySelector('.tutti-card-img').appendChild(creaImg(pr.immagine_copertina, pr.titolo));
-        if (pr.pubblicato === false) card.querySelector('.tutti-card-img').style.opacity = '0.4';
-        card.addEventListener('click', () => { if (pr.pubblicato !== false) apriProgetto(pr.id); });
+        card.addEventListener('click', () => apriProgetto(pr.id));
         $('tutti-proj-grid').appendChild(card);
       });
       break;
@@ -368,16 +366,16 @@ function apriPagina(tipo) {
         <h1 class="overlay-titolo">Chi sono</h1>
         <div class="chi-sono-esteso">
           <div class="chi-sono-esteso-testo">
-            <h2>Un ritratto essenziale.<br><em>Parole e immagini che raccontano il percorso.</em></h2>
+            <h2>Francesco Martolini</h2>
             <p>Fotografo italiano. Il mio lavoro esplora il rapporto tra spazio, tempo e memoria — cercando nelle immagini le tracce di ciò che resta.</p>
             <p>Sono interessato alla fotografia come strumento di indagine, non di rappresentazione. Ogni progetto nasce da una domanda che il tempo continua a restituirmi.</p>
-            <p>Basato in un paesino vinico Firenze, lavoro su progetti a lungo termine alternati a commissioni commerciali selezionate.</p>
+            <p>Basato tra Roma e Milano, lavoro su progetti a lungo termine alternati a commissioni commerciali selezionate.</p>
             <div class="chi-sono-contatti-esteso">
               <p class="contatti-label" style="margin-bottom:4px;">Contatti</p>
               <p class="overlay-nota-contatti">Non offro servizi di shooting su richiesta. Scrivimi se sei interessato a un'opera o vuoi costruire qualcosa insieme.</p>
               <a class="contatto-btn" href="mailto:info@francescomartolini.art">${SVG_MAIL}info@francescomartolini.art</a>
-              <a class="contatto-btn" href="https://instagram.com/francesco_martolini_ph" target="_blank" rel="noopener">${SVG_IG}@francesco_martolini_ph</a>
-              <a class="contatto-btn" href="tel:+393930336642">${SVG_TEL}+39 393 033 6642</a>
+              <a class="contatto-btn" href="https://instagram.com/francescomartolini" target="_blank" rel="noopener">${SVG_IG}@francescomartolini</a>
+              <a class="contatto-btn" href="tel:+39XXXXXXXXXX">${SVG_TEL}+39 XXX XXX XXXX</a>
             </div>
           </div>
           <div class="chi-sono-esteso-img" id="chi-sono-overlay-img"></div>
@@ -385,7 +383,7 @@ function apriPagina(tipo) {
       `;
       const imgWrap = $('chi-sono-overlay-img');
       if (imgWrap && stato.progetti[0]) {
-        imgWrap.appendChild(creaImg("/images/chi-sono-img.jpg", 'Francesco Martolini'));
+        imgWrap.appendChild(creaImg(stato.progetti[0].immagine_copertina, 'Francesco Martolini'));
       }
       break;
     }
@@ -439,16 +437,7 @@ const _cacheProgetti = {};
 
 function apriProgetto(id) {
   const pr = stato.progetti.find(p => p.id === id);
-    if (!pr) return;
-
-    if (pr.pubblicato === false) {
-      contenuto.innerHTML = `
-        <h1 class="overlay-titolo">${pr.titolo}</h1>
-        <p class="progetto-interno-testo">Questo progetto è in lavorazione.</p>
-      `;
-      return;
-    }
-
+  if (!pr) return;
   const el = $('pagina-progetto');
   const interno = el.querySelector('.progetto-interno');
 
@@ -481,7 +470,7 @@ function generaContenutoProgetto(pr) {
   if (!pr.contenuto) {
     const galleria = pr.galleria.map(src => generaImgHTML(src, pr.titolo)).join('');
     return `
-      <p class="progetto-interno-testo">${(pr.testo_lungo || '').replace(/\n/g, '<br>')}</p>
+      <p class="progetto-interno-testo">${pr.testo_lungo.replace(/\n/g, '<br>')}</p>
       ${generaMappaHTML(pr)}
       <div class="progetto-galleria">${galleria}</div>
     `;
@@ -614,7 +603,6 @@ function costruisciMobile() {
 
     const wrap = crea('div'); wrap.className = 'progetto-mobile-wrap';
     const imgDiv = crea('div'); imgDiv.className = 'progetto-mobile-img';
-    if (pr.pubblicato === false) imgDiv.style.opacity = '0.4';
     imgDiv.appendChild(creaImg(pr.immagine_copertina, pr.titolo));
 
     const testo = crea('div'); testo.className = 'progetto-mobile-testo';
@@ -624,12 +612,11 @@ function costruisciMobile() {
       <p class="progetto-anno">${pr.anno}</p>
       <h2 class="progetto-titolo">${pr.titolo}</h2>
       <p class="progetto-anno">${pr.descrizione}</p>
-      ${pr.pubblicato === false ? '' : `<button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>`}
+      <button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>
       ${linkEsterno}
     `;
-    if (pr.pubblicato !== false) {
-      testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(pr.id));
-    }
+    testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(pr.id));
+
     wrap.appendChild(imgDiv); wrap.appendChild(testo); p.appendChild(wrap);
     containerProgetti.appendChild(p);
     tIdx = inserisciTaccuinoSeDisponibile(containerProgetti, tIdx);
@@ -675,8 +662,8 @@ function costruisciMobile() {
       pTitolo.dataset.titolo = 'Commercial';
       const { mpc: mpcT, pc: pcT } = creaMobilePageContent();
       pcT.innerHTML = `<div>
-        <p class="capitolo-label">Capitolo 04</p>
-        <h2 class="capitolo-titolo">Commercial</h2>
+        <p class="capitolo-label">Fotografie commerciali</p>
+        <h2 class="capitolo-titolo">Collaborazioni</h2>
       </div>`;
       pTitolo.appendChild(mpcT);
       containerCollab.appendChild(pTitolo);  // ← aggiunta prima delle foto
@@ -969,13 +956,18 @@ const lightbox = (() => {
 
     // ── Event delegation: intercetta click su qualsiasi immagine ──
     document.addEventListener('click', e => {
-      // Cerca un img dentro un .img-wrap o .progetto-galleria-img
-      const img = e.target.closest(
-        '.img-wrap, .progetto-galleria-img, .progetto-mobile-img, ' +
-        '.intervallo-mobile-cella, .tutti-studio-img, .studio-img, ' +
-        '.taccuino-voce-foto, .collab-img, .collab-mobile-img, ' +
-        '.chi-sono-esteso-img, .chi-sono-desktop-img'
-      )?.querySelector('img');
+      // Cerca un img dentro un contenitore cliccabile
+      // Su mobile escludi .progetto-mobile-img (è la copertina, il tap serve per navigare)
+      const selettori = isMobile()
+        ? '.img-wrap, .progetto-galleria-img, ' +
+          '.intervallo-mobile-cella, ' +
+          '.taccuino-voce-foto, .collab-mobile-img'
+        : '.img-wrap, .progetto-galleria-img, ' +
+          '.tutti-studio-img, .studio-img, ' +
+          '.taccuino-voce-foto, .collab-img, ' +
+          '.chi-sono-esteso-img, .chi-sono-desktop-img';
+
+      const img = e.target.closest(selettori)?.querySelector('img');
 
       if (!img || !img.src || img.src.endsWith('favicon.svg')) return;
 
