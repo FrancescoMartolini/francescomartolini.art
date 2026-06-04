@@ -587,10 +587,12 @@ function costruisciIndice() {
   const lista = $('indice-lista');
   if (!indice || !lista) return;
 
+  // Voci statiche + progetti dinamici
   const voci = [
-    { num: '—', label: 'Introduzione', sub: null, azione: () => { const p = $('intro-mobile'); if (p) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(p)); } },
+    { num: '—',  label: 'Introduzione',  sub: null,               azione: () => { const p = $('intro-mobile'); if (p) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(p)); } },
   ];
 
+  // Progetti pubblicati
   stato.progetti.forEach((pr, i) => {
     if (pr.pubblicato === false) return;
     voci.push({
@@ -598,6 +600,7 @@ function costruisciIndice() {
       label: pr.titolo,
       sub: pr.anno,
       azione: () => {
+        // Naviga alla pagina capitolo Progetti e poi apre il progetto
         const progettiSection = $('progetti');
         if (progettiSection) {
           const pagine = [...document.querySelectorAll('.page, .pagina-progetto-mobile')];
@@ -608,15 +611,16 @@ function costruisciIndice() {
     });
   });
 
+  // Voci fisse finali
   voci.push(
-    { num: '—', label: 'Studi',    sub: 'Intervalli', azione: () => { const el = $('intervalli'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
-    { num: '—', label: 'Chi sono', sub: null,          azione: () => { const el = $('chi-sono-capitolo') || $('chi-sono'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
-    { num: '—', label: 'Taccuino', sub: 'Appunti',     azione: () => { apriTaccuino(); } }
+    { num: '—', label: 'Studi',      sub: 'Intervalli',   azione: () => { const el = $('intervalli'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
+    { num: '—', label: 'Chi sono',   sub: null,           azione: () => { const el = $('chi-sono-capitolo') || $('chi-sono'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
+    { num: '—', label: 'Taccuino',   sub: 'Appunti',      azione: () => { apriTaccuino(); } }
   );
 
   lista.innerHTML = `<p class="indice-titolo">Indice</p>`;
 
-  voci.forEach(v => {
+  voci.forEach((v, i) => {
     const riga = crea('div');
     riga.className = 'indice-voce';
     riga.innerHTML = `
@@ -630,10 +634,13 @@ function costruisciIndice() {
     lista.appendChild(riga);
   });
 
+  // Posizionamento: dopo l'intro (se esiste), altrimenti dopo #home
   const pIntro = $('intro-mobile');
   const homeSection = $('home');
   const riferimento = pIntro || homeSection;
-  if (riferimento) riferimento.after(indice);
+  if (riferimento) {
+    riferimento.after(indice);
+  }
 }
 
 // ════════════════════════════════
