@@ -275,7 +275,8 @@ function popolaSliderProgetti() {
   if (!griglia) return;
 
   stato.progetti.forEach((pr, i) => {
-    const card = crea('div'); card.className = 'progetto-card';
+    const card = crea('div');
+    card.className = 'progetto-card' + (pr.pubblicato === false ? ' in-lavorazione' : '');
     card.innerHTML = `
       <div class="progetto-card-img"></div>
       <p class="progetto-card-num">0${i + 1}</p>
@@ -283,7 +284,9 @@ function popolaSliderProgetti() {
       <p class="progetto-card-anno">${pr.anno}</p>
     `;
     card.querySelector('.progetto-card-img').appendChild(creaImg(pr.immagine_copertina, pr.titolo));
-    card.addEventListener('click', () => apriProgetto(pr.id));
+    if (pr.pubblicato !== false) {
+      card.addEventListener('click', () => apriProgetto(pr.id));
+    }
     griglia.appendChild(card);
   });
 
@@ -605,11 +608,10 @@ function costruisciIndice() {
     riga.className = 'indice-voce';
     riga.innerHTML = `
       <span class="indice-voce-num">${v.num}</span>
-      <span class="indice-voce-linea"></span>
-      <span class="indice-voce-destra">
+      <div class="indice-voce-destra">
         <span class="indice-voce-label">${v.label}</span>
-        ${v.sub ? `<p class="indice-voce-sub">${v.sub}</p>` : ''}
-      </span>
+        ${v.sub ? `<span class="indice-voce-sub">${v.sub}</span>` : ''}
+      </div>
     `;
     riga.addEventListener('click', v.azione);
     lista.appendChild(riga);
@@ -666,24 +668,31 @@ function costruisciMobile() {
   const containerProgetti = $('mobile-progetti-container');
 
   stato.progetti.forEach(pr => {
+    const inLavorazione = pr.pubblicato === false;
     const p = creaPaginaMobile(pr.titolo[0].toUpperCase(), pr.titolo);
     p.appendChild(creaHeader());
 
     const wrap = crea('div'); wrap.className = 'progetto-mobile-wrap';
-    const imgDiv = crea('div'); imgDiv.className = 'progetto-mobile-img';
+    const imgDiv = crea('div');
+    imgDiv.className = 'progetto-mobile-img' + (inLavorazione ? ' in-lavorazione' : '');
     imgDiv.appendChild(creaImg(pr.immagine_copertina, pr.titolo));
 
     const testo = crea('div'); testo.className = 'progetto-mobile-testo';
     const linkEsterno = pr.link_esterno
       ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">Vedi online</a>` : '';
+    const bottoneEntrata = inLavorazione
+      ? `<p class="progetto-in-lavorazione">In lavorazione</p>`
+      : `<button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>`;
     testo.innerHTML = `
       <p class="progetto-anno">${pr.anno}</p>
       <h2 class="progetto-titolo">${pr.titolo}</h2>
       <p class="progetto-anno">${pr.descrizione}</p>
-      <button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>
+      ${bottoneEntrata}
       ${linkEsterno}
     `;
-    testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(pr.id));
+    if (!inLavorazione) {
+      testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(pr.id));
+    }
 
     wrap.appendChild(imgDiv); wrap.appendChild(testo); p.appendChild(wrap);
     containerProgetti.appendChild(p);
