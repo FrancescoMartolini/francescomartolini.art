@@ -2,7 +2,7 @@
    FRANCESCO MARTOLINI .ART — v5
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500&family=Caveat+Brush&display=swap');
+/*@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500&family=Caveat+Brush&display=swap');*/
 
 :root {
   --nero: #0a0a0a;
@@ -42,38 +42,50 @@ body.tema-scuro {
 /* ════════════════════════════════
    CURSORE CUSTOM — adattivo
    ════════════════════════════════ */
+
+#cursore, #cursore-ring {
+  display: block;
+}
+
 @media (hover: hover) {
-  * { cursor: none !important; }
+  * {
+    cursor: none !important;
+  }
 
   #cursore {
     position: fixed;
-    width: 8px; height: 8px;
+    left: 0;
+    top: 0;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: var(--nero);
     pointer-events: none;
     z-index: 10002;
     transform: translate(-50%, -50%);
-    transition: background 0.15s ease, width 0.2s, height 0.2s;
+    transition: background 0.15s ease, width 0.2s ease, height 0.2s ease;
   }
 
   #cursore-ring {
     position: fixed;
-    width: 32px; height: 32px;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    border: 1px solid rgba(10,10,10,0.25);
+    border: 1px solid rgba(10, 10, 10, 0.25);
     pointer-events: none;
     z-index: 10001;
     transform: translate(-50%, -50%);
     transition: border-color 0.15s ease;
   }
 
-  /* Cursore invertito quando sopra area scura */
   body.cursore-invertito #cursore {
     background: #f5f4f0;
   }
 
   body.cursore-invertito #cursore-ring {
-    border-color: rgba(245,244,240,0.7);
+    border-color: rgba(245, 244, 240, 0.7);
   }
 }
 
@@ -804,7 +816,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   object-fit: cover; display: block;
   pointer-events: none; -webkit-user-drag: none;
 }
-.img-overlay { position: absolute; inset: 0; z-index: 1; }
+.img-overlay { position: absolute; inset: 0; pointer-events: none; }
 .img-wrap--vuota {
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; color: var(--grigio-medio);

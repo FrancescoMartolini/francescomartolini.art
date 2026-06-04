@@ -34,6 +34,10 @@ function formatData(s) {
 
 function formatNum(n) { return String(n).padStart(2, '0'); }
 
+function progettoPubblicato(pr) {
+  return pr && pr.pubblicato !== false;
+}
+
 // ── Favicon dinamica ──
 function aggiorneFavicon(lettera) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="#0a0a0a" rx="6"/><text x="16" y="24" font-family="Georgia,serif" font-size="20" font-style="italic" fill="#fafaf8" text-anchor="middle">${lettera}</text></svg>`;
@@ -275,19 +279,41 @@ function popolaSliderProgetti() {
   if (!griglia) return;
 
   stato.progetti.forEach((pr, i) => {
+<<<<<<< HEAD
+      const inLavorazione = pr.pubblicato === false;
+
     const card = crea('div');
-    card.className = 'progetto-card' + (pr.pubblicato === false ? ' in-lavorazione' : '');
+    card.className = 'tutti-card' + (inLavorazione ? ' in-lavorazione' : '');
+
+=======
+    const card = crea('div'); card.className = 'progetto-card';
+>>>>>>> parent of 5ecfbdf (Add files via upload)
     card.innerHTML = `
-      <div class="progetto-card-img"></div>
-      <p class="progetto-card-num">0${i + 1}</p>
-      <p class="progetto-card-titolo">${pr.titolo.toUpperCase()}</p>
-      <p class="progetto-card-anno">${pr.anno}</p>
+      <div class="tutti-card-num">${formatNum(i + 1)}</div>
+      <div class="tutti-card-img"></div>
+      <div class="tutti-card-meta">
+        <h3>${pr.titolo}</h3>
+        <p>${pr.anno}</p>
+        <p>${pr.descrizione || ''}</p>
+        ${inLavorazione ? '<span class="stato-progetto">In lavorazione</span>' : ''}
+      </div>
     `;
-    card.querySelector('.progetto-card-img').appendChild(creaImg(pr.immagine_copertina, pr.titolo));
-    if (pr.pubblicato !== false) {
+<<<<<<< HEAD
+
+    card.querySelector('.tutti-card-img').appendChild(
+      creaImg(pr.immagine_copertina, pr.titolo)
+    );
+
+    if (progettoPubblicato(pr)) {
       card.addEventListener('click', () => apriProgetto(pr.id));
     }
+
+    $('tutti-proj-grid').appendChild(card);
+=======
+    card.querySelector('.progetto-card-img').appendChild(creaImg(pr.immagine_copertina, pr.titolo));
+    card.addEventListener('click', () => apriProgetto(pr.id));
     griglia.appendChild(card);
+>>>>>>> parent of 5ecfbdf (Add files via upload)
   });
 
   const sx = $('proj-sx'), dx = $('proj-dx');
@@ -377,8 +403,8 @@ function apriPagina(tipo) {
               <p class="contatti-label" style="margin-bottom:4px;">Contatti</p>
               <p class="overlay-nota-contatti">Non offro servizi di shooting su richiesta. Scrivimi se sei interessato a un'opera o vuoi costruire qualcosa insieme.</p>
               <a class="contatto-btn" href="mailto:info@francescomartolini.art">${SVG_MAIL}info@francescomartolini.art</a>
-              <a class="contatto-btn" href="https://instagram.com/francescomartolini" target="_blank" rel="noopener">${SVG_IG}@francescomartolini</a>
-              <a class="contatto-btn" href="tel:+39XXXXXXXXXX">${SVG_TEL}+39 XXX XXX XXXX</a>
+              <a class="contatto-btn" href="https://instagram.com/francesco_martolini_ph" target="_blank" rel="noopener">${SVG_IG}francesco_martolini_ph</a>
+              <a class="contatto-btn" href="tel:+393930336642">${SVG_TEL}+39 393 033 6642</a>
             </div>
           </div>
           <div class="chi-sono-esteso-img" id="chi-sono-overlay-img"></div>
@@ -386,7 +412,7 @@ function apriPagina(tipo) {
       `;
       const imgWrap = $('chi-sono-overlay-img');
       if (imgWrap && stato.progetti[0]) {
-        imgWrap.appendChild(creaImg(stato.progetti[0].immagine_copertina, 'Francesco Martolini'));
+        imgWrap.appendChild(creaImg("./images/chi-sono-img.jpg", 'Francesco Martolini'));
       }
       break;
     }
@@ -440,6 +466,7 @@ const _cacheProgetti = {};
 
 function apriProgetto(id) {
   const pr = stato.progetti.find(p => p.id === id);
+  if (!pr || pr.pubblicato === false) return;
   if (!pr) return;
   const el = $('pagina-progetto');
   const interno = el.querySelector('.progetto-interno');
@@ -570,10 +597,12 @@ function costruisciIndice() {
   const lista = $('indice-lista');
   if (!indice || !lista) return;
 
+  // Voci statiche + progetti dinamici
   const voci = [
-    { num: '—', label: 'Introduzione', sub: null, azione: () => { const p = $('intro-mobile'); if (p) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(p)); } },
+    { num: '—',  label: 'Introduzione',  sub: null,               azione: () => { const p = $('intro-mobile'); if (p) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(p)); } },
   ];
 
+  // Progetti pubblicati
   stato.progetti.forEach((pr, i) => {
     if (pr.pubblicato === false) return;
     voci.push({
@@ -581,6 +610,7 @@ function costruisciIndice() {
       label: pr.titolo,
       sub: pr.anno,
       azione: () => {
+        // Naviga alla pagina capitolo Progetti e poi apre il progetto
         const progettiSection = $('progetti');
         if (progettiSection) {
           const pagine = [...document.querySelectorAll('.page, .pagina-progetto-mobile')];
@@ -591,32 +621,37 @@ function costruisciIndice() {
     });
   });
 
+  // Voci fisse finali
   voci.push(
-    { num: '—', label: 'Studi',    sub: 'Intervalli', azione: () => { const el = $('intervalli'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
-    { num: '—', label: 'Chi sono', sub: null,          azione: () => { const el = $('chi-sono-capitolo') || $('chi-sono'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
-    { num: '—', label: 'Taccuino', sub: 'Appunti',     azione: () => { apriTaccuino(); } }
+    { num: '—', label: 'Studi',      sub: 'Intervalli',   azione: () => { const el = $('intervalli'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
+    { num: '—', label: 'Chi sono',   sub: null,           azione: () => { const el = $('chi-sono-capitolo') || $('chi-sono'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
+    { num: '—', label: 'Taccuino',   sub: 'Appunti',      azione: () => { apriTaccuino(); } }
   );
 
   lista.innerHTML = `<p class="indice-titolo">Indice</p>`;
 
-  voci.forEach(v => {
+  voci.forEach((v, i) => {
     const riga = crea('div');
     riga.className = 'indice-voce';
     riga.innerHTML = `
       <span class="indice-voce-num">${v.num}</span>
-      <div class="indice-voce-destra">
+      <span class="indice-voce-linea"></span>
+      <span class="indice-voce-destra">
         <span class="indice-voce-label">${v.label}</span>
-        ${v.sub ? `<span class="indice-voce-sub">${v.sub}</span>` : ''}
-      </div>
+        ${v.sub ? `<p class="indice-voce-sub">${v.sub}</p>` : ''}
+      </span>
     `;
     riga.addEventListener('click', v.azione);
     lista.appendChild(riga);
   });
 
+  // Posizionamento: dopo l'intro (se esiste), altrimenti dopo #home
   const pIntro = $('intro-mobile');
   const homeSection = $('home');
   const riferimento = pIntro || homeSection;
-  if (riferimento) riferimento.after(indice);
+  if (riferimento) {
+    riferimento.after(indice);
+  }
 }
 
 // ════════════════════════════════
@@ -661,31 +696,24 @@ function costruisciMobile() {
   const containerProgetti = $('mobile-progetti-container');
 
   stato.progetti.forEach(pr => {
-    const inLavorazione = pr.pubblicato === false;
     const p = creaPaginaMobile(pr.titolo[0].toUpperCase(), pr.titolo);
     p.appendChild(creaHeader());
 
     const wrap = crea('div'); wrap.className = 'progetto-mobile-wrap';
-    const imgDiv = crea('div');
-    imgDiv.className = 'progetto-mobile-img' + (inLavorazione ? ' in-lavorazione' : '');
+    const imgDiv = crea('div'); imgDiv.className = 'progetto-mobile-img';
     imgDiv.appendChild(creaImg(pr.immagine_copertina, pr.titolo));
 
     const testo = crea('div'); testo.className = 'progetto-mobile-testo';
     const linkEsterno = pr.link_esterno
       ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">Vedi online</a>` : '';
-    const bottoneEntrata = inLavorazione
-      ? `<p class="progetto-in-lavorazione">In lavorazione</p>`
-      : `<button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>`;
     testo.innerHTML = `
       <p class="progetto-anno">${pr.anno}</p>
       <h2 class="progetto-titolo">${pr.titolo}</h2>
       <p class="progetto-anno">${pr.descrizione}</p>
-      ${bottoneEntrata}
+      <button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>
       ${linkEsterno}
     `;
-    if (!inLavorazione) {
-      testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(pr.id));
-    }
+    testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(pr.id));
 
     wrap.appendChild(imgDiv); wrap.appendChild(testo); p.appendChild(wrap);
     containerProgetti.appendChild(p);

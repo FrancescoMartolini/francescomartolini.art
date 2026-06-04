@@ -1,5 +1,5 @@
 # Francesco Martolini .art
-## Guida completa al sito — v5.0
+## Guida completa al sito — v5.1
 
 ---
 
@@ -40,7 +40,7 @@ francescomartolini.art/
 
 Il sito si comporta in modo diverso in base al dispositivo:
 
-**Desktop (> 768px):** layout editoriale con scroll verticale, sezioni distinte, griglia progetti, menu in alto, cursore custom adattivo.
+**Desktop (> 768px):** layout editoriale con scroll verticale, sezioni distinte, griglia progetti, menu in alto, overlay a pagina intera e cursore custom adattivo.
 
 **Mobile (≤ 768px):** libro a pagine orizzontali, swipe o tap per sfogliare, nessun header visibile, navigazione con frecce in basso.
 
@@ -52,6 +52,7 @@ Il sito si comporta in modo diverso in base al dispositivo:
 - Scroll verticale tra le sezioni
 - Menu in alto per saltare ai capitoli
 - Overlay per progetti, studi, chi sono, collaborazioni, taccuino
+- Apertura overlay tramite attributo `data-overlay` gestito da `libro.js`
 
 **Mobile:**
 - Swipe sinistra/destra per sfogliare
@@ -78,6 +79,7 @@ Il sito si comporta in modo diverso in base al dispositivo:
     Studi (sequenze)
     Taccuino
 ...
+    Capitolo 03 — Chi sono
     Chi sono
     Fotografie commerciali (pagina unica con scroll)
     fin.
@@ -97,18 +99,21 @@ Il sito si comporta in modo diverso in base al dispositivo:
     "anno": "2025",
     "descrizione": "Breve descrizione (2-3 righe).",
     "testo_lungo": "Testo completo.\n\nUsa \\n\\n per i paragrafi.",
-    "immagine_copertina": "images/progetti/nome-progetto/cover.jpg",
+    "immagine_copertina": "https://res.cloudinary.com/tuo-nome/image/upload/w_600,q_auto,f_auto/percorso/cover.jpg",
     "galleria": [
-      "images/progetti/nome-progetto/01.jpg",
-      "images/progetti/nome-progetto/02.jpg"
+      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/01.jpg",
+      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/02.jpg"
     ],
     "link_esterno": "",
-    "mappa": null
+    "mappa": null,
+    "pubblicato": true
   }
 ]
 ```
 
 **link_esterno:** se vuoto `""` il bottone non appare. Se presente appare "Vedi online ↗".
+
+**pubblicato:** se `false`, il progetto resta visibile come “in lavorazione” ma non è apribile, né da mobile né da desktop.
 
 **mappa** — tre opzioni:
 
@@ -133,6 +138,38 @@ Il sito si comporta in modo diverso in base al dispositivo:
 
 Per ottenere l'URL di Google My Maps: My Maps → Condividi → Incorpora nella pagina → copia il valore `src` dell'iframe.
 
+#### Campo `contenuto` (layout avanzato opzionale)
+
+In alternativa a `testo_lungo` + `galleria`, puoi usare il campo `contenuto` per costruire il progetto a blocchi.
+
+```json
+"contenuto": [
+  {
+    "tipo": "testo",
+    "valore": "Un paragrafo di testo.\n\nUn secondo paragrafo."
+  },
+  {
+    "tipo": "immagine",
+    "valore": "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/01.jpg"
+  },
+  {
+    "tipo": "galleria",
+    "valore": [
+      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/02.jpg",
+      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/03.jpg"
+    ]
+  },
+  {
+    "tipo": "mappa"
+  },
+  {
+    "tipo": "separatore"
+  }
+]
+```
+
+Quando `contenuto` è presente, viene usato come struttura principale del progetto.
+
 ---
 
 #### `json/intervalli.json`
@@ -144,9 +181,9 @@ Per ottenere l'URL di Google My Maps: My Maps → Condividi → Incorpora nella 
     "titolo": "Sequenza 01",
     "descrizione": "Breve descrizione.",
     "immagini": [
-      "images/intervalli/seq01-a.jpg",
-      "images/intervalli/seq01-b.jpg",
-      "images/intervalli/seq01-c.jpg"
+      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/seq01-a.jpg",
+      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/seq01-b.jpg",
+      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/seq01-c.jpg"
     ]
   }
 ]
@@ -162,7 +199,7 @@ Per ottenere l'URL di Google My Maps: My Maps → Condividi → Incorpora nella 
     "id": "Cliente1",
     "titolo": "Nome Cliente",
     "anno": "2025",
-    "foto": "https://res.cloudinary.com/tuo-nome/image/upload/foto.jpg"
+    "foto": "https://res.cloudinary.com/tuo-nome/image/upload/w_600,q_auto,f_auto/percorso/foto.jpg"
   }
 ]
 ```
@@ -197,7 +234,11 @@ Le collaborazioni appaiono in una pagina unica con scroll verticale nel mobile e
 ]
 ```
 
-`foto` può essere `null` oppure un URL immagine (Cloudinary consigliato).
+`foto` può essere `null` oppure un URL immagine Cloudinary già ottimizzato, per esempio:
+
+```json
+"foto": "https://res.cloudinary.com/tuo-nome/image/upload/w_600,q_auto,f_auto/percorso/taccuino.jpg"
+```
 
 ---
 
@@ -231,15 +272,41 @@ Il taccuino si aggiorna automaticamente da Google Sheets. Ogni volta che apri il
 **Formato:** JPG consigliato
 **Copertine:** 1200×800px (orizzontale) o 800×1200px (verticale)
 **Galleria:** qualsiasi proporzione, il sito si adatta
-**Peso:** sotto i 500KB per immagine
+**Peso sorgente consigliato:** sotto i 500KB se usi immagini locali
 
 **Cloudinary — ottimizzazione automatica:**
 ```
 https://res.cloudinary.com/tuo-nome/image/upload/w_1200,q_auto,f_auto/percorso/immagine.jpg
 ```
-Parametri: `w_` larghezza, `q_auto` qualità automatica, `f_auto` formato WebP automatico.
+
+Parametri principali:
+- `w_600` → card, anteprime, collaborazioni, immagini piccole
+- `w_1400` → gallerie progetto, intervalli, immagini grandi
+- `q_auto` → qualità automatica
+- `f_auto` → formato automatico (WebP / AVIF quando disponibile)
+
+**Regola pratica usata nel sito:**
+- `immagine_copertina` → `w_600,q_auto,f_auto`
+- `galleria` / `intervalli` → `w_1400,q_auto,f_auto`
+- `collaborazioni` / `taccuino` → `w_600,q_auto,f_auto`
 
 **Lightbox:** su desktop tutte le immagini di contenuto si aprono a schermo intero con click. Escluse le copertine card e le immagini di interfaccia.
+
+---
+
+### OTTIMIZZAZIONI PERFORMANCE
+
+Le ottimizzazioni attuali del sito sono:
+
+- **Preconnect font** in `index.html` verso `fonts.googleapis.com` e `fonts.gstatic.com`
+- **Caricamento font in HTML** invece di `@import` nel CSS, per ridurre il tempo di blocco iniziale
+- **Lazy loading** su tutte le immagini generate dinamicamente, tranne l'hero
+- **`decoding="async"`** sulle immagini non prioritarie
+- **Cloudinary con trasformazioni attive** nei JSON (`w_`, `q_auto`, `f_auto`)
+- **Hero prioritaria** lasciata fuori dal lazy loading
+- **Cache HTML** per overlay progetto e taccuino
+
+Queste modifiche migliorano in modo visibile il tempo di caricamento iniziale, soprattutto su mobile e connessioni lente.
 
 ---
 
@@ -304,6 +371,9 @@ Posizionato sopra il footer, non copre la navigazione.
 
 - **Titoli, capitoli, taccuino, fin:** Playfair Display (serif)
 - **Menu, date, testi, UI:** Inter (sans-serif)
+- **Accenti scritti / note visive:** Caveat Brush
+
+I font vengono caricati direttamente in `index.html` con `preconnect`, non tramite `@import` nel CSS.
 
 ---
 
@@ -324,14 +394,18 @@ Con 4 o meno progetti le frecce non appaiono.
 
 ### PAGINE OVERLAY (desktop)
 
-Quattro pagine accessibili dal menu o dai link "Vedi tutti":
+Quattro pagine accessibili dal menu o dai link di sezione:
 
-| Link | Contenuto |
-|------|-----------|
-| Vedi tutti → (Progetti) | Griglia tutti i progetti con copertina e descrizione |
-| Vedi tutti → (Studi) | Griglia tutte le immagini degli intervalli |
-| Scopri di più → (Chi sono) | Biografia estesa, foto, contatti |
-| Vedi alcuni lavori → (Collaborazioni) | Griglia clienti con foto e anno |
+| Link | Metodo | Contenuto |
+|------|--------|-----------|
+| Vedi tutti → (Progetti) | `data-overlay="tutti-progetti-pagina"` | Griglia tutti i progetti con copertina e descrizione |
+| Vedi tutti → (Studi) | `data-overlay="tutti-studi-pagina"` | Griglia tutte le immagini degli intervalli |
+| Scopri di più → (Chi sono) | `data-overlay="chi-sono-pagina"` | Biografia estesa, foto, contatti |
+| Vedi alcuni lavori → (Collaborazioni) | `data-overlay="collaborazioni-pagina"` | Griglia clienti con foto e anno |
+| Leggi tutti → (Taccuino) | `data-overlay="taccuino-pagina"` | Archivio completo appunti e immagini |
+
+Gli overlay non usano più `onclick` inline come metodo principale: l'apertura viene gestita in JavaScript leggendo l'attributo `data-overlay`.
+Nella vista desktop, i progetti con `pubblicato: false` possono comparire nella griglia ma non aprono la pagina dettaglio.
 
 ---
 
@@ -344,6 +418,8 @@ href="mailto:tua@email.com"
 href="https://instagram.com/tuonome"
 href="tel:+39XXXXXXXXXX"
 ```
+
+**Nota:** verifica sempre che i link esterni usino l'URL completo con `https://`.
 
 ---
 
@@ -375,33 +451,41 @@ Per aggiornare: fai commit e push, GitHub Pages si aggiorna automaticamente.
 | Studi | `json/intervalli.json` |
 | Collaborazioni commerciali | `json/collaborazioni.json` |
 | Colori | `css/stile.css` → `:root` |
-| Font | `css/stile.css` → `@import` e `--font-*` |
+| Font | `index.html` → `<head>` (`preconnect` + `<link href=...fonts...>`) |
 | Contatti | `js/libro.js` → sezione chi sono |
 | URL Google Sheets | `js/libro.js` → `const SHEETS_URL` |
 | Testo cookie | `index.html` → `#cookie-banner` |
 | Soglia cursore scuro/chiaro | `js/libro.js` → `isColorDark()` → valore `0.4` |
+| Link overlay desktop | `index.html` → attributo `data-overlay` |
 
 ---
 
 ### AGGIUNGERE UN NUOVO PROGETTO — CHECKLIST
 
 - [ ] Aggiungi l'oggetto in `json/progetti.json`
-- [ ] Crea cartella `images/progetti/nome-progetto/`
-- [ ] Carica `cover.jpg` e le foto della galleria
+- [ ] Se il progetto non è pronto, imposta `"pubblicato": false`
+- [ ] Se usi Cloudinary, applica subito `w_600,q_auto,f_auto` alla copertina e `w_1400,q_auto,f_auto` alla galleria
+- [ ] Crea cartella `images/progetti/nome-progetto/` solo se usi immagini locali
+- [ ] Carica `cover.jpg` e le foto della galleria oppure inserisci gli URL Cloudinary
 - [ ] Imposta `immagine_copertina` e array `galleria` con i percorsi corretti
+- [ ] Se vuoi il layout avanzato, usa il campo `contenuto`
 - [ ] Se vuoi la mappa: ottieni URL Google My Maps o inserisci le coordinate
 - [ ] Se vuoi il link esterno: aggiungi l'URL in `link_esterno`
+- [ ] Se il progetto non è pronto, imposta `"pubblicato": false` per mostrarlo come “In lavorazione” senza renderlo accessibile
 - [ ] Fai commit e push
 
 ---
 
 ### NOTE TECNICHE
 
-- Zero dipendenze esterne (solo Google Fonts)
+- Zero dipendenze esterne oltre a Google Fonts
 - Dati gestiti interamente via JSON
 - Taccuino aggiornabile da smartphone via Google Sheets
 - Lazy loading su tutte le immagini tranne l'hero
+- `decoding="async"` sulle immagini non prioritarie
 - Cache HTML per overlay progetto e taccuino (apertura istantanea dalla seconda volta)
+- Overlay desktop gestiti tramite attributi `data-overlay`
 - Compatibile con tutti i browser moderni
 - Accessibile: navigazione da tastiera completa (frecce, Escape)
 - PWA-ready: manifest e apple-touch-icon configurati
+- Accesso ai progetti controllato dal flag `pubblicato` in modo coerente tra mobile, slider desktop, overlay e apertura diretta
