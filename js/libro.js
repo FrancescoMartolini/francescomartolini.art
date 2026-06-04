@@ -560,6 +560,71 @@ function apriTaccuino() {
 function chiudiTaccuino() { $('pagina-taccuino-archivio').classList.remove('aperta'); }
 
 // ════════════════════════════════
+// MOBILE — Pagina indice
+// ════════════════════════════════
+function costruisciIndice() {
+  const indice = $('indice-mobile');
+  const lista = $('indice-lista');
+  if (!indice || !lista) return;
+
+  // Voci statiche + progetti dinamici
+  const voci = [
+    { num: '—',  label: 'Introduzione',  sub: null,               azione: () => { const p = $('intro-mobile'); if (p) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(p)); } },
+  ];
+
+  // Progetti pubblicati
+  stato.progetti.forEach((pr, i) => {
+    if (pr.pubblicato === false) return;
+    voci.push({
+      num: formatNum(i + 1),
+      label: pr.titolo,
+      sub: pr.anno,
+      azione: () => {
+        // Naviga alla pagina capitolo Progetti e poi apre il progetto
+        const progettiSection = $('progetti');
+        if (progettiSection) {
+          const pagine = [...document.querySelectorAll('.page, .pagina-progetto-mobile')];
+          navigaA(pagine.indexOf(progettiSection));
+        }
+        setTimeout(() => apriProgetto(pr.id), 300);
+      }
+    });
+  });
+
+  // Voci fisse finali
+  voci.push(
+    { num: '—', label: 'Studi',      sub: 'Intervalli',   azione: () => { const el = $('intervalli'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
+    { num: '—', label: 'Chi sono',   sub: null,           azione: () => { const el = $('chi-sono-capitolo') || $('chi-sono'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
+    { num: '—', label: 'Taccuino',   sub: 'Appunti',      azione: () => { apriTaccuino(); } }
+  );
+
+  lista.innerHTML = `<p class="indice-titolo">Indice</p>`;
+
+  voci.forEach((v, i) => {
+    const riga = crea('div');
+    riga.className = 'indice-voce';
+    riga.innerHTML = `
+      <span class="indice-voce-num">${v.num}</span>
+      <span class="indice-voce-linea"></span>
+      <span class="indice-voce-destra">
+        <span class="indice-voce-label">${v.label}</span>
+        ${v.sub ? `<p class="indice-voce-sub">${v.sub}</p>` : ''}
+      </span>
+    `;
+    riga.addEventListener('click', v.azione);
+    lista.appendChild(riga);
+  });
+
+  // Posizionamento: dopo l'intro (se esiste), altrimenti dopo #home
+  const pIntro = $('intro-mobile');
+  const homeSection = $('home');
+  const riferimento = pIntro || homeSection;
+  if (riferimento) {
+    riferimento.after(indice);
+  }
+}
+
+// ════════════════════════════════
 // MOBILE — Costruisci pagine
 // ════════════════════════════════
 function costruisciMobile() {
@@ -587,6 +652,9 @@ function costruisciMobile() {
     const homeSection = document.querySelector('#main-content #home');
     if (homeSection) { homeSection.after(pIntro); homeSection.after(pTitoloIntro); }
   }
+
+  // Pagina indice (mobile) — inserita dopo intro, prima di #progetti
+  costruisciIndice();
 
   // Taccuino prima frase
   const taccuinoFrase = $('taccuino-mobile-frase');
