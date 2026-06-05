@@ -11,7 +11,7 @@
       },
       {
         "tipo": "immagine",
-        "valore": "images/progetti/la-pelle-della-citta/01.jpg"
+        "valore": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416455/LaPelleDellaCitta107_sh3xyv.jpg"
       },
       {
         "tipo": "testo",
@@ -26,20 +26,18 @@
       },
       {
         "tipo": "immagine",
-        "valore": "images/progetti/la-pelle-della-citta/02.jpg"
+        "valore": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416462/LaPelleDellaCitta40_ppttqh.jpg"
       }
     ],
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778416462/LaPelleDellaCitta40_ppttqh.jpg",
     "galleria": [
-      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416455/LaPelleDellaCitta107_sh3xyv.jpg",
-      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416463/LaPelleDellaCitta96_xa1ydm.jpg",
       "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416466/LaPelleDellaCitta93_lyiv6w.jpg",
       "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416462/LaPelleDellaCitta133_ivxt9p.jpg",
       "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416462/LaPelleDellaCitta91_n4lpsb.jpg",
       "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416462/LaPelleDellaCitta3_tcaiy5.png",
       "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416455/LaPelleDellaCitta112_merfsj.jpg"      
     ],
-    "link_esterno": "",
+    "link_esterno": "https://www.saal-digital.net/share/umDMBZb/",
     "mappa": {
       "url": "https://www.google.com/maps/d/embed?mid=1oONLATOAeXZ81Nm9tfSGbuGdIrLjrMw&ehbc=2E312F",
       "label": "Firenze - La pelle della città"

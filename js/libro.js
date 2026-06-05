@@ -391,7 +391,7 @@ function apriPagina(tipo) {
             <h2>Francesco Martolini</h2>
             <p>Fotografo italiano. Il mio lavoro esplora il rapporto tra spazio, tempo e memoria — cercando nelle immagini le tracce di ciò che resta.</p>
             <p>Sono interessato alla fotografia come strumento di indagine, non di rappresentazione. Ogni progetto nasce da una domanda che il tempo continua a restituirmi.</p>
-            <p>Basato tra Roma e Milano, lavoro su progetti a lungo termine alternati a commissioni commerciali selezionate.</p>
+            <p>Basato in un paesino vicino Firenze, lavoro su progetti a lungo termine alternati a commissioni commerciali selezionate.</p>
             <div class="chi-sono-contatti-esteso">
               <p class="contatti-label" style="margin-bottom:4px;">Contatti</p>
               <p class="overlay-nota-contatti">Non offro servizi di shooting su richiesta. Scrivimi se sei interessato a un'opera o vuoi costruire qualcosa insieme.</p>
@@ -616,8 +616,8 @@ function costruisciIndice() {
 
   // Voci fisse finali
   voci.push(
-    { num: '—', label: 'Studi',      sub: 'Intervalli',   azione: () => { const el = $('intervalli'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
-    { num: '—', label: 'Chi sono',   sub: null,           azione: () => { const el = $('chi-sono-capitolo') || $('chi-sono'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
+    { num: '—', label: 'Intervalli', sub: 'Fotografie che non appartengono a un progetto, ma al mio modo di guardare.',   azione: () => { const el = $('intervalli'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
+    { num: '—', label: 'Chi sono',   sub: 'Un ritratto essenziale.',           azione: () => { const el = $('chi-sono-capitolo') || $('chi-sono'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
     { num: '—', label: 'Taccuino',   sub: 'Appunti',      azione: () => { apriTaccuino(); } }
   );
 
@@ -723,7 +723,7 @@ function costruisciMobile() {
     const p = creaPaginaMobile('I', iv.titolo);
     const { mpc, pc } = creaMobilePageContent();
     const wrap = crea('div'); wrap.className = 'intervallo-mobile-wrap';
-    wrap.innerHTML = `<p class="capitolo-label">Studi</p><h2 class="capitolo-titolo">${iv.titolo}</h2><p class="capitolo-descrizione">${iv.descrizione}</p>`;
+    wrap.innerHTML = `<p class="capitolo-label">Intervalli</p><h2 class="capitolo-titolo">${iv.titolo}</h2><p class="capitolo-descrizione">${iv.descrizione}</p>`;
     const gr = crea('div'); gr.className = 'intervallo-mobile-griglia';
     iv.immagini.forEach((src, i) => {
       const cell = crea('div'); cell.className = 'intervallo-mobile-cella';
@@ -758,8 +758,8 @@ function costruisciMobile() {
       pTitolo.dataset.titolo = 'Commercial';
       const { mpc: mpcT, pc: pcT } = creaMobilePageContent();
       pcT.innerHTML = `<div>
-        <p class="capitolo-label">Fotografie commerciali</p>
-        <h2 class="capitolo-titolo">Collaborazioni</h2>
+        <p class="capitolo-label">Capitolo 04</p>
+        <h2 class="capitolo-titolo">Commercial</h2>
       </div>`;
       pTitolo.appendChild(mpcT);
       containerCollab.appendChild(pTitolo);  // ← aggiunta prima delle foto
