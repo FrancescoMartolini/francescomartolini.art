@@ -283,7 +283,6 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 @media (min-width: 769px) {
   .studio-griglia,
   .tutti-studio-griglia,
-  .taccuino-voce-foto,
   .mobile-only { display: none !important; }
   .intervallo-img {
     cursor: zoom-in;
@@ -529,7 +528,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .taccuino-voce { border-top: 1px solid var(--grigio-chiaro); padding: 28px 0; }
 .taccuino-voce:last-child { border-bottom: 1px solid var(--grigio-chiaro); }
 .taccuino-voce-frase { font-family: var(--font-taccuino); font-size: clamp(20px, 2.8vw, 30px); line-height: 1.4; margin-bottom: 10px; }
-.taccuino-voce-foto { width: 100%; max-width: 300px; aspect-ratio: 4/3; overflow: hidden; margin-bottom: 10px; background: var(--grigio-chiaro); }
+.taccuino-voce-foto { width: 100%; aspect-ratio: 3/2; overflow: hidden; margin-bottom: 16px; background: var(--grigio-chiaro); }
 .taccuino-voce-foto img { width: 100%; height: 100%; object-fit: cover;; }
 .taccuino-voce-data { font-size: 11px; font-weight: 300; letter-spacing: 0.2em; color: var(--grigio-medio); }
 

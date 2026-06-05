@@ -1,42 +1,48 @@
 [
   {
     "id": 1,
-    "testo": "Il tempo non passa nelle immagini. Si deposita.",
-    "data": "2026-04-30",
+    "testo": "Ogni fotografia è un frammento di silenzio.",
+    "data": "2026-05-15",
     "foto": null
   },
   {
     "id": 2,
+    "testo": "Il tempo non passa nelle immagini. Si deposita.",
+    "data": "2026-04-30",
+    "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1779218647/2_knfg3v.jpg"
+  },
+  {
+    "id": 3,
     "testo": "Osservo. Aspetto. Raccolgo.",
     "data": "2026-04-28",
     "foto": null
   },
   {
-    "id": 3,
+    "id": 4,
     "testo": "Le storie non si inventano. Si riconoscono.",
     "data": "2026-04-24",
     "foto": null
   },
   {
-    "id": 4,
+    "id": 5,
     "testo": "A volte basta uno sguardo per capire dove sei.",
     "data": "2026-04-18",
     "foto": null
   },
   {
-    "id": 5,
+    "id": 6,
     "testo": "La luce giusta arriva sempre quando smetti di cercarla.",
     "data": "2026-04-12",
     "foto": null
   },
   {
-    "id": 6,
+    "id": 7,
     "testo": "Ogni fotografia è un frammento di silenzio.",
     "data": "2026-04-05",
     "foto": null
   },
   {
-    "id": 7,
+    "id": 8,
     "testo": "Non fotografo luoghi. Fotografo il tempo che li attraversa.",
     "data": "2026-03-28",
     "foto": null

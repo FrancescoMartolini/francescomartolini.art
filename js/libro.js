@@ -49,10 +49,13 @@ function aggiorneFavicon(lettera) {
 // ── CSV Parser ──
 function parseCsv(csv) {
   return csv.trim().split('\n').slice(1).map((riga, i) => {
-    const celle = []; let inQ = false, cell = '';
-    for (const ch of riga) {
+    const celle = []; let inQ = false, cell = '', colIdx = 0;
+    for (let c = 0; c < riga.length; c++) {
+      const ch = riga[c];
       if (ch === '"') { inQ = !inQ; continue; }
-      if (ch === ',' && !inQ) { celle.push(cell.trim()); cell = ''; continue; }
+      if (ch === ',' && !inQ && colIdx < 2) {
+        celle.push(cell.trim()); cell = ''; colIdx++; continue;
+      }
       cell += ch;
     }
     celle.push(cell.trim());
@@ -74,11 +77,13 @@ async function caricaDati() {
     const r = await fetch(SHEETS_URL);
     if (!r.ok) throw new Error();
     stato.taccuino = parseCsv(await r.text()).sort((a, b) => new Date(b.data) - new Date(a.data));
+    _cacheTaccuino = null;
   } catch {
     try {
       stato.taccuino = (await fetch('json/taccuino.json').then(r => r.json()))
         .sort((a, b) => new Date(b.data) - new Date(a.data));
     } catch { stato.taccuino = []; }
+    _cacheTaccuino = null;
   }
 }
 
