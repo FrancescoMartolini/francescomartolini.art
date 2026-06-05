@@ -331,16 +331,18 @@ function apriPagina(tipo) {
     case 'tutti-progetti':
       contenuto.innerHTML = `<h1 class="overlay-titolo">Tutti i progetti</h1><div class="tutti-progetti-griglia" id="tutti-proj-grid"></div>`;
       stato.progetti.forEach((pr, i) => {
-        const card = crea('div'); card.className = 'tutti-card';
+        const inLavorazione = pr.pubblicato === false;
+        const card = crea('div'); card.className = 'tutti-card' + (inLavorazione ? ' in-lavorazione' : '');
         card.innerHTML = `
           <div class="tutti-card-img"></div>
           <p class="tutti-card-num">0${i + 1}</p>
           <h2 class="tutti-card-titolo">${pr.titolo}</h2>
           <p class="tutti-card-anno">${pr.anno}</p>
           <p class="tutti-card-desc">${pr.descrizione}</p>
+          ${inLavorazione ? '<p class="tutti-card-wip">In lavorazione</p>' : ''}
         `;
         card.querySelector('.tutti-card-img').appendChild(creaImg(pr.immagine_copertina, pr.titolo));
-        card.addEventListener('click', () => apriProgetto(pr.id));
+        if (!inLavorazione) card.addEventListener('click', () => apriProgetto(pr.id));
         $('tutti-proj-grid').appendChild(card);
       });
       break;
@@ -621,11 +623,10 @@ function costruisciIndice() {
     riga.className = 'indice-voce';
     riga.innerHTML = `
       <span class="indice-voce-num">${v.num}</span>
-      <span class="indice-voce-linea"></span>
-      <span class="indice-voce-destra">
+      <div class="indice-voce-destra">
         <span class="indice-voce-label">${v.label}</span>
         ${v.sub ? `<p class="indice-voce-sub">${v.sub}</p>` : ''}
-      </span>
+      </div>
     `;
     riga.addEventListener('click', v.azione);
     lista.appendChild(riga);
