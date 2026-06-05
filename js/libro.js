@@ -8,7 +8,7 @@
 
 'use strict';
 
-const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/XXXXXXXXXXXXXXXX/pub?output=csv';
+const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?output=csv';
 
 const stato = {
   paginaCorrente: 0,
@@ -707,7 +707,7 @@ function costruisciMobile() {
       <h2 class="progetto-titolo">${pr.titolo}</h2>
       <p class="progetto-anno">${pr.descrizione}</p>
       ${bottoneEntrata}
-      ${linkEsterno}
+      <!-- ${linkEsterno} -->
     `;
     if (!inLavorazione) {
       testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(pr.id));
