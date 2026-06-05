@@ -282,20 +282,16 @@ function popolaSliderProgetti() {
     const inLavorazione = pr.pubblicato === false;
 
     const card = crea('div');
-    card.className = 'tutti-card' + (inLavorazione ? ' in-lavorazione' : '');
+    card.className = 'progetto-card' + (inLavorazione ? ' in-lavorazione' : '');
 
     card.innerHTML = `
-      <div class="tutti-card-num">${formatNum(i + 1)}</div>
-      <div class="tutti-card-img"></div>
-      <div class="tutti-card-meta">
-        <h3>${pr.titolo}</h3>
-        <p>${pr.anno}</p>
-        <p>${pr.descrizione || ''}</p>
-        ${inLavorazione ? '<span class="stato-progetto">In lavorazione</span>' : ''}
-      </div>
+      <div class="progetto-card-img"></div>
+      <p class="progetto-card-num">${formatNum(i + 1)}</p>
+      <p class="progetto-card-titolo">${pr.titolo.toUpperCase()}</p>
+      <p class="progetto-card-anno">${pr.anno}</p>
     `;
 
-    card.querySelector('.tutti-card-img').appendChild(
+    card.querySelector('.progetto-card-img').appendChild(
       creaImg(pr.immagine_copertina, pr.titolo)
     );
 
@@ -661,19 +657,18 @@ function costruisciMobile() {
     const pIntro = crea('div');
     pIntro.className = 'page mobile-only'; pIntro.id = 'intro-mobile';
     pIntro.dataset.favicon = '∙'; pIntro.dataset.titolo = stato.intro.titolo || 'Introduzione';
-    pIntro.appendChild(creaHeader());
-    const corpo = crea('div'); corpo.className = 'intro-mobile-corpo';
-    corpo.innerHTML = `
+    const { mpc: mpcIntro, pc: pcIntro } = creaMobilePageContent();
+    pcIntro.innerHTML = `
       <p class="introduzione-testo">${stato.intro.testo.replace(/\n/g, '<br>')}</p>
       <p class="introduzione-firma">${stato.intro.firma}<br><span>${stato.intro.anno}</span></p>
     `;
-    pIntro.appendChild(corpo);
+    pIntro.appendChild(mpcIntro);
 
     const homeSection = document.querySelector('#main-content #home');
     if (homeSection) { homeSection.after(pIntro); homeSection.after(pTitoloIntro); }
   }
 
-  // Pagina indice (mobile) — inserita dopo intro, prima di #progetti
+  // Pagina indice (mobile) — inserita dopo intro (ora già nel DOM)
   costruisciIndice();
 
   // Taccuino prima frase
@@ -686,24 +681,31 @@ function costruisciMobile() {
   const containerProgetti = $('mobile-progetti-container');
 
   stato.progetti.forEach(pr => {
+    const inLavorazione = pr.pubblicato === false;
     const p = creaPaginaMobile(pr.titolo[0].toUpperCase(), pr.titolo);
     p.appendChild(creaHeader());
 
     const wrap = crea('div'); wrap.className = 'progetto-mobile-wrap';
-    const imgDiv = crea('div'); imgDiv.className = 'progetto-mobile-img';
+    const imgDiv = crea('div');
+    imgDiv.className = 'progetto-mobile-img' + (inLavorazione ? ' in-lavorazione' : '');
     imgDiv.appendChild(creaImg(pr.immagine_copertina, pr.titolo));
 
     const testo = crea('div'); testo.className = 'progetto-mobile-testo';
     const linkEsterno = pr.link_esterno
       ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">Vedi online</a>` : '';
+    const bottoneEntrata = inLavorazione
+      ? `<p class="progetto-in-lavorazione">In lavorazione</p>`
+      : `<button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>`;
     testo.innerHTML = `
       <p class="progetto-anno">${pr.anno}</p>
       <h2 class="progetto-titolo">${pr.titolo}</h2>
       <p class="progetto-anno">${pr.descrizione}</p>
-      <button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>
+      ${bottoneEntrata}
       ${linkEsterno}
     `;
-    testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(pr.id));
+    if (!inLavorazione) {
+      testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(pr.id));
+    }
 
     wrap.appendChild(imgDiv); wrap.appendChild(testo); p.appendChild(wrap);
     containerProgetti.appendChild(p);
