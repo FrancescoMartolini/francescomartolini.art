@@ -65,13 +65,14 @@ function parseCsv(csv) {
 
 // ── Carica dati ──
 async function caricaDati() {
-  const [progetti, intervalli, collaborazioni, intro] = await Promise.all([
+  const [progetti, intervalli, collaborazioni, intro, pubblicazioni] = await Promise.all([
     fetch('json/progetti.json').then(r => r.json()),
     fetch('json/intervalli.json').then(r => r.json()),
     fetch('json/collaborazioni.json').then(r => r.json()),
-    fetch('json/intro.json').then(r => r.json()).catch(() => ({ testo: '' }))
+    fetch('json/intro.json').then(r => r.json()).catch(() => ({ testo: '' })),
+    fetch('json/pubblicazioni.json').then(r => r.json()).catch(() => [])
   ]);
-  Object.assign(stato, { progetti, intervalli, collaborazioni, intro });
+  Object.assign(stato, { progetti, intervalli, collaborazioni, intro, pubblicazioni });
 
   try {
     const r = await fetch(SHEETS_URL);
@@ -419,6 +420,11 @@ function apriPagina(tipo) {
           <p class="overlay-sottotitolo">Per collaborazioni e commissioni:</p>
           <a href="mailto:info@francescomartolini.art" class="section-link">info@francescomartolini.art →</a>
         </div>
+        ${stato.pubblicazioni.length > 0 ? `
+        <!-- div class="pubblicazioni-sezione">
+          <h2 class="pubblicazioni-titolo">Publications</h2>
+          <div class="pubblicazioni-griglia" id="pubblicazioni-grid"></div>
+        </div -->` : ''}
       `;
       overlay.classList.add('aperta');
       overlay.scrollTop = 0;
@@ -444,6 +450,24 @@ function apriPagina(tipo) {
         }
         requestAnimationFrame(step);
       })();
+
+      // Pubblicazioni
+      const pubGrid = $('pubblicazioni-grid');
+      if (pubGrid) {
+        stato.pubblicazioni.forEach(pub => {
+          const item = crea('div'); item.className = 'pub-item';
+          item.innerHTML = `
+            <div class="pub-img"></div>
+            <div class="pub-info">
+              <p class="pub-titolo">${pub.titolo}</p>
+              <p class="pub-anno">${pub.anno}</p>
+              ${pub.link ? `<a class="pub-link" href="${pub.link}" target="_blank" rel="noopener">Vedi →</a>` : ''}
+            </div>
+          `;
+          if (pub.immagine) item.querySelector('.pub-img').appendChild(creaImg(pub.immagine, pub.titolo));
+          pubGrid.appendChild(item);
+        });
+      }
       return;
       break;
   }
@@ -465,8 +489,6 @@ function apriProgetto(id) {
   const interno = el.querySelector('.progetto-interno');
 
   if (!_cacheProgetti[id]) {
-    const linkEsterno = pr.link_esterno
-      ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">Vedi online</a>` : '';
     _cacheProgetti[id] = `
       <button class="progetto-torna" onclick="chiudiProgetto()">Torna</button>
       <div class="progetto-interno-header">
@@ -474,7 +496,7 @@ function apriProgetto(id) {
           <h1 class="progetto-interno-titolo">${pr.titolo}</h1>
           <p class="progetto-interno-anno">${pr.anno}</p>
         </div>
-        <div class="progetto-interno-azioni">${linkEsterno}</div>
+        ${pr.link_esterno ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">Vedi online</a>` : ''}
       </div>
       ${generaContenutoProgetto(pr)}
     `;
@@ -780,6 +802,44 @@ function costruisciMobile() {
     p.appendChild(corpo);
     containerCollab.appendChild(p);
   }
+
+  // Pubblicazioni mobile
+  /*if (containerCollab && stato.pubblicazioni.length > 0) {
+    // Pagina titolo capitolo
+    const pTitoloPub = crea('div');
+    pTitoloPub.className = 'page mobile-only';
+    pTitoloPub.dataset.favicon = 'P'; pTitoloPub.dataset.titolo = 'Scritto';
+    const { mpc: mpcPub, pc: pcPub } = creaMobilePageContent();
+    pcPub.innerHTML = `<div>
+      <p class="capitolo-label">Capitolo 05</p>
+      <h2 class="capitolo-titolo">Publications</h2>
+    </div>`;
+    pTitoloPub.appendChild(mpcPub);
+    containerCollab.appendChild(pTitoloPub);
+
+    // Pagina elenco pubblicazioni
+    const pListaPub = crea('div');
+    pListaPub.className = 'page mobile-only';
+    pListaPub.dataset.favicon = 'P'; pListaPub.dataset.titolo = 'Publications';
+    const { mpc: mpcLista, pc: pcLista } = creaMobilePageContent();
+    const listaWrap = crea('div'); listaWrap.className = 'pub-mobile-lista';
+    stato.pubblicazioni.forEach(pub => {
+      const item = crea('div'); item.className = 'pub-mobile-item';
+      item.innerHTML = `
+        ${pub.immagine ? `<div class="pub-mobile-img"></div>` : ''}
+        <div class="pub-mobile-info">
+          <p class="pub-mobile-titolo">${pub.titolo}</p>
+          <p class="pub-mobile-anno">${pub.anno}</p>
+          ${pub.link ? `<a class="pub-mobile-link" href="${pub.link}" target="_blank" rel="noopener" style="pointer-events:all;">Vedi →</a>` : ''}
+        </div>
+      `;
+      if (pub.immagine) item.querySelector('.pub-mobile-img').appendChild(creaImg(pub.immagine, pub.titolo));
+      listaWrap.appendChild(item);
+    });
+    pcLista.appendChild(listaWrap);
+    pListaPub.appendChild(mpcLista);
+    containerCollab.appendChild(pListaPub);
+  }*/
 
   raccogliPagine();
 }
