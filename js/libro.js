@@ -279,15 +279,11 @@ function popolaSliderProgetti() {
   if (!griglia) return;
 
   stato.progetti.forEach((pr, i) => {
-<<<<<<< HEAD
-      const inLavorazione = pr.pubblicato === false;
+    const inLavorazione = pr.pubblicato === false;
 
     const card = crea('div');
     card.className = 'tutti-card' + (inLavorazione ? ' in-lavorazione' : '');
 
-=======
-    const card = crea('div'); card.className = 'progetto-card';
->>>>>>> parent of 5ecfbdf (Add files via upload)
     card.innerHTML = `
       <div class="tutti-card-num">${formatNum(i + 1)}</div>
       <div class="tutti-card-img"></div>
@@ -298,7 +294,6 @@ function popolaSliderProgetti() {
         ${inLavorazione ? '<span class="stato-progetto">In lavorazione</span>' : ''}
       </div>
     `;
-<<<<<<< HEAD
 
     card.querySelector('.tutti-card-img').appendChild(
       creaImg(pr.immagine_copertina, pr.titolo)
@@ -308,12 +303,7 @@ function popolaSliderProgetti() {
       card.addEventListener('click', () => apriProgetto(pr.id));
     }
 
-    $('tutti-proj-grid').appendChild(card);
-=======
-    card.querySelector('.progetto-card-img').appendChild(creaImg(pr.immagine_copertina, pr.titolo));
-    card.addEventListener('click', () => apriProgetto(pr.id));
     griglia.appendChild(card);
->>>>>>> parent of 5ecfbdf (Add files via upload)
   });
 
   const sx = $('proj-sx'), dx = $('proj-dx');
