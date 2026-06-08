@@ -3,13 +3,13 @@
     "id": 1,
     "testo": "Ogni fotografia è un frammento di silenzio.",
     "data": "2026-05-15",
-    "foto": null
+    "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1779218647/2_knfg3v.jpg"
   },
   {
     "id": 2,
     "testo": "Il tempo non passa nelle immagini. Si deposita.",
     "data": "2026-04-30",
-    "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1779218647/2_knfg3v.jpg"
+    "foto": null
   },
   {
     "id": 3,

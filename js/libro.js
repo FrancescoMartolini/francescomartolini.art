@@ -8,7 +8,7 @@
 
 'use strict';
 
-const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?output=csv';
+const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?gid=1174325309&single=true&output=csv';
 
 const stato = {
   paginaCorrente: 0,
@@ -77,12 +77,12 @@ async function caricaDati() {
   try {
     const r = await fetch(SHEETS_URL);
     if (!r.ok) throw new Error();
-    stato.taccuino = parseCsv(await r.text()).sort((a, b) => new Date(b.data) - new Date(a.data));
+    stato.taccuino = parseCsv(await r.text()).sort((a, b,c) => new Date(b.data) - new Date(a.data) - new Date(a.data));
     _cacheTaccuino = null;
   } catch {
     try {
       stato.taccuino = (await fetch('json/taccuino.json').then(r => r.json()))
-        .sort((a, b) => new Date(b.data) - new Date(a.data));
+        .sort((a, b, c) => new Date(b.data) - new Date(a.data) - new Date(c.data));
     } catch { stato.taccuino = []; }
     _cacheTaccuino = null;
   }
@@ -596,7 +596,7 @@ function apriTaccuino() {
   const el = $('pagina-taccuino-archivio');
   const interno = el.querySelector('.taccuino-archivio-interno');
 
-  if (!_cacheTaccuino) {
+  if (stato.taccuino.length != 0) {
     const voci = stato.taccuino.map(v => {
       const foto = v.foto
         ? `<div class="taccuino-voce-foto"><img src="${v.foto}" alt="" draggable="false" loading="lazy"></div>` : '';
