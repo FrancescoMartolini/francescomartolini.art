@@ -499,7 +499,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .progetto-torna::before { content: '←'; }
 .progetto-torna:hover { color: var(--nero); gap: 12px; }
 
-.progetto-interno-header { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: start; margin-bottom: 36px; }
+.progetto-interno-header { display: grid; /*grid-template-columns: 1fr auto;*/ gap: 24px; align-items: start; margin-bottom: 36px; }
 .progetto-interno-titolo { font-family: var(--font-titolo); font-size: clamp(32px, 6vw, 68px); font-weight: 400; line-height: 1.1; margin-bottom: 8px; }
 .progetto-interno-anno { font-size: 11px; font-weight: 300; letter-spacing: 0.2em; color: var(--grigio-medio); }
 .progetto-interno-azioni { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; padding-top: 8px; }
