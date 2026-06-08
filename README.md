@@ -459,9 +459,9 @@ Modificabili in due posti da tenere allineati:
 2. `js/libro.js` → funzione `apriPagina('chi-sono-pagina')` (versione desktop overlay)
 
 ```html
-href="mailto:info@francescomartolini.art"
-href="https://instagram.com/francesco_martolini_ph"
-href="tel:+393930336642"
+href="mailto:XXXXXXXXXX@XXXXXXXXXX"
+href="https://instagram.com/XXXXXXXXXX"
+href="tel:+39XXXXXXXXXX"
 ```
 
 ---
