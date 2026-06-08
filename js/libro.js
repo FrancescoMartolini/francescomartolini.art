@@ -540,7 +540,7 @@ function generaContenutoProgetto(pr) {
       <div class="progetto-galleria">${galleria}</div>
     `;
   }
-  return pr.contenuto.map(blocco => {
+  const blocchi = pr.contenuto.map(blocco => {
     switch (blocco.tipo) {
       case 'testo':
         return `<p class="progetto-interno-testo">${blocco.valore.replace(/\n/g, '<br>')}</p>`;
@@ -559,6 +559,10 @@ function generaContenutoProgetto(pr) {
         return '';
     }
   }).join('');
+  const galleriaExtra = (pr.galleria?.length > 0)
+    ? `<div class="progetto-galleria">${pr.galleria.map(src => generaImgHTML(src, pr.titolo)).join('')}</div>`
+    : '';
+  return blocchi + galleriaExtra;
 }
 
 function generaMappaHTML(pr) {
