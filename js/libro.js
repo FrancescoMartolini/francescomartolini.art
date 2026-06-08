@@ -516,7 +516,7 @@ function apriProgetto(id) {
           <h1 class="progetto-interno-titolo">${pr.titolo}</h1>
           <p class="progetto-interno-anno">${pr.anno}</p>
         </div>
-        ${pr.link_esterno ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">Vedi online</a>` : ''}
+        ${pr.link_esterno ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">${pr.label_link || 'Vedi online'}</a>` : ''}
       </div>
       ${generaContenutoProgetto(pr)}
     `;
@@ -662,10 +662,11 @@ function costruisciIndice() {
 
   // Voci fisse finali
   voci.push(
-    { num: '—', label: 'Intervalli', sub: 'Fotografie che non appartengono a un progetto, ma al mio modo di guardare.',   azione: () => { const el = $('intervalli'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
-    { num: '—', label: 'Chi sono',   sub: 'Un ritratto essenziale.',           azione: () => { const el = $('chi-sono-capitolo') || $('chi-sono'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
-    { num: '—', label: 'Taccuino',   sub: 'Appunti',      azione: () => { apriTaccuino(); } }
-  );
+    { num: '—', label: 'Intervalli', sub: 'Fotografie che non appartengono a un progetto, ma al mio modo di guardare.', azione: () => { const el = $('intervalli'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
+    { num: '—', label: 'Chi sono',   sub: 'Un ritratto essenziale.', azione: () => { const el = $('chi-sono-capitolo') || $('chi-sono'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
+    { num: '—', label: 'Taccuino',   sub: 'Appunti', azione: () => { apriTaccuino(); } },
+    { num: '—', label: 'Pubblicazioni', sub: '', azione: () => { const el = document.querySelector('#mobile-pubblicazioni-container .page'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); }}
+  )
 
   lista.innerHTML = `<p class="indice-titolo">Indice</p>`;
 
@@ -744,7 +745,7 @@ function costruisciMobile() {
 
     const testo = crea('div'); testo.className = 'progetto-mobile-testo';
     const linkEsterno = pr.link_esterno
-      ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">Vedi online</a>` : '';
+      ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">${pr.label_link || 'Vedi online'}</a>` : '';
     const bottoneEntrata = inLavorazione
       ? `<p class="progetto-in-lavorazione">In lavorazione</p>`
       : `<button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>`;

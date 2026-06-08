@@ -156,7 +156,15 @@ body.tema-scuro {
 #mobile-progetti-container { display: none; }
 #mobile-intervalli-container { display: none; }
 #mobile-pubblicazioni-container { display: none; }
-#mobile-pubblicazioni-container .pagina-corpo { align-items: flex-start; }
+#mobile-pubblicazioni-container .pagina-corpo {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  overflow-y: auto;
+  width: 100%;
+}
 /*#mobile-collaborazioni-container { display: none; }*/
 .desktop-hero { display: grid; }
 .desktop-section { display: flex; }
