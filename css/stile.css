@@ -1122,6 +1122,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 
 /* Mobile — pubblicazioni */
 .pub-mobile-lista {
+  margin-top: auto;
   display: flex;
   flex-direction: column;
   gap: 28px;
