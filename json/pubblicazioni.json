@@ -1,9 +1,68 @@
 [
   {
     "id": 1,
-    "titolo": "Nome pubblicazione",
+    "titolo": "Milano Fashion Week FW25",
+    "anno": "2025",
+    "link": "https://www.vogue.it/article/brand-moda-indipendenti-milano-fashion-week",
+    "immagine": ""
+  },
+  {
+    "id": 2,
+    "titolo": "Forged through the fire of love - Milano Fashion Week 2025",
+    "anno": "2025",
+    "link": "https://www.youtube.com/watch?v=hWOfOgQ01e4",
+    "immagine": ""
+  },
+  {
+    "id": 3,
+    "titolo": "Milano Fashion Week FW24",
     "anno": "2024",
-    "link": "https://example.com",
+    "link": "https://www.cameramoda.it/it/milano-moda-donna/designer/12178/",
+    "immagine": ""
+  },
+  {
+    "id": 4,
+    "titolo": "I STOLE IT FROM MAMA’S “WARROBE” - Milano Fashion Week FW24",
+    "anno": "2024",
+    "link": "https://www.cameramoda.it/it/milano-moda-donna/designer/12178/",
+    "immagine": ""
+  }
+  ,
+  {
+    "id": 5,
+    "titolo": "Milano Fashion Week SS24",
+    "anno": "2024",
+    "link": "https://www.cameramoda.it/it/milano-moda-donna/designer/gallery/collection/10166/",
+    "immagine": ""
+  }
+  ,
+  {
+    "id": 6,
+    "titolo": "In My Skin - Milano Fashion Week SS24",
+    "anno": "2024",
+    "link": "https://www.youtube.com/watch?v=WnokEIOq1zQ&t=8s&ab_channel=FashionChannel",
+    "immagine": ""
+  }
+  ,
+  {
+    "id": 7,
+    "titolo": "Harper's Bazaar - MFW SS24",
+    "anno": "2024",
+    "link": "https://photo.harpersbazaar.fr/milano-maison-nencioni-defile-printemps-ete-2024-57124",
+    "immagine": ""
+  },
+  {
+    "id": 8,
+    "titolo": "Docu Magazine  V47 Digital edition",
+    "anno": "2024",
+    "link": "https://documagazine.gumroad.com/l/DocuBooks/",
+    "immagine": ""
+  },
+  {
+    "id": 9,
+    "titolo": "Diablo - Mercantia 2018",
+    "anno": "2018",
+    "link": "https://www.gonews.it/2018/07/16/mercantia-31esima-edizione-successo-oltre-26mila-presenze/",
     "immagine": ""
   }
 ]
