@@ -275,6 +275,26 @@ function popolaDesktop() {
     });
   }
 
+  // Pubblicazioni desktop
+  const pubWrap = $('pub-desktop-wrap');
+  const pubLista = $('pub-desktop-lista');
+  if (pubWrap && pubLista && stato.pubblicazioni.length > 0) {
+    pubWrap.style.display = '';
+    stato.pubblicazioni.forEach(pub => {
+      const item = crea('div'); item.className = 'pub-desktop-item';
+      item.innerHTML = `
+        ${pub.immagine ? '<div class="pub-desktop-img"></div>' : ''}
+        <div class="pub-desktop-info">
+          <p class="pub-desktop-titolo">${pub.titolo}</p>
+          <p class="pub-desktop-anno">${pub.anno}</p>
+          ${pub.link ? `<a class="pub-desktop-link" href="${pub.link}" target="_blank" rel="noopener">Vedi →</a>` : ''}
+        </div>
+      `;
+      if (pub.immagine) item.querySelector('.pub-desktop-img').appendChild(creaImg(pub.immagine, pub.titolo));
+      pubLista.appendChild(item);
+    });
+  }
+
   const annoEl = $('footer-anno');
   if (annoEl) annoEl.textContent = new Date().getFullYear();
 }
@@ -804,7 +824,47 @@ function costruisciMobile() {
   }
 
   // Pubblicazioni mobile
-  /*if (containerCollab && stato.pubblicazioni.length > 0) {
+  const containerPub = $('mobile-pubblicazioni-container');
+  if (containerPub && stato.pubblicazioni.length > 0) {
+    // Pagina titolo capitolo
+    const pTitoloPub = crea('div');
+    pTitoloPub.className = 'page mobile-only';
+    pTitoloPub.dataset.favicon = 'P'; pTitoloPub.dataset.titolo = 'Pubblicazioni';
+    const { mpc: mpcPub, pc: pcPub } = creaMobilePageContent();
+    pcPub.innerHTML = `<div>
+      <p class="capitolo-label">Capitolo 04</p>
+      <h2 class="capitolo-titolo">Pubblicazioni</h2>
+      <p class="capitolo-descrizione">Libri, cataloghi e testi pubblicati.</p>
+    </div>`;
+    pTitoloPub.appendChild(mpcPub);
+    containerPub.appendChild(pTitoloPub);
+
+    // Pagina elenco pubblicazioni
+    const pListaPub = crea('div');
+    pListaPub.className = 'page mobile-only';
+    pListaPub.dataset.favicon = 'P'; pListaPub.dataset.titolo = 'Pubblicazioni';
+    const { mpc: mpcLista, pc: pcLista } = creaMobilePageContent();
+    const listaWrap = crea('div'); listaWrap.className = 'pub-mobile-lista';
+    stato.pubblicazioni.forEach(pub => {
+      const item = crea('div'); item.className = 'pub-mobile-item';
+      item.innerHTML = `
+        ${pub.immagine ? `<div class="pub-mobile-img"></div>` : ''}
+        <div class="pub-mobile-info">
+          <p class="pub-mobile-titolo">${pub.titolo}</p>
+          <p class="pub-mobile-anno">${pub.anno}</p>
+          ${pub.link ? `<a class="pub-mobile-link" href="${pub.link}" target="_blank" rel="noopener" style="pointer-events:all;">Vedi →</a>` : ''}
+        </div>
+      `;
+      if (pub.immagine) item.querySelector('.pub-mobile-img').appendChild(creaImg(pub.immagine, pub.titolo));
+      listaWrap.appendChild(item);
+    });
+    pcLista.appendChild(listaWrap);
+    pListaPub.appendChild(mpcLista);
+    containerPub.appendChild(pListaPub);
+  }
+
+  /*VECCHIO BLOCCO PUBBLICAZIONI - RIMOSSO
+  if (containerCollab && stato.pubblicazioni.length > 0) {
     // Pagina titolo capitolo
     const pTitoloPub = crea('div');
     pTitoloPub.className = 'page mobile-only';
@@ -839,7 +899,8 @@ function costruisciMobile() {
     pcLista.appendChild(listaWrap);
     pListaPub.appendChild(mpcLista);
     containerCollab.appendChild(pListaPub);
-  }*/
+  }
+  VECCHIO BLOCCO FINE */
 
   raccogliPagine();
 }
