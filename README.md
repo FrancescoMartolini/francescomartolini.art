@@ -1,5 +1,5 @@
 # Francesco Martolini .art
-## Guida completa al sito — v5.1
+## Guida completa al sito — v5.2
 
 ---
 
@@ -20,6 +20,7 @@ francescomartolini.art/
 │   ├── progetti.json             ← dati progetti fotografici
 │   ├── intervalli.json           ← dati sequenze studi
 │   ├── collaborazioni.json       ← dati fotografie commerciali
+│   ├── pubblicazioni.json        ← dati pubblicazioni e press
 │   ├── intro.json                ← testo introduzione
 │   └── taccuino.json             ← frasi taccuino (fallback locale)
 │
@@ -52,7 +53,7 @@ Il sito si comporta in modo diverso in base al dispositivo:
 - Scroll verticale tra le sezioni
 - Menu in alto per saltare ai capitoli
 - Overlay per progetti, studi, chi sono, collaborazioni, taccuino
-- Apertura overlay tramite attributo `data-overlay` gestito da `libro.js`
+- Apertura overlay tramite chiamate dirette a `apriPagina()` in `libro.js`
 
 **Mobile:**
 - Swipe sinistra/destra per sfogliare
@@ -69,21 +70,41 @@ Il sito si comporta in modo diverso in base al dispositivo:
 01  Home — titolo
 02  Capitolo 0 — Introduzione (titolo)
 03  Introduzione (testo)
-04  Capitolo 01 — Progetti
-05  Progetto 1
-06  Taccuino
-07  Progetto 2
-08  Taccuino
+04  Indice — sommario cliccabile
+05  Capitolo 01 — Progetti
+06  Progetto 1
+07  Taccuino
+08  Progetto 2
+09  Taccuino
 ...
-    Capitolo 02 — Studi
-    Studi (sequenze)
+    Capitolo 02 — Intervalli
+    Intervalli (sequenze)
     Taccuino
 ...
     Capitolo 03 — Chi sono
     Chi sono
-    Fotografie commerciali (pagina unica con scroll)
+    Capitolo 04 — Commercial
+    Fotografie commerciali (pagina con scroll)
+    Capitolo 04 — Pubblicazioni
+    Pubblicazioni (elenco con link)
     fin.
 ```
+
+---
+
+### INDICE MOBILE
+
+Dopo l'introduzione appare una pagina indice generata dinamicamente che elenca:
+- Introduzione
+- Ogni progetto pubblicato (con numero e anno)
+- Intervalli
+- Chi sono
+- Taccuino
+- Pubblicazioni
+
+Ogni voce è cliccabile e porta direttamente alla sezione corrispondente. I progetti aprono direttamente la pagina di dettaglio.
+
+L'indice viene posizionato automaticamente dopo la pagina introduzione (o dopo home se l'introduzione è assente).
 
 ---
 
@@ -105,29 +126,29 @@ Il sito si comporta in modo diverso in base al dispositivo:
       "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/02.jpg"
     ],
     "link_esterno": "",
+    "label_link": "Vedi online",
     "mappa": null,
     "pubblicato": true
   }
 ]
 ```
 
-**link_esterno:** se vuoto `""` il bottone non appare. Se presente appare "Vedi online ↗".
+**link_esterno:** se vuoto `""` il bottone non appare. Se presente appare il testo di `label_link`.
 
-**pubblicato:** se `false`, il progetto resta visibile come “in lavorazione” ma non è apribile, né da mobile né da desktop.
+**label_link:** etichetta personalizzabile del bottone link esterno. Se assente usa `"Vedi online"` come default.
+
+**pubblicato:** se `false`, il progetto appare come "In lavorazione" ma non è apribile, né da mobile né da desktop.
 
 **mappa** — tre opzioni:
 
 ```json
-// Nessuna mappa
 "mappa": null
 
-// Google My Maps (consigliato — puoi aggiungere punti personalizzati)
 "mappa": {
   "url": "https://www.google.com/maps/d/embed?mid=XXXXXXXXXXXXXXXX",
   "label": "Luoghi del progetto"
 }
 
-// Coordinate classiche
 "mappa": {
   "lat": 41.9028,
   "lng": 12.4964,
@@ -144,31 +165,17 @@ In alternativa a `testo_lungo` + `galleria`, puoi usare il campo `contenuto` per
 
 ```json
 "contenuto": [
-  {
-    "tipo": "testo",
-    "valore": "Un paragrafo di testo.\n\nUn secondo paragrafo."
-  },
-  {
-    "tipo": "immagine",
-    "valore": "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/01.jpg"
-  },
-  {
-    "tipo": "galleria",
-    "valore": [
-      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/02.jpg",
-      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/03.jpg"
-    ]
-  },
-  {
-    "tipo": "mappa"
-  },
-  {
-    "tipo": "separatore"
-  }
+  { "tipo": "testo",     "valore": "Testo del progetto.\n\nSecondo paragrafo." },
+  { "tipo": "immagine",  "valore": "https://...01.jpg" },
+  { "tipo": "galleria",  "valore": ["https://...02.jpg", "https://...03.jpg"] },
+  { "tipo": "mappa" },
+  { "tipo": "separatore" }
 ]
 ```
 
-Quando `contenuto` è presente, viene usato come struttura principale del progetto.
+Tipi disponibili: `testo`, `immagine`, `galleria`, `mappa`, `separatore`.
+
+Quando `contenuto` è presente viene usato come struttura principale. Il campo `galleria` (se presente) viene aggiunto in fondo come blocco extra.
 
 ---
 
@@ -182,8 +189,7 @@ Quando `contenuto` è presente, viene usato come struttura principale del proget
     "descrizione": "Breve descrizione.",
     "immagini": [
       "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/seq01-a.jpg",
-      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/seq01-b.jpg",
-      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/seq01-c.jpg"
+      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/seq01-b.jpg"
     ]
   }
 ]
@@ -204,7 +210,31 @@ Quando `contenuto` è presente, viene usato come struttura principale del proget
 ]
 ```
 
-Le collaborazioni appaiono in una pagina unica con scroll verticale nel mobile e in una griglia nell'overlay desktop.
+Le collaborazioni appaiono in una pagina con scroll verticale nel mobile e in una griglia nell'overlay desktop.
+
+---
+
+#### `json/pubblicazioni.json`
+
+```json
+[
+  {
+    "id": 1,
+    "titolo": "Titolo pubblicazione o press",
+    "anno": "2025",
+    "link": "https://esempio.com/articolo",
+    "immagine": ""
+  }
+]
+```
+
+**link:** URL all'articolo, video o pagina esterna. Appare come "Vedi →".
+
+**immagine:** URL Cloudinary opzionale. Se vuoto `""`, la voce appare solo come testo.
+
+Le pubblicazioni appaiono:
+- **Mobile:** capitolo "Pubblicazioni" (Capitolo 04), con titolo, anno e link cliccabile
+- **Desktop:** sezione "Pubblicazioni" nella colonna destra di Chi sono, visibile solo se ci sono dati
 
 ---
 
@@ -234,7 +264,7 @@ Le collaborazioni appaiono in una pagina unica con scroll verticale nel mobile e
 ]
 ```
 
-`foto` può essere `null` oppure un URL immagine Cloudinary già ottimizzato, per esempio:
+`foto` può essere `null` oppure un URL Cloudinary ottimizzato:
 
 ```json
 "foto": "https://res.cloudinary.com/tuo-nome/image/upload/w_600,q_auto,f_auto/percorso/taccuino.jpg"
@@ -267,6 +297,23 @@ Il taccuino si aggiorna automaticamente da Google Sheets. Ogni volta che apri il
 
 ---
 
+### LIGHTBOX
+
+Le immagini di contenuto si aprono in un lightbox a schermo intero al click, sia su desktop che su mobile.
+
+**Navigazione:**
+- Frecce laterali ← → (cliccabili o touch)
+- Swipe su mobile
+- Tasti `ArrowLeft` / `ArrowRight`
+- `Escape` o click fuori dall'immagine per chiudere
+- Contatore "N / TOT" visibile quando le immagini sono più di una
+
+**Contesti in cui il lightbox si apre:** gallerie di progetto, griglia intervalli, collaborazioni, foto taccuino, foto chi sono.
+
+**Esclusi dal lightbox:** copertine card progetto (aprono il progetto), favicon e immagini di interfaccia.
+
+---
+
 ### IMMAGINI
 
 **Formato:** JPG consigliato
@@ -280,7 +327,7 @@ https://res.cloudinary.com/tuo-nome/image/upload/w_1200,q_auto,f_auto/percorso/i
 ```
 
 Parametri principali:
-- `w_600` → card, anteprime, collaborazioni, immagini piccole
+- `w_600` → card, anteprime, collaborazioni, pubblicazioni, immagini piccole
 - `w_1400` → gallerie progetto, intervalli, immagini grandi
 - `q_auto` → qualità automatica
 - `f_auto` → formato automatico (WebP / AVIF quando disponibile)
@@ -288,25 +335,20 @@ Parametri principali:
 **Regola pratica usata nel sito:**
 - `immagine_copertina` → `w_600,q_auto,f_auto`
 - `galleria` / `intervalli` → `w_1400,q_auto,f_auto`
-- `collaborazioni` / `taccuino` → `w_600,q_auto,f_auto`
-
-**Lightbox:** su desktop tutte le immagini di contenuto si aprono a schermo intero con click. Escluse le copertine card e le immagini di interfaccia.
+- `collaborazioni` / `taccuino` / `pubblicazioni` → `w_600,q_auto,f_auto`
 
 ---
 
 ### OTTIMIZZAZIONI PERFORMANCE
 
-Le ottimizzazioni attuali del sito sono:
-
 - **Preconnect font** in `index.html` verso `fonts.googleapis.com` e `fonts.gstatic.com`
-- **Caricamento font in HTML** invece di `@import` nel CSS, per ridurre il tempo di blocco iniziale
+- **Caricamento font in HTML** invece di `@import` nel CSS
 - **Lazy loading** su tutte le immagini generate dinamicamente, tranne l'hero
 - **`decoding="async"`** sulle immagini non prioritarie
 - **Cloudinary con trasformazioni attive** nei JSON (`w_`, `q_auto`, `f_auto`)
 - **Hero prioritaria** lasciata fuori dal lazy loading
-- **Cache HTML** per overlay progetto e taccuino
-
-Queste modifiche migliorano in modo visibile il tempo di caricamento iniziale, soprattutto su mobile e connessioni lente.
+- **Cache HTML** per overlay progetto e taccuino (apertura istantanea dalla seconda volta)
+- **Inserimento a blocchi** con `requestAnimationFrame` per overlay studi e collaborazioni (6 elementi per frame)
 
 ---
 
@@ -332,9 +374,11 @@ Il tab del browser mostra una lettera diversa per ogni sezione:
 | Home | H |
 | Progetti | P |
 | Taccuino | T |
-| Studi / Intervalli | I |
+| Intervalli | I |
 | Chi sono | C |
-| Fotografie commerciali | F |
+| Commercial | F |
+| Pubblicazioni | P |
+| Indice | ≡ |
 | Introduzione | ∙ |
 | Fine | · |
 
@@ -345,7 +389,8 @@ Su iPhone, aggiungendo il sito alla schermata home appare come una mini-app con 
 
 ### TEMA CHIARO / SCURO
 
-Il bottone sole nell'header alterna tra tema chiaro e scuro.
+Il bottone sole nell'header è attualmente **disabilitato** (commentato in `index.html`). Il codice è presente in `js/libro.js` nella funzione `avviaTema()` e può essere riattivato decommentando il bottone `#tema-toggle` nell'header.
+
 La scelta viene salvata in `localStorage` e ricordata alle visite successive.
 La sezione Progetti inverte i colori automaticamente in entrambi i temi.
 
@@ -394,39 +439,37 @@ Con 4 o meno progetti le frecce non appaiono.
 
 ### PAGINE OVERLAY (desktop)
 
-Quattro pagine accessibili dal menu o dai link di sezione:
-
 | Link | Metodo | Contenuto |
 |------|--------|-----------|
-| Vedi tutti → (Progetti) | `data-overlay="tutti-progetti-pagina"` | Griglia tutti i progetti con copertina e descrizione |
-| Vedi tutti → (Studi) | `data-overlay="tutti-studi-pagina"` | Griglia tutte le immagini degli intervalli |
-| Scopri di più → (Chi sono) | `data-overlay="chi-sono-pagina"` | Biografia estesa, foto, contatti |
-| Vedi alcuni lavori → (Collaborazioni) | `data-overlay="collaborazioni-pagina"` | Griglia clienti con foto e anno |
-| Leggi tutti → (Taccuino) | `data-overlay="taccuino-pagina"` | Archivio completo appunti e immagini |
+| Vedi tutti → (Progetti) | `apriPagina('tutti-progetti')` | Griglia tutti i progetti con copertina e descrizione |
+| Vedi tutti → (Intervalli) | `apriPagina('tutti-studi')` | Griglia tutte le immagini degli intervalli |
+| Scopri di più → (Chi sono) | `apriPagina('chi-sono-pagina')` | Biografia estesa, foto, contatti |
+| Vedi alcuni lavori → (Collaborazioni) | `apriPagina('collaborazioni-pagina')` | Griglia clienti con foto e anno |
+| Leggi tutti → (Taccuino) | `apriTaccuino()` | Archivio completo con barra di ricerca |
 
-Gli overlay non usano più `onclick` inline come metodo principale: l'apertura viene gestita in JavaScript leggendo l'attributo `data-overlay`.
-Nella vista desktop, i progetti con `pubblicato: false` possono comparire nella griglia ma non aprono la pagina dettaglio.
+I progetti con `pubblicato: false` compaiono nella griglia ma non aprono la pagina dettaglio.
 
 ---
 
 ### CONTATTI
 
-Modifica in `js/libro.js` dentro la sezione HTML di chi sono:
+Modificabili in due posti da tenere allineati:
 
-```javascript
-href="mailto:tua@email.com"
-href="https://instagram.com/tuonome"
-href="tel:+39XXXXXXXXXX"
+1. `index.html` → sezione `#chi-sono` (versione mobile)
+2. `js/libro.js` → funzione `apriPagina('chi-sono-pagina')` (versione desktop overlay)
+
+```html
+href="mailto:info@francescomartolini.art"
+href="https://instagram.com/francesco_martolini_ph"
+href="tel:+393930336642"
 ```
-
-**Nota:** verifica sempre che i link esterni usino l'URL completo con `https://`.
 
 ---
 
 ### PUBBLICAZIONE
 
 **GitHub Pages (attuale):**
-Il sito è già pubblicato su GitHub Pages all'indirizzo:
+Il sito è pubblicato su GitHub Pages all'indirizzo:
 `https://francescomartolini.github.io/francescomartolini.art/`
 
 Per aggiornare: fai commit e push, GitHub Pages si aggiorna automaticamente.
@@ -448,15 +491,16 @@ Per aggiornare: fai commit e push, GitHub Pages si aggiorna automaticamente.
 | Introduzione | `json/intro.json` |
 | Frasi taccuino | Google Sheets oppure `json/taccuino.json` |
 | Progetti | `json/progetti.json` |
-| Studi | `json/intervalli.json` |
+| Intervalli | `json/intervalli.json` |
 | Collaborazioni commerciali | `json/collaborazioni.json` |
+| Pubblicazioni e press | `json/pubblicazioni.json` |
 | Colori | `css/stile.css` → `:root` |
 | Font | `index.html` → `<head>` (`preconnect` + `<link href=...fonts...>`) |
-| Contatti | `js/libro.js` → sezione chi sono |
+| Contatti | `index.html` → `#chi-sono` + `js/libro.js` → `apriPagina('chi-sono-pagina')` |
 | URL Google Sheets | `js/libro.js` → `const SHEETS_URL` |
 | Testo cookie | `index.html` → `#cookie-banner` |
 | Soglia cursore scuro/chiaro | `js/libro.js` → `isColorDark()` → valore `0.4` |
-| Link overlay desktop | `index.html` → attributo `data-overlay` |
+| Bottone tema chiaro/scuro | `index.html` → commenta/decommenta `#tema-toggle` nell'header |
 
 ---
 
@@ -464,14 +508,21 @@ Per aggiornare: fai commit e push, GitHub Pages si aggiorna automaticamente.
 
 - [ ] Aggiungi l'oggetto in `json/progetti.json`
 - [ ] Se il progetto non è pronto, imposta `"pubblicato": false`
-- [ ] Se usi Cloudinary, applica subito `w_600,q_auto,f_auto` alla copertina e `w_1400,q_auto,f_auto` alla galleria
-- [ ] Crea cartella `images/progetti/nome-progetto/` solo se usi immagini locali
-- [ ] Carica `cover.jpg` e le foto della galleria oppure inserisci gli URL Cloudinary
+- [ ] Applica le trasformazioni Cloudinary: `w_600` alla copertina, `w_1400` alla galleria
+- [ ] Crea la cartella `images/progetti/nome-progetto/` solo se usi immagini locali
 - [ ] Imposta `immagine_copertina` e array `galleria` con i percorsi corretti
-- [ ] Se vuoi il layout avanzato, usa il campo `contenuto`
-- [ ] Se vuoi la mappa: ottieni URL Google My Maps o inserisci le coordinate
-- [ ] Se vuoi il link esterno: aggiungi l'URL in `link_esterno`
-- [ ] Se il progetto non è pronto, imposta `"pubblicato": false` per mostrarlo come “In lavorazione” senza renderlo accessibile
+- [ ] Se vuoi il layout avanzato, usa `contenuto` con i tipi: `testo`, `immagine`, `galleria`, `mappa`, `separatore`
+- [ ] Se vuoi la mappa: URL Google My Maps o coordinate lat/lng
+- [ ] Se vuoi il link esterno: compila `link_esterno` e `label_link`
+- [ ] Fai commit e push
+
+---
+
+### AGGIUNGERE UNA PUBBLICAZIONE — CHECKLIST
+
+- [ ] Aggiungi l'oggetto in `json/pubblicazioni.json` con `id`, `titolo`, `anno`, `link`
+- [ ] Se hai un'immagine, inserisci l'URL Cloudinary in `immagine`; altrimenti lascia `""`
+- [ ] La voce appare automaticamente nel mobile (Capitolo Pubblicazioni) e nel desktop (sezione Chi sono)
 - [ ] Fai commit e push
 
 ---
@@ -482,9 +533,10 @@ Per aggiornare: fai commit e push, GitHub Pages si aggiorna automaticamente.
 - Dati gestiti interamente via JSON
 - Taccuino aggiornabile da smartphone via Google Sheets
 - Lazy loading su tutte le immagini tranne l'hero
-- `decoding="async"` sulle immagini non prioritarie
 - Cache HTML per overlay progetto e taccuino (apertura istantanea dalla seconda volta)
-- Overlay desktop gestiti tramite attributi `data-overlay`
+- Inserimento a blocchi con `requestAnimationFrame` per overlay studi e collaborazioni
+- Lightbox con navigazione frecce, swipe e tastiera
+- Indice mobile generato dinamicamente con navigazione diretta alle sezioni
 - Compatibile con tutti i browser moderni
 - Accessibile: navigazione da tastiera completa (frecce, Escape)
 - PWA-ready: manifest e apple-touch-icon configurati
