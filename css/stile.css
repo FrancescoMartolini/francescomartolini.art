@@ -380,9 +380,28 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 
 /* FOOTER */
 #site-footer-desktop {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 24px clamp(24px, 5vw, 72px);
+  display: flex;
+  flex-direction: column;
+  padding: 0 clamp(24px, 5vw, 72px) 32px;
   font-size: 11px; font-weight: 300; letter-spacing: 0.08em; color: var(--grigio-medio);
+}
+.epilogo-desktop {
+  text-align: center;
+  padding: 20px;
+  font-family: var(--font-titolo);
+  font-size: clamp(13px, 1vw, 16px);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--grigio-testo);
+  letter-spacing: 0.01em;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+.epilogo-desktop.visibile { opacity: 1; }
+.footer-riga {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--grigio-chiaro);
 }
 
 .footer-logo { font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--nero); font-size: 11px; }
@@ -499,11 +518,11 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .progetto-torna::before { content: '←'; }
 .progetto-torna:hover { color: var(--nero); gap: 12px; }
 
-.progetto-interno-header { display: grid; /*grid-template-columns: 1fr auto;*/ gap: 24px; align-items: start; margin-bottom: 36px; }
+.progetto-interno-header { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: start; margin-bottom: 36px; }
 .progetto-interno-titolo { font-family: var(--font-titolo); font-size: clamp(32px, 6vw, 68px); font-weight: 400; line-height: 1.1; margin-bottom: 8px; }
 .progetto-interno-anno { font-size: 11px; font-weight: 300; letter-spacing: 0.2em; color: var(--grigio-medio); }
 .progetto-interno-azioni { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; padding-top: 8px; }
-.progetto-interno-testo { font-size: 15px; font-weight: 300; line-height: 2; color: var(--grigio-testo); max-width: 800px; margin-bottom: 48px; white-space: pre-line; }
+.progetto-interno-testo { font-size: 15px; font-weight: 300; line-height: 2; color: var(--grigio-testo); max-width: 600px; margin-bottom: 48px; white-space: pre-line; }
 
 .link-esterno-btn { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grigio-testo); border-bottom: 1px solid var(--grigio-chiaro); padding-bottom: 4px; width: fit-content; transition: color var(--transizione), border-color var(--transizione); }
 .link-esterno-btn:hover { color: var(--nero); border-color: var(--nero); }
@@ -648,7 +667,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 
   .page {
     position: absolute; inset: 0;
-    opacity: 0; pointer-events: none;
+    opacity: 0; pointer-events: none; overflow: hidden;
     transform: translateX(60px);
       transition: opacity 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -722,10 +741,68 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .contatti-label { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--grigio-medio); margin-bottom: 6px; }
   .contatti-nota { font-size: 11px; font-weight: 300; line-height: 1.7; color: var(--grigio-testo); font-style: italic; margin-bottom: 12px; }
 
-  .fin-wrap { text-align: center; }
-  .fin-titolo { font-family: var(--font-titolo); font-size: clamp(60px, 22vw, 110px); font-weight: 400; font-style: italic; line-height: 1; margin-bottom: 32px; }
-  .fin-link { font-size: 11px; font-weight: 400; letter-spacing: 0.25em; text-transform: uppercase; color: var(--grigio-medio); cursor: pointer; transition: color var(--transizione); }
-  .fin-link:hover { color: var(--nero); }
+  .fin-wrap { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .fin-titolo { font-family: var(--font-titolo); font-size: clamp(60px, 22vw, 110px); font-weight: 400; font-style: italic; line-height: 1; margin-bottom: 28px; }
+  .fin-epilogo {
+    display: none;
+    font-family: var(--font-titolo);
+    font-size: clamp(13px, 3.5vw, 17px);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--grigio-testo);
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+    max-width: 280px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 1.2s ease, transform 1.2s ease;
+    margin-bottom: 20px;
+  }
+  .fin-epilogo.visibile {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .fin-footer {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 36px;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  .fin-footer.visibile {
+    display: flex;
+    opacity: 1;
+  }
+  .fin-footer-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .fin-footer-link {
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--grigio-medio);
+    transition: color var(--transizione);
+  }
+  .fin-footer-link:hover { color: var(--nero); }
+  .fin-footer-sep {
+    font-size: 10px;
+    color: var(--grigio-chiaro);
+  }
+  .fin-copyright {
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    color: var(--grigio-chiaro);
+    margin-top: 2px;
+  }
+  .fin-link { font-size: 11px; font-weight: 400; letter-spacing: 0.25em; text-transform: uppercase; color: var(--grigio-chiaro); cursor: pointer; transition: color var(--transizione); background: none; border: none; margin-bottom: 20px; }
+  .fin-link:hover { color: var(--grigio-medio); }
 
   #mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 44px; background: var(--bianco); border-top: 1px solid var(--grigio-chiaro); z-index: 200; display: flex; align-items: center; justify-content: center; }
 
@@ -1122,7 +1199,6 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 
 /* Mobile — pubblicazioni */
 .pub-mobile-lista {
-  margin-top: auto;
   display: flex;
   flex-direction: column;
   gap: 28px;

@@ -8,7 +8,7 @@
 
 'use strict';
 
-const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?gid=1174325309&single=true&output=csv';
+const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?output=csv';
 
 const stato = {
   paginaCorrente: 0,
@@ -21,6 +21,39 @@ const stato = {
   intro: {},
   sliderIdx: 0
 };
+
+const EPILOGHI = [
+  'Il tempo lascia tracce.',
+  'Questo archivio rimane aperto.',
+  'Ogni immagine conserva una domanda.',
+  'Alcune tracce richiedono anni per diventare visibili.',
+  'Nessuna fotografia ferma il tempo.',
+  'Le immagini continuano a cambiare dopo essere state scattate.',
+  'Ogni progetto è un intervallo.',
+  'La memoria modifica ciò che conserva.',
+  'Ogni archivio è una forma di attesa.',
+  'Ciò che resta racconta più di ciò che accade.',
+  'Le tracce sopravvivono agli eventi.',
+  'Fotografare significa osservare una trasformazione.',
+];
+
+function inizializzaFin() {
+  const frase = EPILOGHI[Math.floor(Math.random() * EPILOGHI.length)];
+
+  // Mobile — inietta il testo; la transizione parte in aggiornaUI quando si arriva a #fin
+  const elMobile = document.getElementById('fin-epilogo');
+  if (elMobile) elMobile.textContent = frase;
+  const anno = document.getElementById('fin-anno');
+  if (anno) anno.textContent = new Date().getFullYear();
+
+  // Desktop — appare subito con fade (già visibile da scroll)
+  const elDesktop = document.getElementById('epilogo-desktop');
+  if (elDesktop) {
+    elDesktop.textContent = "Alcune tracce richiedono anni per diventare visibili.";
+    //elDesktop.style.display = 'block';
+    requestAnimationFrame(() => elDesktop.classList.add('visibile'));
+  }
+}
 
 const $ = id => document.getElementById(id);
 const crea = tag => document.createElement(tag);
@@ -77,12 +110,12 @@ async function caricaDati() {
   try {
     const r = await fetch(SHEETS_URL);
     if (!r.ok) throw new Error();
-    stato.taccuino = parseCsv(await r.text()).sort((a, b,c) => new Date(b.data) - new Date(a.data) - new Date(a.data));
+    stato.taccuino = parseCsv(await r.text()).sort((a, b) => new Date(b.data) - new Date(a.data));
     _cacheTaccuino = null;
   } catch {
     try {
       stato.taccuino = (await fetch('json/taccuino.json').then(r => r.json()))
-        .sort((a, b, c) => new Date(b.data) - new Date(a.data) - new Date(c.data));
+        .sort((a, b) => new Date(b.data) - new Date(a.data));
     } catch { stato.taccuino = []; }
     _cacheTaccuino = null;
   }
@@ -409,13 +442,10 @@ function apriPagina(tipo) {
         <h1 class="overlay-titolo">Chi sono</h1>
         <div class="chi-sono-esteso">
           <div class="chi-sono-esteso-testo">
-            <!-- <h2>Francesco Martolini</h2> -->
-            <h2>Dove nasce il lavoro</h2>
-              <p class="introduzione-testo">${stato.intro.testo.replace(/\n/g, '<br>')}</p>
-            <h2>Biografia</h2>
+            <h2>Francesco Martolini</h2>
             <p>Fotografo italiano. Il mio lavoro esplora il rapporto tra spazio, tempo e memoria — cercando nelle immagini le tracce di ciò che resta.</p>
             <p>Sono interessato alla fotografia come strumento di indagine, non di rappresentazione. Ogni progetto nasce da una domanda che il tempo continua a restituirmi.</p>
-            <p>Basato in Toscana, lavoro su progetti a lungo termine alternati a commissioni commerciali selezionate.</p>
+            <p>Basato in un paesino vicino Firenze, lavoro su progetti a lungo termine alternati a commissioni commerciali selezionate.</p>
             <div class="chi-sono-contatti-esteso">
               <p class="contatti-label" style="margin-bottom:4px;">Contatti</p>
               <p class="overlay-nota-contatti">Non offro servizi di shooting su richiesta. Scrivimi se sei interessato a un'opera o vuoi costruire qualcosa insieme.</p>
@@ -596,7 +626,7 @@ function apriTaccuino() {
   const el = $('pagina-taccuino-archivio');
   const interno = el.querySelector('.taccuino-archivio-interno');
 
-  if (stato.taccuino.length != 0) {
+  if (!_cacheTaccuino) {
     const voci = stato.taccuino.map(v => {
       const foto = v.foto
         ? `<div class="taccuino-voce-foto"><img src="${v.foto}" alt="" draggable="false" loading="lazy"></div>` : '';
@@ -971,6 +1001,25 @@ function aggiornaUI() {
   } else {
     if (tornaBtn) tornaBtn.style.display = 'none';
   }
+  if (isUltima) {
+    const epilogo = document.getElementById('fin-epilogo');
+    const footer = document.querySelector('.fin-footer');
+    if (epilogo && !epilogo.classList.contains('visibile')) {
+      epilogo.style.display = 'block';
+      epilogo.style.opacity = '0';
+      epilogo.style.transform = 'translateY(6px)';
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        epilogo.style.opacity = '';
+        epilogo.style.transform = '';
+        epilogo.classList.add('visibile');
+        if (footer) {
+          footer.style.display = 'flex';
+          footer.style.opacity = '0';
+          setTimeout(() => { footer.style.opacity = ''; footer.classList.add('visibile'); }, 400);
+        }
+      }));
+    }
+  }
   if (pCorrente) {
     aggiorneFavicon(pCorrente.dataset.favicon || 'f');
     document.title = `${pCorrente.dataset.titolo || 'Francesco Martolini .art'} — Francesco Martolini .art`;
@@ -1247,6 +1296,7 @@ async function init() {
   avviaCookie();
   avviaCursore();
   lightbox.init();
+  inizializzaFin();
 }
 
 document.addEventListener('DOMContentLoaded', init);
