@@ -34,11 +34,11 @@ const EPILOGHI = [
   'Ogni archivio è una forma di attesa.',
   'Ciò che resta racconta più di ciò che accade.',
   'Le tracce sopravvivono agli eventi.',
-  'Fotografare significa osservare una trasformazione.',
 ];
 
 function inizializzaFin() {
-  const frase = EPILOGHI[Math.floor(Math.random() * EPILOGHI.length)];
+  const elenco = stato.epiloghi?.length ? stato.epiloghi : EPILOGHI;
+  const frase = elenco[Math.floor(Math.random() * elenco.length)];
 
   // Mobile — inietta il testo; la transizione parte in aggiornaUI quando si arriva a #fin
   const elMobile = document.getElementById('fin-epilogo');
@@ -50,7 +50,6 @@ function inizializzaFin() {
   const elDesktop = document.getElementById('epilogo-desktop');
   if (elDesktop) {
     elDesktop.textContent = "Alcune tracce richiedono anni per diventare visibili.";
-    //elDesktop.style.display = 'block';
     requestAnimationFrame(() => elDesktop.classList.add('visibile'));
   }
 }
@@ -103,7 +102,8 @@ async function caricaDati() {
     fetch('json/intervalli.json').then(r => r.json()),
     fetch('json/collaborazioni.json').then(r => r.json()),
     fetch('json/intro.json').then(r => r.json()).catch(() => ({ testo: '' })),
-    fetch('json/pubblicazioni.json').then(r => r.json()).catch(() => [])
+    fetch('json/pubblicazioni.json').then(r => r.json()).catch(() => []),
+    fetch('json/epiloghi.json').then(r => r.json()).catch(() => [])
   ]);
   Object.assign(stato, { progetti, intervalli, collaborazioni, intro, pubblicazioni });
 
