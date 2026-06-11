@@ -442,7 +442,10 @@ function apriPagina(tipo) {
         <h1 class="overlay-titolo">Chi sono</h1>
         <div class="chi-sono-esteso">
           <div class="chi-sono-esteso-testo">
-            <h2>Francesco Martolini</h2>
+            <!-- <h2>Francesco Martolini</h2> -->
+            <h2>Dove nasce il lavoro</h2>
+              <p class="introduzione-testo">${stato.intro.testo.replace(/\n/g, '<br>')}</p>
+            <h2>Biografia</h2>
             <p>Fotografo italiano. Il mio lavoro esplora il rapporto tra spazio, tempo e memoria — cercando nelle immagini le tracce di ciò che resta.</p>
             <p>Sono interessato alla fotografia come strumento di indagine, non di rappresentazione. Ogni progetto nasce da una domanda che il tempo continua a restituirmi.</p>
             <p>Basato in un paesino vicino Firenze, lavoro su progetti a lungo termine alternati a commissioni commerciali selezionate.</p>
