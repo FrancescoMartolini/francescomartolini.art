@@ -368,6 +368,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   grid-template-columns: 1fr 1fr 1fr;
   gap: clamp(32px, 5vw, 64px);
   align-items: start;
+  max-height: 1200px;
 }
 
 .chi-sono-bio { font-family: var(--font-titolo); font-size: clamp(20px, 2.5vw, 30px); font-weight: 400; line-height: 1.4; margin: 16px 0 24px; }
