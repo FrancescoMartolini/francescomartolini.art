@@ -798,10 +798,10 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
     font-size: 10px;
     font-weight: 300;
     letter-spacing: 0.15em;
-    color: var(--grigio-chiaro);
+    color: var(--grigio-medio);
     margin-top: 2px;
   }
-  .fin-link { font-size: 11px; font-weight: 400; letter-spacing: 0.25em; text-transform: uppercase; color: var(--grigio-chiaro); cursor: pointer; transition: color var(--transizione); background: none; border: none; margin-bottom: 20px; }
+  .fin-link { font-size: 11px; font-weight: 400; letter-spacing: 0.25em; text-transform: uppercase; color: var(--grigio-medio); cursor: pointer; transition: color var(--transizione); background: none; border: none; margin-bottom: 20px; }
   .fin-link:hover { color: var(--grigio-medio); }
 
   #mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 44px; background: var(--bianco); border-top: 1px solid var(--grigio-chiaro); z-index: 200; display: flex; align-items: center; justify-content: center; }
@@ -1203,6 +1203,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   flex-direction: column;
   gap: 28px;
   padding: 20px 20px 20px;
+  margin-top: auto;
 }
 .pub-mobile-item {
   display: flex;
