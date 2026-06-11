@@ -2,12 +2,12 @@
   {
     "id": "la-pelle-della-citta",
     "titolo": "La pelle della città",
-    "anno": "2024 - 2025",
+    "anno": "2025",
     "descrizione": "Ogni muro ha una storia. Basta avvicinarsi abbastanza.",
     "contenuto": [
       {
         "tipo": "testo",
-        "valore": "Firenze è una città che conosciamo bene, ma spesso la osserviamo distrattamente. Eppure, ogni angolo, ogni muro, è una pagina della sua storia, scritta da chi l'ha attraversata, da chi ha lasciato un segno senza sapere che avrebbe parlato anche a chi sarebbe passato dopo. 'La Pelle Della Città' è il mio tentativo di restituire queste tracce, di fermare il tempo in un luogo dove il passato e il presente si incontrano ogni giorno. Ogni città ha una pelle, una superficie che racconta la sua storia attraverso i segni lasciati dal tempo e dalle persone. Firenze, con le sue strade intrise di arte e memoria, non è solo fatta di monumenti e architetture storiche, ma anche di dettagli nascosti che sfuggono alla vista distratta. Questo progetto fotografico si propone di esplorare questi segni, dando voce ai muri attraverso un'inedita lettura della città."
+        "valore": "Firenze è una città che conosciamo bene, ma spesso la osserviamo distrattamente. Eppure, ogni angolo, ogni muro, è una pagina della sua storia, scritta da chi l'ha attraversata, da chi ha lasciato un segno senza sapere che avrebbe parlato anche a chi sarebbe passato dopo. «La Pelle Della Città» è il mio tentativo di restituire queste tracce, di fermare il tempo in un luogo dove il passato e il presente si incontrano ogni giorno.\n\nOgni città ha una pelle, una superficie che racconta la sua storia attraverso i segni lasciati dal tempo e dalle persone. Firenze, con le sue strade intrise di arte e memoria, non è solo fatta di monumenti e architetture storiche, ma anche di dettagli nascosti che sfuggono alla vista distratta. Questo progetto fotografico si propone di esplorare questi segni, dando voce ai muri attraverso un'inedita lettura della città."
       },
       {
         "tipo": "immagine",
@@ -15,29 +15,48 @@
       },
       {
         "tipo": "testo",
-        "valore": "Muri che parlano, ombre che indicano, vuoti che raccontano più di qualsiasi presenza."
+        "valore": "La mappa interattiva\n\nIn aggiunta alle immagini, ho creato una mappa interattiva che raccoglie tutte le scansioni realizzate, offrendo un'esperienza di esplorazione diretta delle vie di Firenze. Ogni punto sulla mappa rappresenta un'istantanea, un microcosmo di storie urbane. Invito chi osserva le immagini a percorrere virtualmente la città, immergendosi nelle sue tracce più nascoste.\n\nMappa aggiornata ogni volta che scansiono qualcosa."
       },
       {
         "tipo": "mappa"
       },
       {
         "tipo": "testo",
-        "valore": "La pelle della città è un archivio in costruzione. Non cerca di essere esaustivo."
+        "valore": "Il concetto del progetto\n\nIl progetto nasce dalla volontà di documentare la dimensione più intima e spontanea dell'ambiente urbano, raccogliendo le tracce umane impresse sulle superfici della città. Dai graffiti ai manifesti strappati, dalle scritte incise ai resti di adesivi sbiaditi, ogni muro racconta qualcosa di chi l'ha attraversato. Questa pelle urbana si trasforma così in una mappa visiva del passaggio delle persone nel tempo.\n\nLe scansioni che ho realizzato non sono semplici fotografie, ma veri e propri «momenti congelati» che testimoniano l'evolversi del paesaggio urbano. Ogni muro è un contenitore di storie invisibili, una memoria che cambia continuamente. Ho voluto usare una cornice bianca per separare l'immagine dal contesto e, sotto ogni scansione, ho aggiunto le coordinate geografiche per ancorare ciascun frammento alla sua posizione nel tempo e nello spazio.\n\nPer realizzare questo lavoro, ho sviluppato una metodologia basata sulla scansione diretta delle superfici. Ogni immagine viene poi archiviata e organizzata in una mappa personalizzata su Google Maps, creando un archivio interattivo che permette di navigare tra i luoghi della città e vedere la stratificazione dei segni urbani."
       },
       {
         "tipo": "immagine",
         "valore": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416462/LaPelleDellaCitta40_ppttqh.jpg"
+      },
+      {
+        "tipo": "testo",
+        "valore": "La relazione con il tempo e le persone\n\nIl principale obiettivo di «La Pelle Della Città» è quello di rendere visibile l'invisibile. In un'epoca in cui le città cambiano rapidamente, molte di queste tracce sono effimere e destinate a scomparire sotto nuove stratificazioni di colore o sotto la pressione della pulizia urbana. Documentarle significa costruire un archivio della memoria urbana, una sorta di museo diffuso che racconta la storia della città attraverso ciò che normalmente viene ignorato.\n\nOgni muro che scansiono è una testimonianza di un passaggio, di un cambiamento. Le scritte, i graffiti, gli adesivi sono come segni lasciati da chi ha camminato prima di noi. Alcuni rimangono, altri scompaiono, ma il loro passaggio è impresso, per quanto fugace, sulla pelle della città. Il progetto si interroga anche sul significato dell'intervento umano nello spazio pubblico: i muri non sono solo superfici neutre, ma vere e proprie tele collettive dove si esprimono idee, emozioni, messaggi politici e culturali."
+      },
+      {
+        "tipo": "immagine",
+        "valore": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416462/LaPelleDellaCitta133_ivxt9p.jpg"
+      },
+      {
+        "tipo": "testo",
+        "valore": "Il Processo Creativo\n\nIl processo creativo inizia tutto girando per Firenze, cercando muri con tratti distintivi: colori accesi, forme geometriche disegnate sopra, stampe o adesivi, nuovi o strappati. Cerco dettagli che riescano a catturare la mia attenzione, elementi nascosti che raccontano qualcosa di inaspettato.\n\nUltimamente mi sto focalizzando molto su questo progetto e sto scoprendo particolari straordinari che, in 27 anni della mia vita, non avevo mai notato sui muri della città. Ogni passeggiata diventa un'esplorazione, uno sguardo nuovo su Firenze.\n\nHo sempre amato i graffiti e il modo in cui le persone lasciano una piccola traccia di sé nella città. A volte si tratta di un atto di vandalismo, ma questo non significa che non possa essere trasformato in arte. Ogni segno, ogni scritta, ogni adesivo ha una sua storia, e documentarli significa riconoscere la presenza di chi ha attraversato questi luoghi prima di noi.\n\nLa tecnica utilizzata per catturare queste immagini è quella della scansione diretta, che permette di ottenere un livello di dettaglio e di intimità impossibile da raggiungere con la fotografia tradizionale. Avvicinando lo scanner alle superfici urbane, il progetto elimina la prospettiva e il contesto generale, concentrandosi solo sulla texture e sulle tracce lasciate dal tempo.\n\nCapita molte volte che l'immagine finale è irregolare — proprio in queste tracce imperfette che trovo la bellezza: le mie scansioni non sono perfette, spesso presentano increspature o difetti dovuti alla natura irregolare dei muri, ma per me è proprio questo a dare più forza e autenticità al progetto.\n\nUna delle cose che più mi ha colpito è la bellezza del non sapere. Quando premo «scan», tutto ciò che vedo è un numero che aumenta, senza sapere davvero cosa sto catturando. È un momento sospeso, un'incognita che mi accompagna fino a quando non scarico tutto sul computer. Questa incertezza mi ricorda l'attesa della fotografia analogica, quando si aspettava di vedere cosa fosse rimasto davvero impresso. Anche se tecnicamente non si tratta di fotografia, il processo ha un'anima molto simile.\n\nL'archiviazione delle immagini con le coordinate geografiche consente di costruire una narrazione spaziale del progetto. Ogni scansione è un frammento di un racconto più grande, un tassello che si aggiunge alla mappa della memoria urbana."
+      },
+      {
+        "tipo": "immagine",
+        "valore": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416466/LaPelleDellaCitta93_lyiv6w.jpg"
+      },
+      {
+        "tipo": "testo",
+        "valore": "Esposizione e Formato\n\n«La Pelle Della Città» è un progetto in continua evoluzione, iniziato nel marzo 2025 e senza una data di conclusione precisa. Non so se finirà mai, perché la città stessa è in costante trasformazione, e con essa cambiano le tracce che lasciano le persone.\n\nIl progetto è pensato per essere fruito in diversi formati. L'idea di pubblicarlo su una pagina nasce dal desiderio di portare questo progetto fuori dai circuiti tradizionali dell'arte, rendendolo accessibile a un pubblico più ampio. La pagina diventa essa stessa un'estensione della città, una superficie da esplorare come se fosse un muro su cui fermarsi a leggere.\n\nParallelamente, il progetto trova una sua dimensione digitale attraverso la mappa interattiva, che permette di esplorare i luoghi fotografati e di collegare ogni immagine al suo spazio di appartenenza.\n\nInoltre, ho scelto di condividere il progetto anche attraverso Instagram, utilizzando post e storie per documentare non solo le scansioni, ma anche il processo dietro la loro realizzazione. Attraverso i social, voglio offrire un retroscena sul lavoro che svolgo, mostrando le esplorazioni urbane, gli strumenti utilizzati e le riflessioni che emergono lungo il percorso. In questo modo, il pubblico può seguire l'evoluzione del progetto in tempo reale e interagire con esso."
       }
     ],
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778416462/LaPelleDellaCitta40_ppttqh.jpg",
     "galleria": [
-      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416466/LaPelleDellaCitta93_lyiv6w.jpg",
-      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416462/LaPelleDellaCitta133_ivxt9p.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778416462/LaPelleDellaCitta40_ppttqh.jpg",
       "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416462/LaPelleDellaCitta91_n4lpsb.jpg",
       "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416462/LaPelleDellaCitta3_tcaiy5.png",
-      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416455/LaPelleDellaCitta112_merfsj.jpg"      
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416455/LaPelleDellaCitta112_merfsj.jpg"
     ],
-    "label_link":"Ordina una stampa",
+    "label_link": "Ordina una stampa",
     "link_esterno": "https://www.saal-digital.net/share/umDMBZb/",
     "mappa": {
       "url": "https://www.google.com/maps/d/embed?mid=1oONLATOAeXZ81Nm9tfSGbuGdIrLjrMw&ehbc=2E312F",
@@ -65,14 +84,13 @@
   },
   {
     "id": "divina-commedia",
-    "titolo": "Divina Commedia", 
+    "titolo": "Divina Commedia",
     "anno": "",
     "descrizione": "Questo sarà un progetto che durerà anni! lo scopo finale è ritrarre 99 immagini una per ogni canto della divina commedia",
     "testo_lungo": "",
     "testo_lungo_bozza": "Non è un progetto su Dante. È un progetto sul viaggio — quella condizione strana in cui ci si trova in mezzo, senza sapere bene da dove si viene né dove si va.",
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778787008/cover_z6yvxm.jpg",
-    "galleria": [
-    ],
+    "galleria": [],
     "pagina_libro": 7,
     "pubblicato": false
   },
@@ -84,8 +102,7 @@
     "testo_lungo": "",
     "testo_lungo_bozza": "PLAYLIST è un progetto curatoriale che mette in relazione fotografia e musica. \n Nasce dall’idea che un’immagine possa essere attraversata non solo con lo sguardo, ma anche con l’ascolto.\n Ogni fotografia è associata a un brano musicale selezionato dall’autore.\n Non come colonna sonora, ma come chiave di accesso emotiva e percettiva all’immagine.\n Il progetto prende forma attraverso una pubblicazione cartacea composta da immagini quadrate su fondo bianco, testi brevi e QR code che permettono di ascoltare i brani suggeriti. Il libro diventa così un oggetto contemplativo che si attiva nel momento in cui il lettore decide di ascoltare. \n PLAYLIST non è un progetto fotografico.\n\n È un modo di leggere i progetti fotografici. \n Le immagini presenti nei volumi provengono da lavori già esistenti e mantengono il loro significato originario. All’interno di PLAYLIST vengono rilette, accostate e messe in dialogo con un universo sonoro coerente. \n Ogni capitolo della serie, identificato da un numero progressivo (PLAYLIST.0, PLAYLIST.1, …), esplora la relazione tra un linguaggio fotografico e un ambito musicale specifico. \n Il progetto si sviluppa su più livelli: \n - il libro, come esperienza fisica e silenziosa; \n - il sito web, come spazio di approfondimento; \n\n - la playlist musicale, come estensione sonora permanente. \n PLAYLIST è un archivio visivo-sonoro in continua evoluzione. \n Un sistema aperto che permette alle immagini di essere ascoltate e alla musica di essere osservata. \n",
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778786521/Scan_20260416_aijdfw.png",
-    "galleria": [
-    ],
+    "galleria": [],
     "pagina_libro": 9,
     "pubblicato": false
   },
@@ -97,8 +114,7 @@
     "testo_lungo": "",
     "testo_lungo_bozza": "Questo progetto nasce durante le mie uscite quotidiane, osservando alberi che, per forma o postura, sembrano sfuggire alla normalità. Non vengono fotografati per il paesaggio in cui si trovano, né per la specie a cui appartengono. Vengono scelti per la loro struttura. Ogni albero viene isolato dal suo contesto e ridotto alla sua ossatura principale. Rimangono solo il tronco e i rami che ne definiscono la postura, come se venisse messo a nudo il suo scheletro. Privato dello sfondo, dei dettagli secondari e del luogo in cui cresce, l’albero smette di essere parte del paesaggio e diventa un individuo. Una forma unica che esiste da sola.Questa raccolta diventa un atlante di posture vegetali: pieghe, tensioni, equilibri, gesti congelati nel tempo. Non è un lavoro sugli alberi. È un lavoro sulle forme.",
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778787290/pinterest_uobvby.jpg",
-    "galleria": [
-    ],
+    "galleria": [],
     "pagina_libro": 11,
     "pubblicato": false
   },
@@ -108,11 +124,10 @@
     "anno": "",
     "descrizione": "3.3 è un progetto fotografico nato da una limitazione tecnica",
     "testo_lungo": "",
-    "testo_lungo_bozza":  "Le immagini sono realizzate con una HP Photosmart 715, una fotocamera digitale dei primi anni 2000 con una risoluzione di 3.3 megapixel. Questa limitazione diventa il punto di partenza del progetto. La serie è composta da tre fotografie.\n Tutte le immagini sono: \n - scattate nello stesso punto della città\n\n - realizzate in tre giorni diversi\n - costruite attorno alla presenza di tre elementi ripetuti nella scena\n Ogni fotografia viene poi ritagliata in formato 1:1 e convertita in bianco e nero, per enfatizzare le forme, la ripetizione e il carattere grezzo del sensore digitale.\n Il progetto segue una struttura semplice e quasi matematica:\n - 3.3 megapixel — la risoluzione della fotocamera\n - 3 fotografie — la struttura della serie\n - 3 elementi — la composizione di ogni immagine\n - 3 giorni — il tempo in cui il progetto prende forma\n Lo stesso spazio urbano viene osservato più volte, lasciando che la città cambi naturalmente: persone, oggetti e luce si trasformano, mentre l'inquadratura rimane la stessa.\n Le tre fotografie della serie verranno aggiunte qui una volta completato il progetto.",
+    "testo_lungo_bozza": "Le immagini sono realizzate con una HP Photosmart 715, una fotocamera digitale dei primi anni 2000 con una risoluzione di 3.3 megapixel. Questa limitazione diventa il punto di partenza del progetto. La serie è composta da tre fotografie.\n Tutte le immagini sono: \n - scattate nello stesso punto della città\n\n - realizzate in tre giorni diversi\n - costruite attorno alla presenza di tre elementi ripetuti nella scena\n Ogni fotografia viene poi ritagliata in formato 1:1 e convertita in bianco e nero, per enfatizzare le forme, la ripetizione e il carattere grezzo del sensore digitale.\n Il progetto segue una struttura semplice e quasi matematica:\n - 3.3 megapixel — la risoluzione della fotocamera\n - 3 fotografie — la struttura della serie\n - 3 elementi — la composizione di ogni immagine\n - 3 giorni — il tempo in cui il progetto prende forma\n Lo stesso spazio urbano viene osservato più volte, lasciando che la città cambi naturalmente: persone, oggetti e luce si trasformano, mentre l'inquadratura rimane la stessa.\n Le tre fotografie della serie verranno aggiunte qui una volta completato il progetto.",
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778787452/inspo_emmyoy.jpg",
-    "galleria": [
-    ],
+    "galleria": [],
     "pagina_libro": 13,
     "pubblicato": false
-  }  
+  }
 ]
