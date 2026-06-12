@@ -4,6 +4,14 @@
 
 /*@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500&family=Caveat+Brush&display=swap');*/
 
+@font-face {
+  font-family: 'Biro Script';
+  src: url('../fonts/Biro_Script_reduced.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --nero: #0a0a0a;
   --bianco: #f5f4f0;
@@ -12,7 +20,7 @@
   --grigio-testo: #5a5855;
   --font-titolo: 'Playfair Display', Georgia, serif;
   --font-testo: 'Inter', system-ui, sans-serif;
-  --font-taccuino: 'Caveat Brush', cursive; /*var(--font-titolo); */
+  --font-taccuino: 'Biro Script', cursive; /*Caveat Brush', cursive; var(--font-titolo); */
   --transizione: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --header-h: 60px;
   /* Colori inversione nella sezione progetti */
@@ -743,7 +751,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .contatti-label { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--grigio-medio); margin-bottom: 6px; }
   .contatti-nota { font-size: 11px; font-weight: 300; line-height: 1.7; color: var(--grigio-testo); font-style: italic; margin-bottom: 12px; }
 
-  .fin-wrap { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .fin-wrap { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0;}
   .fin-titolo { font-family: var(--font-titolo); font-size: clamp(60px, 22vw, 110px); font-weight: 400; font-style: italic; line-height: 1; margin-bottom: 28px; }
   .fin-epilogo {
     display: none;
@@ -764,6 +772,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
     display: block;
     opacity: 1;
     transform: translateY(0);
+    font-family: var(--font-taccuino);
   }
   .fin-footer {
     display: none;
