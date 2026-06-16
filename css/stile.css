@@ -362,6 +362,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .taccuino-col-frase { font-size: 14px; font-weight: 300; line-height: 1.75; color: var(--grigio-testo); flex: 1; }
 .taccuino-col-expand { font-size: 18px; color: var(--grigio-chiaro); cursor: pointer; width: fit-content; transition: color var(--transizione); background: none; border: none; }
 .taccuino-col-expand:hover { color: var(--nero); }
+.taccuino-voce-camera { font-size: 0.75rem; color: #999; margin-top: 2px;}
 
 /* STUDI */
 .desktop-studi { flex-direction: row; gap: clamp(32px, 6vw, 80px); align-items: flex-start; }
