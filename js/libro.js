@@ -91,13 +91,13 @@ function parseCsv(csv) {
       cell += ch;
     }
     celle.push(cell.trim());
-    return { id: i + 1, testo: celle[0] || '', data: celle[1] || '', foto: celle[2] || null };
+    return { id: i+1, testo: celle[0]||'', data: celle[1]||'', foto: celle[2]||null, camera: celle[3]||null };
   }).filter(v => v.testo);
 }
 
 // ── Carica dati ──
 async function caricaDati() {
-  const [progetti, intervalli, collaborazioni, intro, pubblicazioni] = await Promise.all([
+  const [progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi] = await Promise.all([
     fetch('json/progetti.json').then(r => r.json()),
     fetch('json/intervalli.json').then(r => r.json()),
     fetch('json/collaborazioni.json').then(r => r.json()),
@@ -105,7 +105,7 @@ async function caricaDati() {
     fetch('json/pubblicazioni.json').then(r => r.json()).catch(() => []),
     fetch('json/epiloghi.json').then(r => r.json()).catch(() => [])
   ]);
-  Object.assign(stato, { progetti, intervalli, collaborazioni, intro, pubblicazioni });
+  Object.assign(stato, { progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi});
 
   try {
     const r = await fetch(SHEETS_URL);
@@ -202,12 +202,14 @@ function creaPaginaTaccuinoMobile(v) {
   const pt = creaPaginaMobile('T', 'Taccuino');
   const { mpc, pc } = creaMobilePageContent();
   const tw = crea('div'); tw.className = 'taccuino-wrap';
+    tw.style.overflowY = 'auto';
+    tw.style.maxHeight = '80vh'; 
   if (v.foto) {
     const fw = crea('div'); fw.className = 'taccuino-foto';
     const img = crea('img'); img.src = v.foto; img.alt = ''; img.draggable = false;
     fw.appendChild(img); tw.appendChild(fw);
   }
-  tw.innerHTML += `<p class="taccuino-frase">${v.testo}</p><p class="taccuino-data">${formatData(v.data)}</p>`;
+  tw.innerHTML += `<p class="taccuino-frase">${v.testo}</p><p class="taccuino-data">${formatData(v.data)}</p>${v.camera ? `<p class="taccuino-voce-camera">${v.camera}</p>` : ''}`;
   pc.appendChild(tw); pt.appendChild(mpc);
   return pt;
 }
@@ -438,7 +440,7 @@ function apriPagina(tipo) {
       const SVG_MAIL = `<svg viewBox="0 0 24 24" class="contatto-icon"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>`;
       const SVG_IG = `<svg viewBox="0 0 24 24" class="contatto-icon"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/></svg>`;
       const SVG_TEL = `<svg viewBox="0 0 24 24" class="contatto-icon"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.09 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7a2 2 0 011.72 2.03z"/></svg>`;
-      const SVG_WA = `<svg viewBox="0 0 32 32" class="whatsapp-ico"><path d=" M19.11 17.205c-.372 0-1.088 1.39-1.518 1.39a.63.63 0 0 1-.315-.1c-.802-.402-1.504-.817-2.163-1.447-.545-.516-1.146-1.29-1.46-1.963a.426.426 0 0 1-.073-.215c0-.33.99-.945.99-1.49 0-.143-.73-2.09-.832-2.335-.143-.372-.214-.487-.6-.487-.187 0-.36-.043-.53-.043-.302 0-.53.115-.746.315-.688.645-1.032 1.318-1.06 2.264v.114c-.015.99.472 1.977 1.017 2.78 1.23 1.82 2.506 3.41 4.554 4.34.616.287 2.035.888 2.722.888.817 0 2.15-.515 2.478-1.318.13-.33.244-.73.244-1.088 0-.058 0-.144-.03-.215-.1-.172-2.434-1.39-2.678-1.39zm-2.908 7.593c-1.747 0-3.48-.53-4.942-1.49L7.793 24.41l1.132-3.337a8.955 8.955 0 0 1-1.72-5.272c0-4.955 4.04-8.995 8.997-8.995S25.2 10.845 25.2 15.8c0 4.958-4.04 8.998-8.998 8.998zm0-19.798c-5.96 0-10.8 4.842-10.8 10.8 0 1.964.53 3.898 1.546 5.574L5 27.176l5.974-1.92a10.807 10.807 0 0 0 16.03-9.455c0-5.958-4.842-10.8-10.802-10.8z" fill-rule="evenodd"></path></svg>`
+      const SVG_WA = `<svg viewBox="0 0 24 24" class="contatto-icon"><circle cx="12" cy="12" r="10"/><path d="M8.5 7.5c.3-.3.8-.3 1.1 0l1.2 1.2c.3.3.3.8 0 1.1l-.6.6c.6 1.2 1.6 2.2 2.8 2.8l.6-.6c.3-.3.8-.3 1.1 0l1.2 1.2c.3.3.3.8 0 1.1-.8.8-2 .9-3 .4-3-1.4-5.4-3.8-6.8-6.8-.5-1-.4-2.2.4-3z"fill="white"/></svg>`;
       contenuto.innerHTML = `
         <h1 class="overlay-titolo">Chi sono</h1>
         <div class="chi-sono-esteso">
@@ -456,7 +458,7 @@ function apriPagina(tipo) {
               <a class="contatto-btn" href="mailto:info@francescomartolini.art">${SVG_MAIL}info@francescomartolini.art</a>
               <a class="contatto-btn" href="https://instagram.com/francesco_martolini_ph" target="_blank" rel="noopener">${SVG_IG}francesco_martolini_ph</a>
               <a class="contatto-btn" href="tel:+393930336642">${SVG_TEL}+39 393 033 6642</a>
-              <a class="contatto-btn" href="https://wa.me/393930336642?text=Ciao%2C%20vorrei%20collaborare%20con%20te%0AQuesta%20%C3%A8%20la%20mia%20idea%20cosa%20ne%20pensi%3F" aria-label="Chat WhatsApp" target="_blank" rel="noopener">${SVG_WA} Chat WhatsApp</a>
+              <a class="contatto-btn" href="https://wa.me/393930336642?text=Ciao%2C%20vorrei%20collaborare%20con%20te%0AQuesta%20%C3%A8%20la%20mia%20idea%20cosa%20ne%20pensi%3F" aria-label="Chat with us on WhatsApp" target="_blank" rel="noopener noreferrer">${SVG_WA} Chat WhatsApp</a>
             </div>
           </div>
           <div class="chi-sono-esteso-img" id="chi-sono-overlay-img"></div>
