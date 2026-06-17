@@ -1,0 +1,637 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .tl-root {
+    background: #0a0a0a;
+    color: #e8e4dc;
+    font-family: 'Inter', sans-serif;
+    min-height: 400px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tl-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 32px 14px;
+    border-bottom: 0.5px solid rgba(255,255,255,0.08);
+  }
+
+  .tl-logo {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+  }
+
+  .tl-logo span {
+    color: rgba(255,255,255,0.85);
+    font-weight: 400;
+  }
+
+  .tl-nav {
+    display: flex;
+    gap: 28px;
+    align-items: center;
+  }
+
+  .tl-nav a {
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.38);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .tl-nav a:hover { color: rgba(255,255,255,0.7); }
+  .tl-nav a.active { color: rgba(255,255,255,0.85); }
+
+  .tl-nav-dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+  }
+
+  .tl-body {
+    display: flex;
+    height: 340px;
+  }
+
+  .tl-sidebar {
+    width: 200px;
+    min-width: 200px;
+    padding: 28px 24px 24px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 0.5px solid rgba(255,255,255,0.06);
+  }
+
+  .tl-sidebar-top {}
+
+  .tl-label-meta {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    margin-bottom: 10px;
+  }
+
+  .tl-tagline {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-style: italic;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.6;
+  }
+
+  .tl-tagline strong {
+    font-style: normal;
+    color: rgba(255,255,255,0.8);
+    font-weight: 400;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .tl-sidebar-bottom {}
+
+  .tl-scroll-hint {
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.22);
+    margin-bottom: 8px;
+  }
+
+  .tl-arrows {
+    display: flex;
+    gap: 12px;
+  }
+
+  .tl-arrow-btn {
+    width: 26px; height: 26px;
+    border: 0.5px solid rgba(255,255,255,0.18);
+    background: transparent;
+    color: rgba(255,255,255,0.45);
+    font-size: 13px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    border-radius: 2px;
+  }
+
+  .tl-arrow-btn:hover {
+    border-color: rgba(255,255,255,0.4);
+    color: rgba(255,255,255,0.8);
+  }
+
+  .tl-canvas {
+    flex: 1;
+    position: relative;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+
+  .tl-canvas::-webkit-scrollbar { display: none; }
+
+  .tl-inner {
+    width: 1600px;
+    height: 100%;
+    position: relative;
+  }
+
+  .tl-years-row {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 8px;
+  }
+
+  .tl-year {
+    position: absolute;
+    font-size: 28px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.12);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .tl-axis {
+    position: absolute;
+    top: 155px;
+    left: 0;
+    right: 0;
+    height: 0.5px;
+    background: rgba(255,255,255,0.12);
+  }
+
+  .tl-dot {
+    position: absolute;
+    top: 150px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.28);
+    transform: translateX(-3px);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .tl-dot:hover { background: rgba(255,255,255,0.7); }
+  .tl-dot.major { background: rgba(255,255,255,0.55); width: 8px; height: 8px; top: 148px; transform: translateX(-4px); }
+
+  .tl-node {
+    position: absolute;
+    cursor: pointer;
+  }
+
+  .tl-node-above {
+    top: 20px;
+  }
+
+  .tl-node-below {
+    top: 170px;
+  }
+
+  .tl-node-img {
+    width: 90px;
+    height: 72px;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(0.2) brightness(0.85);
+    transition: filter 0.3s;
+  }
+
+  .tl-node:hover .tl-node-img {
+    filter: grayscale(0) brightness(1);
+  }
+
+  .tl-node-title {
+    font-size: 8.5px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    margin-top: 6px;
+    line-height: 1.4;
+    max-width: 90px;
+  }
+
+  .tl-node-type {
+    font-size: 7.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.28);
+    margin-top: 2px;
+  }
+
+  .tl-fragment {
+    position: absolute;
+    top: 168px;
+  }
+
+  .tl-fragment-inner {
+    border-left: 0.5px solid rgba(255,255,255,0.14);
+    padding-left: 8px;
+    max-width: 110px;
+    cursor: pointer;
+  }
+
+  .tl-fragment-inner:hover .tl-fragment-text {
+    color: rgba(255,255,255,0.65);
+  }
+
+  .tl-fragment-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 9px;
+    font-style: italic;
+    color: rgba(255,255,255,0.35);
+    line-height: 1.5;
+    transition: color 0.2s;
+  }
+
+  .tl-fragment-date {
+    font-size: 7px;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.18);
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+
+  .tl-connector {
+    position: absolute;
+    top: 155px;
+    width: 0.5px;
+    background: rgba(255,255,255,0.1);
+    pointer-events: none;
+  }
+
+  .tl-right-index {
+    width: 180px;
+    min-width: 180px;
+    padding: 24px 28px 24px 20px;
+    border-left: 0.5px solid rgba(255,255,255,0.06);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .tl-index-list {
+    list-style: none;
+  }
+
+  .tl-index-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 5px 0;
+    cursor: pointer;
+    border-bottom: 0.5px solid rgba(255,255,255,0.04);
+  }
+
+  .tl-index-list li:hover .tl-index-label {
+    color: rgba(255,255,255,0.75);
+  }
+
+  .tl-index-num {
+    font-size: 8px;
+    color: rgba(255,255,255,0.2);
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    min-width: 16px;
+  }
+
+  .tl-index-label {
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.38);
+    transition: color 0.2s;
+  }
+
+  .tl-copyright {
+    font-size: 8px;
+    color: rgba(255,255,255,0.15);
+    letter-spacing: 0.1em;
+    text-align: right;
+  }
+
+  .tl-node-line {
+    position: absolute;
+    left: 44px;
+    width: 0.5px;
+    background: rgba(255,255,255,0.12);
+    pointer-events: none;
+  }
+
+  .tl-node-line-above {
+    top: 92px;
+    height: 63px;
+  }
+
+  .tl-node-line-below {
+    bottom: 185px;
+    height: 20px;
+    top: 155px;
+    height: 15px;
+  }
+
+  .tl-frag-line {
+    position: absolute;
+    width: 0.5px;
+    background: rgba(255,255,255,0.1);
+    pointer-events: none;
+    top: 155px;
+  }
+
+  .tl-tooltip {
+    position: fixed;
+    background: #0a0a0a;
+    border: 0.5px solid rgba(255,255,255,0.18);
+    padding: 10px 14px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 100;
+    max-width: 200px;
+  }
+
+  .tl-tooltip.visible { opacity: 1; }
+
+  .tl-tooltip-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 11px;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 4px;
+  }
+
+  .tl-tooltip-desc {
+    font-size: 9px;
+    color: rgba(255,255,255,0.42);
+    line-height: 1.5;
+  }
+
+  .tl-intro-badge {
+    display: inline-block;
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.2);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    padding: 3px 8px;
+    margin-bottom: 12px;
+  }
+</style>
+
+<div class="tl-root">
+
+  <div class="tl-topbar">
+    <div class="tl-logo"><span>Francesco Martolini</span> .art</div>
+    <nav class="tl-nav">
+      <a class="active">Linea Temporale</a>
+      <a>Progetti</a>
+      <a>Intervalli</a>
+      <a>Taccuino</a>
+      <a>Chi sono</a>
+      <div class="tl-nav-dot"></div>
+    </nav>
+  </div>
+
+  <div class="tl-body">
+    <div class="tl-sidebar">
+      <div class="tl-sidebar-top">
+        <div class="tl-intro-badge">Concept 03</div>
+        <div class="tl-label-meta">Linea Temporale</div>
+        <div class="tl-tagline">
+          <strong>Il tempo lascia tracce.</strong>
+          Attraversa il tempo.<br>
+          Ogni punto è una traccia.<br>
+          Ogni traccia, una storia.
+        </div>
+      </div>
+      <div class="tl-sidebar-bottom">
+        <div class="tl-scroll-hint">Scorri la linea del tempo</div>
+        <div class="tl-arrows">
+          <button class="tl-arrow-btn" id="btn-left" title="Indietro">←</button>
+          <button class="tl-arrow-btn" id="btn-right" title="Avanti">→</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-canvas" id="tl-canvas">
+      <div class="tl-inner" id="tl-inner">
+
+        <div class="tl-years-row">
+          <div class="tl-year" style="left:60px">2022</div>
+          <div class="tl-year" style="left:350px">2023</div>
+          <div class="tl-year" style="left:640px">2024</div>
+          <div class="tl-year" style="left:950px">2025</div>
+          <div class="tl-year" style="left:1240px">2026</div>
+        </div>
+
+        <div class="tl-axis"></div>
+
+        <div class="tl-dot major" style="left:80px"></div>
+        <div class="tl-dot" style="left:180px"></div>
+        <div class="tl-dot major" style="left:370px"></div>
+        <div class="tl-dot" style="left:500px"></div>
+        <div class="tl-dot major" style="left:660px"></div>
+        <div class="tl-dot" style="left:780px"></div>
+        <div class="tl-dot major" style="left:970px"></div>
+        <div class="tl-dot" style="left:1100px"></div>
+        <div class="tl-dot major" style="left:1260px"></div>
+        <div class="tl-dot" style="left:1380px"></div>
+
+        <div class="tl-node tl-node-above" style="left:140px" data-title="Progetto XPan" data-desc="Street photography in formato 65:24">
+          <div style="position:relative">
+            <img class="tl-node-img" src="https://res.cloudinary.com/dgo7tnyv6/image/upload/w_200,q_auto,f_auto/v1778414649/cover_bpfi9g.jpg" alt="Progetto XPan" onerror="this.style.background='#1a1a1a'; this.removeAttribute('src')">
+            <div class="tl-node-line" style="top:72px; height:83px"></div>
+          </div>
+          <div class="tl-node-title">Progetto XPan</div>
+          <div class="tl-node-type">Progetto</div>
+        </div>
+
+        <div class="tl-fragment" style="left:170px; top:168px">
+          <div class="tl-frag-line" style="left:0; height:13px"></div>
+          <div class="tl-fragment-inner" style="margin-top:13px">
+            <div class="tl-fragment-text">"Intervalli di sguardo"</div>
+            <div class="tl-fragment-date">2022 — Intervalli</div>
+          </div>
+        </div>
+
+        <div class="tl-node tl-node-above" style="left:460px">
+          <div style="position:relative">
+            <img class="tl-node-img" src="https://res.cloudinary.com/dgo7tnyv6/image/upload/w_200,q_auto,f_auto/v1778787452/inspo_emmyoy.jpg" alt="3.3" onerror="this.style.background='#1a1a1a'; this.removeAttribute('src')">
+            <div class="tl-node-line" style="top:72px; height:83px"></div>
+          </div>
+          <div class="tl-node-title">3.3</div>
+          <div class="tl-node-type">Progetto</div>
+        </div>
+
+        <div class="tl-fragment" style="left:480px; top:168px">
+          <div class="tl-frag-line" style="left:0; height:13px"></div>
+          <div class="tl-fragment-inner" style="margin-top:13px">
+            <div class="tl-fragment-text">"Il tempo non passa nelle immagini. Si deposita."</div>
+            <div class="tl-fragment-date">Apr 2023 — Taccuino</div>
+          </div>
+        </div>
+
+        <div class="tl-node tl-node-above" style="left:630px">
+          <div style="position:relative">
+            <img class="tl-node-img" src="https://res.cloudinary.com/dgo7tnyv6/image/upload/w_200,q_auto,f_auto/v1778416462/LaPelleDellaCitta40_ppttqh.jpg" alt="La Pelle della Città" onerror="this.style.background='#1a1a1a'; this.removeAttribute('src')">
+            <div class="tl-node-line" style="top:72px; height:83px"></div>
+          </div>
+          <div class="tl-node-title">La Pelle<br>della Città</div>
+          <div class="tl-node-type">Progetto</div>
+        </div>
+
+        <div class="tl-fragment" style="left:760px; top:168px">
+          <div class="tl-frag-line" style="left:0; height:13px"></div>
+          <div class="tl-fragment-inner" style="margin-top:13px">
+            <div class="tl-fragment-text">"Osservo. Aspetto. Raccolgo."</div>
+            <div class="tl-fragment-date">Apr 2024 — Taccuino</div>
+          </div>
+        </div>
+
+        <div class="tl-node tl-node-below" style="left:740px; top:168px">
+          <div class="tl-frag-line" style="left:4px; top:0; height:13px; position:absolute"></div>
+          <div style="margin-top: 13px">
+            <img class="tl-node-img" src="https://res.cloudinary.com/dgo7tnyv6/image/upload/w_200,q_auto,f_auto/v1778415660/StreetFirenze-14-04-2024-7_nnjvqr.jpg" alt="Intervalli" onerror="this.style.background='#1a1a1a'; this.removeAttribute('src')">
+            <div class="tl-node-title">Sequenza 01</div>
+            <div class="tl-node-type">Intervalli</div>
+          </div>
+        </div>
+
+        <div class="tl-node tl-node-above" style="left:930px">
+          <div style="position:relative">
+            <img class="tl-node-img" src="https://res.cloudinary.com/dgo7tnyv6/image/upload/w_200,q_auto,f_auto/v1778787290/pinterest_uobvby.jpg" alt="Anatomia degli alberi" onerror="this.style.background='#1a1a1a'; this.removeAttribute('src')">
+            <div class="tl-node-line" style="top:72px; height:83px"></div>
+          </div>
+          <div class="tl-node-title">Anatomia<br>degli alberi</div>
+          <div class="tl-node-type">Progetto</div>
+        </div>
+
+        <div class="tl-fragment" style="left:1060px; top:168px">
+          <div class="tl-frag-line" style="left:0; height:13px"></div>
+          <div class="tl-fragment-inner" style="margin-top:13px">
+            <div class="tl-fragment-text">"Ogni fotografia è un frammento di silenzio."</div>
+            <div class="tl-fragment-date">Mag 2025 — Taccuino</div>
+          </div>
+        </div>
+
+        <div class="tl-node tl-node-below" style="left:1060px; top:168px">
+          <div style="position:absolute; left:4px; top:0; width:0.5px; height:13px; background:rgba(255,255,255,0.1)"></div>
+          <div style="margin-top: 13px">
+            <img class="tl-node-img" src="https://res.cloudinary.com/dgo7tnyv6/image/upload/w_200,q_auto,f_auto/v1778415166/ProveSangimignano-05-03-2023-13_geb1es.jpg" alt="Taccuino" onerror="this.style.background='#1a1a1a'; this.removeAttribute('src')">
+            <div class="tl-node-title">Riflessione</div>
+            <div class="tl-node-type">Taccuino</div>
+          </div>
+        </div>
+
+        <div class="tl-node tl-node-above" style="left:1230px">
+          <div style="position:relative">
+            <img class="tl-node-img" src="https://res.cloudinary.com/dgo7tnyv6/image/upload/w_200,q_auto,f_auto/v1778787008/cover_z6yvxm.jpg" alt="Divina Commedia" onerror="this.style.background='#1a1a1a'; this.removeAttribute('src')">
+            <div class="tl-node-line" style="top:72px; height:83px"></div>
+          </div>
+          <div class="tl-node-title">Divina<br>Commedia</div>
+          <div class="tl-node-type">Progetto</div>
+        </div>
+
+        <div class="tl-fragment" style="left:1360px; top:168px">
+          <div class="tl-frag-line" style="left:0; height:13px"></div>
+          <div class="tl-fragment-inner" style="margin-top:13px">
+            <div class="tl-fragment-text">"Non fotografo luoghi. Fotografo il tempo che li attraversa."</div>
+            <div class="tl-fragment-date">Mar 2026 — Taccuino</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="tl-right-index">
+      <ul class="tl-index-list">
+        <li><span class="tl-index-num">01</span><span class="tl-index-label">Frontespizio</span></li>
+        <li><span class="tl-index-num">02</span><span class="tl-index-label">Introduzione</span></li>
+        <li><span class="tl-index-num">03</span><span class="tl-index-label">Progetti</span></li>
+        <li><span class="tl-index-num">04</span><span class="tl-index-label">Intervalli</span></li>
+        <li><span class="tl-index-num">05</span><span class="tl-index-label">Taccuino</span></li>
+        <li><span class="tl-index-num">06</span><span class="tl-index-label">Chi sono</span></li>
+        <li><span class="tl-index-num">07</span><span class="tl-index-label">Commerciali</span></li>
+      </ul>
+      <div class="tl-copyright">© FM 2026</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="tl-tooltip" id="tl-tooltip">
+  <div class="tl-tooltip-title" id="tt-title"></div>
+  <div class="tl-tooltip-desc" id="tt-desc"></div>
+</div>
+
+<script>
+  const canvas = document.getElementById('tl-canvas');
+  const btnL = document.getElementById('btn-left');
+  const btnR = document.getElementById('btn-right');
+
+  btnL.addEventListener('click', () => {
+    canvas.scrollBy({ left: -200, behavior: 'smooth' });
+  });
+
+  btnR.addEventListener('click', () => {
+    canvas.scrollBy({ left: 200, behavior: 'smooth' });
+  });
+
+  let isDown = false, startX, scrollLeft;
+  canvas.addEventListener('mousedown', e => {
+    isDown = true;
+    startX = e.pageX - canvas.offsetLeft;
+    scrollLeft = canvas.scrollLeft;
+    canvas.style.cursor = 'grabbing';
+  });
+  canvas.addEventListener('mouseleave', () => { isDown = false; canvas.style.cursor = 'default'; });
+  canvas.addEventListener('mouseup', () => { isDown = false; canvas.style.cursor = 'default'; });
+  canvas.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - canvas.offsetLeft;
+    canvas.scrollLeft = scrollLeft - (x - startX);
+  });
+
+  const tooltip = document.getElementById('tl-tooltip');
+  const ttTitle = document.getElementById('tt-title');
+  const ttDesc = document.getElementById('tt-desc');
+
+  document.querySelectorAll('.tl-node').forEach(node => {
+    const t = node.dataset.title;
+    const d = node.dataset.desc;
+    if (!t) return;
+    node.addEventListener('mouseenter', e => {
+      ttTitle.textContent = t;
+      ttDesc.textContent = d || '';
+      tooltip.classList.add('visible');
+    });
+    node.addEventListener('mousemove', e => {
+      tooltip.style.left = (e.clientX + 14) + 'px';
+      tooltip.style.top = (e.clientY - 10) + 'px';
+    });
+    node.addEventListener('mouseleave', () => {
+      tooltip.classList.remove('visible');
+    });
+  });
+</script>

@@ -1,0 +1,662 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  .pub {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    background: #f4f1eb;
+    color: #1a1a18;
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+    border: 0.5px solid #c8c4ba;
+  }
+
+  .pub-grid {
+    display: grid;
+    grid-template-columns: 140px 1fr 160px;
+    flex: 1;
+    min-height: 420px;
+  }
+
+  .col-left {
+    border-right: 0.5px solid #c8c4ba;
+    padding: 24px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .col-center {
+    padding: 32px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .col-right {
+    border-left: 0.5px solid #c8c4ba;
+    padding: 24px 18px;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: #7a7870;
+    line-height: 1.9;
+  }
+
+  .logo {
+    font-family: 'EB Garamond', serif;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    margin-bottom: 28px;
+    color: #1a1a18;
+  }
+
+  .nav-item {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    padding: 5px 0;
+    cursor: pointer;
+    transition: color 0.2s;
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #7a7870;
+    border: none;
+    background: none;
+    text-align: left;
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+  }
+
+  .nav-item:hover { color: #1a1a18; }
+  .nav-item.active { color: #1a1a18; }
+
+  .nav-num {
+    font-size: 9px;
+    color: #b0aca2;
+    min-width: 16px;
+  }
+
+  .nav-item.active .nav-num { color: #7a7870; }
+
+  .meta-label {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #b0aca2;
+    margin-bottom: 4px;
+    margin-top: 14px;
+  }
+
+  .meta-label:first-child { margin-top: 0; }
+
+  .meta-val {
+    font-size: 10px;
+    letter-spacing: 0.02em;
+    color: #5a5850;
+    line-height: 1.7;
+  }
+
+  .meta-val.italic {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 11px;
+  }
+
+  .photo-main {
+    width: 220px;
+    height: 168px;
+    background: #2a2820;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .photo-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #1c1c18 0%, #3a3830 40%, #2a2820 100%);
+    opacity: 0.9;
+  }
+
+  .photo-grain {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");
+    opacity: 0.4;
+  }
+
+  .photo-silhouette {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70%;
+    background: linear-gradient(to top, #0e0e0c 0%, transparent 100%);
+  }
+
+  .photo-building {
+    position: absolute;
+    bottom: 20px;
+    left: 30px;
+    width: 60px;
+    height: 90px;
+    background: #1a1a14;
+    opacity: 0.8;
+  }
+
+  .photo-building2 {
+    position: absolute;
+    bottom: 20px;
+    left: 100px;
+    width: 80px;
+    height: 70px;
+    background: #111110;
+    opacity: 0.9;
+  }
+
+  .photo-sky {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to bottom, #606055 0%, #3a3830 100%);
+    opacity: 0.7;
+  }
+
+  .statement {
+    text-align: center;
+    margin-top: 24px;
+  }
+
+  .statement-main {
+    font-family: 'EB Garamond', serif;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+    line-height: 2;
+    color: #1a1a18;
+  }
+
+  .statement-invite {
+    margin-top: 18px;
+    font-size: 8.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #b0aca2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .arrow-down {
+    width: 1px;
+    height: 16px;
+    background: #b0aca2;
+    margin: 0 auto;
+  }
+
+  .tab-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 0.5px solid #c8c4ba;
+    font-size: 8.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .tab {
+    padding: 10px 14px;
+    cursor: pointer;
+    color: #b0aca2;
+    border: none;
+    background: none;
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 8.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s, background 0.2s;
+    border-right: 0.5px solid #c8c4ba;
+    text-align: center;
+  }
+
+  .tab:last-child { border-right: none; }
+  .tab:hover { background: #edeae3; color: #1a1a18; }
+  .tab.active { color: #1a1a18; background: #edeae3; }
+
+  .view { display: none; }
+  .view.active { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; }
+
+  .progetti-layout {
+    display: grid;
+    grid-template-columns: 140px 1fr 160px;
+    flex: 1;
+    min-height: 420px;
+  }
+
+  .proj-list {
+    padding: 24px 18px;
+    border-right: 0.5px solid #c8c4ba;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .proj-list-title {
+    font-size: 8.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #b0aca2;
+    margin-bottom: 18px;
+  }
+
+  .proj-item {
+    font-family: 'EB Garamond', serif;
+    font-size: 12px;
+    color: #7a7870;
+    padding: 6px 0;
+    cursor: pointer;
+    border-bottom: 0.5px solid transparent;
+    transition: color 0.2s;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .proj-item:hover { color: #1a1a18; }
+
+  .proj-item.active {
+    color: #1a1a18;
+    border-bottom-color: #c8c4ba;
+  }
+
+  .proj-num { font-size: 9px; color: #b0aca2; font-family: 'Inter', sans-serif; font-weight: 300; }
+
+  .proj-center {
+    padding: 28px 36px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .proj-collage {
+    position: relative;
+    width: 280px;
+    height: 240px;
+  }
+
+  .photo-thumb {
+    position: absolute;
+    background: #2a2820;
+    border: 2px solid #f4f1eb;
+    overflow: hidden;
+  }
+
+  .pt1 { width: 130px; height: 100px; top: 0; left: 0; transform: rotate(-2deg); }
+  .pt2 { width: 110px; height: 85px; top: 30px; left: 120px; transform: rotate(1.5deg); }
+  .pt3 { width: 120px; height: 95px; top: 110px; left: 20px; transform: rotate(0.5deg); }
+  .pt4 { width: 100px; height: 80px; top: 140px; left: 150px; transform: rotate(-1deg); }
+
+  .pt-inner {
+    width: 100%;
+    height: 100%;
+    background: #1a1a14;
+    opacity: 0.85;
+  }
+
+  .pt1 .pt-inner { background: linear-gradient(140deg, #3a3830 0%, #1a1a14 100%); }
+  .pt2 .pt-inner { background: linear-gradient(200deg, #2a2818 0%, #404038 100%); }
+  .pt3 .pt-inner { background: linear-gradient(160deg, #1c1c18 0%, #30302a 100%); }
+  .pt4 .pt-inner { background: linear-gradient(180deg, #28281e 0%, #1a1a14 100%); }
+
+  .proj-meta {
+    border-left: 0.5px solid #c8c4ba;
+    padding: 24px 18px;
+    font-size: 9.5px;
+    letter-spacing: 0.04em;
+    color: #7a7870;
+    line-height: 1.8;
+  }
+
+  .proj-meta-title {
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #b0aca2;
+    margin-bottom: 3px;
+    margin-top: 14px;
+  }
+
+  .proj-meta-title:first-child { margin-top: 0; }
+
+  .proj-meta-val {
+    font-size: 10px;
+    color: #3a3830;
+  }
+
+  .proj-meta-note {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: #5a5850;
+    margin-top: 14px;
+    line-height: 1.7;
+  }
+
+  .chapter-view {
+    display: grid;
+    grid-template-columns: 140px 1fr 160px;
+    flex: 1;
+    min-height: 420px;
+  }
+
+  .ch-left {
+    padding: 24px 18px;
+    border-right: 0.5px solid #c8c4ba;
+  }
+
+  .ch-num {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: #b0aca2;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .ch-title {
+    font-family: 'EB Garamond', serif;
+    font-size: 16px;
+    line-height: 1.4;
+    color: #1a1a18;
+    margin-bottom: 18px;
+  }
+
+  .ch-intro {
+    font-size: 9.5px;
+    line-height: 1.85;
+    color: #7a7870;
+    font-style: italic;
+    font-family: 'EB Garamond', serif;
+    font-size: 11px;
+  }
+
+  .ch-center {
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .photo-large {
+    width: 100%;
+    max-width: 280px;
+    height: 210px;
+    background: linear-gradient(135deg, #1a1a14 0%, #3a3830 50%, #1c1c18 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .photo-large-sky {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 45%;
+    background: linear-gradient(to bottom, #5a5850 0%, #2a2820 100%);
+    opacity: 0.6;
+  }
+
+  .photo-large-b1 {
+    position: absolute;
+    bottom: 20px; left: 20px;
+    width: 100px; height: 140px;
+    background: #0e0e0c;
+    opacity: 0.9;
+  }
+
+  .photo-large-b2 {
+    position: absolute;
+    bottom: 20px; left: 130px;
+    width: 130px; height: 110px;
+    background: #111110;
+    opacity: 0.85;
+  }
+
+  .ch-right {
+    border-left: 0.5px solid #c8c4ba;
+    padding: 24px 18px;
+    font-size: 9.5px;
+    letter-spacing: 0.04em;
+    color: #7a7870;
+    line-height: 1.85;
+  }
+
+  .nav-sub {
+    font-size: 8.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #b0aca2;
+    padding: 4px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    background: none;
+    font-family: 'Inter', sans-serif;
+    transition: color 0.2s;
+    width: 100%;
+    text-align: left;
+  }
+
+  .nav-sub:hover { color: #1a1a18; }
+  .nav-sub.current { color: #1a1a18; }
+  .nav-sub .dot { width: 3px; height: 3px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+  .ch-note {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 0.5px solid #c8c4ba;
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 11.5px;
+    line-height: 1.8;
+    color: #5a5850;
+  }
+
+  .ch-meta {
+    font-size: 8.5px;
+    color: #b0aca2;
+    margin-top: 4px;
+    letter-spacing: 0.06em;
+  }
+
+  .divider { height: 0.5px; background: #c8c4ba; margin: 12px 0; }
+
+  .hidden { display: none !important; }
+</style>
+
+<h2 class="sr-only">FM — Interfaccia editoriale a tre colonne con navigazione tra homepage, progetti e capitolo</h2>
+
+<div class="pub" id="pub">
+
+  <div id="view-home" style="display:flex; flex-direction:column; flex:1;">
+    <div class="pub-grid">
+      <div class="col-left">
+        <div class="logo">FM.</div>
+        <button class="nav-item active" onclick="switchNav(0)"><span class="nav-num">01</span> Frontespizio</button>
+        <button class="nav-item" onclick="switchNav(1)"><span class="nav-num">02</span> Introduzione</button>
+        <button class="nav-item" onclick="switchNav(2)"><span class="nav-num">03</span> Progetti</button>
+        <button class="nav-item" onclick="switchNav(3)"><span class="nav-num">04</span> Intervalli</button>
+        <button class="nav-item" onclick="switchNav(4)"><span class="nav-num">05</span> Taccuino</button>
+        <button class="nav-item" onclick="switchNav(5)"><span class="nav-num">06</span> Chi Sono</button>
+        <button class="nav-item" onclick="switchNav(6)"><span class="nav-num">07</span> Commerciali</button>
+      </div>
+
+      <div class="col-center">
+        <div class="photo-main">
+          <div class="photo-sky"></div>
+          <div class="photo-overlay"></div>
+          <div class="photo-silhouette"></div>
+          <div class="photo-building"></div>
+          <div class="photo-building2"></div>
+          <div class="photo-grain"></div>
+        </div>
+        <div class="statement">
+          <div class="statement-main">
+            Il tempo lascia tracce.<br>
+            Io le cerco.
+          </div>
+          <div class="statement-invite">
+            Scorri per esplorare
+            <div class="arrow-down"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-right">
+        <div class="meta-label">Capitolo attuale</div>
+        <div class="meta-val">Frontespizio</div>
+
+        <div class="meta-label">Data</div>
+        <div class="meta-val">Giugno 2026</div>
+
+        <div class="meta-label">Luogo</div>
+        <div class="meta-val">44.4949° N<br>11.3408° E</div>
+
+        <div class="meta-label">Ricerca</div>
+        <div class="meta-val">In corso</div>
+
+        <div class="divider"></div>
+
+        <div class="meta-val italic">
+          Ogni fotografia è un tentativo di fermare ciò che sta per scomparire.
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab active" onclick="showView('home', this)">Frontespizio</button>
+      <button class="tab" onclick="showView('progetti', this)">Progetti</button>
+      <button class="tab" onclick="showView('chapter', this)">La Pelle della Città</button>
+    </div>
+  </div>
+
+  <div id="view-progetti" style="display:none; flex-direction:column; flex:1;">
+    <div class="progetti-layout">
+      <div class="proj-list">
+        <div class="proj-list-title">03 — Progetti</div>
+        <div class="proj-item active"><span class="proj-num">I</span> La Pelle della Città</div>
+        <div class="proj-item"><span class="proj-num">II</span> Alberi</div>
+        <div class="proj-item"><span class="proj-num">III</span> Divina Commedia</div>
+        <div class="proj-item"><span class="proj-num">IV</span> 3.3</div>
+        <div class="proj-item"><span class="proj-num">V</span> Playlist.01</div>
+        <div class="proj-item"><span class="proj-num">VI</span> Playlist.02</div>
+        <div class="proj-item" style="color:#b0aca2; font-style:italic;"><span class="proj-num">—</span> Future Chapters</div>
+      </div>
+
+      <div class="proj-center">
+        <div class="proj-collage">
+          <div class="photo-thumb pt1"><div class="pt-inner"></div></div>
+          <div class="photo-thumb pt2"><div class="pt-inner"></div></div>
+          <div class="photo-thumb pt3"><div class="pt-inner"></div></div>
+          <div class="photo-thumb pt4"><div class="pt-inner"></div></div>
+        </div>
+      </div>
+
+      <div class="proj-meta">
+        <div class="proj-meta-title">Progetto selezionato</div>
+        <div class="proj-meta-val" style="font-family:'EB Garamond',serif; font-size:13px;">La Pelle della Città</div>
+
+        <div class="proj-meta-title">Anno</div>
+        <div class="proj-meta-val">2019 — 2024</div>
+
+        <div class="proj-meta-title">Stato</div>
+        <div class="proj-meta-val">Concluso</div>
+
+        <div class="proj-meta-title">Fotografie</div>
+        <div class="proj-meta-val">34</div>
+
+        <div class="divider"></div>
+
+        <div class="proj-meta-note">
+          La città come superficie viva. Strati che si sovrappongono, si consumano, si riscrivono.
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab" onclick="showView('home', this)">Frontespizio</button>
+      <button class="tab active" onclick="showView('progetti', this)">Progetti</button>
+      <button class="tab" onclick="showView('chapter', this)">La Pelle della Città</button>
+    </div>
+  </div>
+
+  <div id="view-chapter" style="display:none; flex-direction:column; flex:1;">
+    <div class="chapter-view">
+      <div class="ch-left">
+        <div class="ch-num">03 — I</div>
+        <div class="ch-title">La Pelle<br>della Città</div>
+        <div class="ch-intro">
+          La città come superficie viva. Strati che si sovrappongono, si consumano, si riscrivono. Tracce di tempo nello spazio urbano.
+        </div>
+      </div>
+
+      <div class="ch-center">
+        <div class="photo-large">
+          <div class="photo-large-sky"></div>
+          <div class="photo-large-b1"></div>
+          <div class="photo-large-b2"></div>
+        </div>
+      </div>
+
+      <div class="ch-right">
+        <button class="nav-sub"><span class="dot"></span>01. Introduzione</button>
+        <button class="nav-sub current"><span class="dot"></span>02. Fotografie</button>
+        <button class="nav-sub"><span class="dot"></span>03. Intervalli</button>
+        <button class="nav-sub"><span class="dot"></span>04. Taccuino</button>
+        <button class="nav-sub"><span class="dot"></span>05. Note</button>
+
+        <div class="divider"></div>
+
+        <div class="ch-meta">Fotografia 01 / 34</div>
+        <div class="ch-meta">Bologna, 2021</div>
+        <div class="ch-meta">Pellicola / 35mm</div>
+
+        <div class="ch-note">
+          Tracce di tempo nello spazio urbano. Ogni muro racconta più di quanto mostri.
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab" onclick="showView('home', this)">Frontespizio</button>
+      <button class="tab" onclick="showView('progetti', this)">Progetti</button>
+      <button class="tab active" onclick="showView('chapter', this)">La Pelle della Città</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showView(name, btn) {
+  document.getElementById('view-home').style.display = 'none';
+  document.getElementById('view-progetti').style.display = 'none';
+  document.getElementById('view-chapter').style.display = 'none';
+  document.getElementById('view-' + name).style.display = 'flex';
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+
+function switchNav(idx) {
+  if(idx === 2) showView('progetti', null);
+  else if(idx === 0) showView('home', null);
+  else showView('home', null);
+}
+</script>

@@ -4,13 +4,13 @@
 
 /*@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500&family=Caveat+Brush&display=swap');*/
 
-/*@font-face {
-  font-family: 'Biro Script';
-  src: url('../fonts/Biro_Script_reduced.woff2') format('woff2');
+@font-face {
+  font-family: 'Custom_Font';
+  src: url('../fonts/Thin_Pencil_Handwriting.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
-}*/
+}
 
 :root {
   --nero: #0a0a0a;
@@ -20,7 +20,7 @@
   --grigio-testo: #5a5855;
   --font-titolo: 'Playfair Display', Georgia, serif;
   --font-testo: 'Inter', system-ui, sans-serif;
-  --font-taccuino:  'Caveat Brush', cursive;  /* 'Biro Script', cursive;*/
+  --font-taccuino:  'Custom_Font', cursive;  /* 'Caveat Brush ', cursive;*/
   --transizione: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --header-h: 60px;
   /* Colori inversione nella sezione progetti */
@@ -740,7 +740,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .link-progetto::after { content: '→'; }
 
   .taccuino-wrap { display: flex; flex-direction: column; align-items: center; max-width: 680px; width: 100%; gap: 20px; }
-  .taccuino-frase { font-family: var(--font-taccuino); font-size: clamp(22px, 6.5vw, 40px); line-height: 1.3; color: var(--nero); text-align: center; }
+  .taccuino-frase { font-family: var(--font-taccuino); /*font-size: clamp(22px, 6.5vw, 40px);*/ max-width: 350px; line-height: 1.3; color: var(--nero); text-align: center; }
   .taccuino-data { font-size: 11px; font-weight: 300; letter-spacing: 0.2em; color: var(--grigio-medio); text-align: center; }
   .taccuino-foto { width: 100%; max-width: 360px; aspect-ratio: 4/3; overflow: hidden; background: var(--grigio-chiaro); }
   .taccuino-foto img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
@@ -773,7 +773,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
     display: block;
     opacity: 1;
     transform: translateY(0);
-    font-family: var(--font-taccuino);
+    /*font-family: var(--font-taccuino);*/
   }
   .fin-footer {
     display: none;

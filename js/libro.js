@@ -38,7 +38,8 @@ const EPILOGHI = [
 
 function inizializzaFin() {
   const elenco = stato.epiloghi?.length ? stato.epiloghi : EPILOGHI;
-  const frase = elenco[Math.floor(Math.random() * elenco.length)];
+  //const frase = elenco[Math.floor(Math.random() * elenco.length)]; // => Elenco dinamico come da variabile sopra
+  const frase = "Alcune tracce richiedono anni per diventare visibili.";
 
   // Mobile — inietta il testo; la transizione parte in aggiornaUI quando si arriva a #fin
   const elMobile = document.getElementById('fin-epilogo');
