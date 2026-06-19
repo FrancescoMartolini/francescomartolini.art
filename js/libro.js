@@ -799,6 +799,8 @@ function costruisciMobile() {
     `;
     if (!inLavorazione) {
       testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(pr.id));
+      imgDiv.style.cursor = 'pointer';
+      imgDiv.addEventListener('click', () => apriProgetto(pr.id));
     }
 
     wrap.appendChild(imgDiv); wrap.appendChild(testo); p.appendChild(wrap);
