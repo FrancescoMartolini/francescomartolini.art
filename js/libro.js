@@ -860,7 +860,30 @@ function costruisciMobile() {
     stato.collaborazioni.forEach(cl => {
       const item = crea('div'); item.className = 'collab-mobile-item';
       const img = crea('div'); img.className = 'collab-mobile-img';
-      img.appendChild(creaImg(cl.foto, cl.titolo));
+      const coverImg = creaImg(cl.foto, cl.titolo);
+      img.appendChild(coverImg);
+
+      // Se ha una galleria extra, inserisci le immagini nascoste nel DOM
+      // così raccogliGalleria() del lightbox le trova nel gruppo collab-mobile-item
+      const haGalleria = Array.isArray(cl.galleria) && cl.galleria.length > 0;
+      if (haGalleria) {
+        const galleriaHidden = crea('div');
+        galleriaHidden.className = 'collab-mobile-galleria-hidden';
+        galleriaHidden.style.cssText = 'display:none;position:absolute;pointer-events:none;';
+        cl.galleria.forEach(url => {
+          const gi = crea('img'); gi.src = url; gi.alt = cl.titolo;
+          galleriaHidden.appendChild(gi);
+        });
+        item.appendChild(galleriaHidden);
+        img.style.cursor = 'pointer';
+        img.addEventListener('click', e => {
+          e.stopPropagation();
+          galleriaHidden.style.display = '';
+          lightbox.apri(coverImg);
+          galleriaHidden.style.display = 'none';
+        });
+      }
+
       const titolo = crea('h2'); titolo.className = 'collab-mobile-titolo'; titolo.textContent = cl.titolo;
       const anno = crea('p'); anno.className = 'collab-mobile-anno'; anno.textContent = cl.anno;
       item.appendChild(img); item.appendChild(titolo); item.appendChild(anno);
@@ -968,6 +991,51 @@ function costruisciIndicatore(tot) {
     dot.addEventListener('click', () => navigaA(i));
     ind.appendChild(dot);
   }
+
+  // ── Scrub: tieni premuto e scorri su/giù per navigare velocemente ──
+  let scrubbing = false;
+  let holdTimer = null;
+
+  function paginaDaY(clientY) {
+    const rect = ind.getBoundingClientRect();
+    const t = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
+    return Math.round(t * (stato.totPagine - 1));
+  }
+
+  function scrubA(idx) {
+    if (idx < 0 || idx >= stato.totPagine || idx === stato.paginaCorrente) return;
+    // Salto diretto senza transizione per permettere scrub fluido
+    const pagine = document.querySelectorAll('.page, .pagina-progetto-mobile');
+    pagine[stato.paginaCorrente].classList.remove('attiva');
+    stato.paginaCorrente = idx;
+    pagine[idx].classList.add('attiva');
+    aggiornaUI();
+  }
+
+  ind.addEventListener('touchstart', e => {
+    holdTimer = setTimeout(() => {
+      scrubbing = true;
+      ind.classList.add('scrub-attivo');
+    }, 180);
+  }, { passive: true });
+
+  ind.addEventListener('touchmove', e => {
+    if (!scrubbing) return;
+    e.preventDefault();
+    scrubA(paginaDaY(e.touches[0].clientY));
+  }, { passive: false });
+
+  ind.addEventListener('touchend', () => {
+    clearTimeout(holdTimer);
+    scrubbing = false;
+    ind.classList.remove('scrub-attivo');
+  });
+
+  ind.addEventListener('touchcancel', () => {
+    clearTimeout(holdTimer);
+    scrubbing = false;
+    ind.classList.remove('scrub-attivo');
+  });
 }
 
 // ── Nav mobile ──
