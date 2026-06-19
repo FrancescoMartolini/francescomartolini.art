@@ -22,17 +22,28 @@ francescomartolini.art/
 │   ├── collaborazioni.json       ← dati fotografie commerciali
 │   ├── pubblicazioni.json        ← dati pubblicazioni e press
 │   ├── intro.json                ← testo introduzione
+│   ├── epiloghi.json             ← frasi di chiusura (pagina "fin")
 │   └── taccuino.json             ← frasi taccuino (fallback locale)
 │
-└── images/
-    ├── favicon.svg               ← icona dinamica (generata da JS)
-    ├── apple-touch-icon.svg      ← icona per schermata home iPhone
-    ├── manifest.json             ← web app manifest
-    ├── chi-sono-img.jpg          ← foto pagina chi sono
-    └── progetti/
-        └── nome-progetto/
-            ├── cover.jpg
-            └── 01.jpg ...
+├── images/
+│   ├── favicon.svg               ← icona dinamica (generata da JS)
+│   ├── apple-touch-icon.svg      ← icona per schermata home iPhone
+│   ├── manifest.json             ← web app manifest
+│   ├── chi-sono-img.jpg          ← foto pagina chi sono
+│   ├── favicon-generate.js       ← script di documentazione (non usato dal sito)
+│   ├── stile.css                 ← copia di lavoro del CSS (non usata dal sito)
+│   └── progetti/
+│       └── nome-progetto/
+│           ├── cover.jpg
+│           └── 01.jpg ...
+│
+└── TEMPLATE/                     ← materiali di supporto (non deployati)
+    ├── Calligraphr-Template.pdf  ← template font calligrafico
+    ├── taccuino_template.xlsx    ← foglio Excel per strutturare il taccuino
+    └── Test_interfaccia_Descktop/
+        ├── fm_editorial_interface.html
+        ├── spatial_map_wireframe.html
+        └── temporal_timeline_desktop.html
 ```
 
 ---
@@ -68,7 +79,7 @@ Il sito si comporta in modo diverso in base al dispositivo:
 
 ```
 01  Home — titolo
-02  Capitolo 0 — Introduzione (titolo)
+02  Capitolo 00 — Introduzione (titolo)
 03  Introduzione (testo)
 04  Indice — sommario cliccabile
 05  Capitolo 01 — Progetti
@@ -85,7 +96,7 @@ Il sito si comporta in modo diverso in base al dispositivo:
     Chi sono
     Capitolo 04 — Commercial
     Fotografie commerciali (pagina con scroll)
-    Capitolo 04 — Pubblicazioni
+    Capitolo 05 — Pubblicazioni
     Pubblicazioni (elenco con link)
     fin.
 ```
@@ -248,6 +259,22 @@ Le pubblicazioni appaiono:
   "anno": "2026"
 }
 ```
+
+---
+
+#### `json/epiloghi.json`
+
+```json
+[
+  "Il tempo lascia tracce.",
+  "Questo archivio rimane aperto.",
+  "Ogni immagine conserva una domanda."
+]
+```
+
+Array di stringhe — frasi brevi che appaiono nella pagina finale "fin", sia su mobile che su desktop.
+
+La frase visualizzata è attualmente fissa in `js/libro.js` (funzione `inizializzaFin()`). Se `epiloghi.json` è assente o vuoto, il sito usa un array di fallback hardcoded in `libro.js`. Per abilitare la selezione casuale tra le frasi, decommenta la riga corrispondente in `inizializzaFin()`.
 
 ---
 
@@ -490,6 +517,7 @@ Per aggiornare: fai commit e push, GitHub Pages si aggiorna automaticamente.
 | Testo hero desktop | `index.html` → `.hero-sinistra` |
 | Introduzione | `json/intro.json` |
 | Frasi taccuino | Google Sheets oppure `json/taccuino.json` |
+| Frasi pagina "fin" | `json/epiloghi.json` (o array `EPILOGHI` in `libro.js`) |
 | Progetti | `json/progetti.json` |
 | Intervalli | `json/intervalli.json` |
 | Collaborazioni commerciali | `json/collaborazioni.json` |
@@ -524,6 +552,22 @@ Per aggiornare: fai commit e push, GitHub Pages si aggiorna automaticamente.
 - [ ] Se hai un'immagine, inserisci l'URL Cloudinary in `immagine`; altrimenti lascia `""`
 - [ ] La voce appare automaticamente nel mobile (Capitolo Pubblicazioni) e nel desktop (sezione Chi sono)
 - [ ] Fai commit e push
+
+---
+
+### MATERIALI DI SUPPORTO (cartella TEMPLATE/)
+
+La cartella `TEMPLATE/` contiene file di lavoro non deployati sul sito:
+
+| File | Descrizione |
+|------|-------------|
+| `Calligraphr-Template.pdf` | Template per creare font calligrafici personalizzati su Calligraphr |
+| `taccuino_template.xlsx` | Foglio Excel per strutturare e preparare le frasi del taccuino |
+| `Test_interfaccia_Descktop/fm_editorial_interface.html` | Prototipo interfaccia editoriale desktop |
+| `Test_interfaccia_Descktop/spatial_map_wireframe.html` | Prototipo wireframe con mappa spaziale |
+| `Test_interfaccia_Descktop/temporal_timeline_desktop.html` | Prototipo timeline temporale desktop |
+
+Questi file non influenzano il sito in produzione.
 
 ---
 
