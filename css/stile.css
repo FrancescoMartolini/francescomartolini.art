@@ -731,7 +731,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .titolo-principale em { font-style: italic; color: var(--grigio-testo); }
   .capitolo-label { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--grigio-medio); margin-bottom: 14px; }
   .capitolo-titolo { font-family: var(--font-titolo); font-size: clamp(28px, 8vw, 44px); font-weight: 400; line-height: 1.15; margin-bottom: 16px; }
-  .capitolo-descrizione { font-size: 13px; font-weight: 300; line-height: 1.8; color: var(--grigio-testo); }
+  .capitolo-descrizione { font-size: 13px; font-weight: 300; line-height: 1.8; color: var(--grigio-testo); padding-bottom: 8px; }
 
   .progetto-anno { font-size: 11px; font-weight: 300; letter-spacing: 0.15em; color: var(--grigio-medio); margin-bottom: 10px; }
   .progetto-titolo { font-family: var(--font-titolo); font-size: clamp(18px, 5.5vw, 26px); font-weight: 400; line-height: 1.15; margin-bottom: 16px; }
