@@ -992,9 +992,9 @@ function costruisciIndicatore(tot) {
     ind.appendChild(dot);
   }
 
-  // ── Scrub: tieni premuto e scorri su/giù per navigare velocemente ──
+  // ── Scrub: scorri su/giù sull'indicatore per navigare velocemente ──
   let scrubbing = false;
-  let holdTimer = null;
+  let startY = 0;
 
   function paginaDaY(clientY) {
     const rect = ind.getBoundingClientRect();
@@ -1004,38 +1004,44 @@ function costruisciIndicatore(tot) {
 
   function scrubA(idx) {
     if (idx < 0 || idx >= stato.totPagine || idx === stato.paginaCorrente) return;
-    // Salto diretto senza transizione per permettere scrub fluido
     const pagine = document.querySelectorAll('.page, .pagina-progetto-mobile');
-    pagine[stato.paginaCorrente].classList.remove('attiva');
+    pagine[stato.paginaCorrente]?.classList.remove('attiva');
     stato.paginaCorrente = idx;
-    pagine[idx].classList.add('attiva');
+    pagine[idx]?.classList.add('attiva');
     aggiornaUI();
   }
 
   ind.addEventListener('touchstart', e => {
-    holdTimer = setTimeout(() => {
-      scrubbing = true;
-      ind.classList.add('scrub-attivo');
-    }, 180);
+    e.stopPropagation();
+    startY = e.touches[0].clientY;
+    scrubbing = false;
+    ind.classList.remove('scrub-attivo');
   }, { passive: true });
 
   ind.addEventListener('touchmove', e => {
-    if (!scrubbing) return;
-    e.preventDefault();
-    scrubA(paginaDaY(e.touches[0].clientY));
+    e.stopPropagation();
+    const dy = Math.abs(e.touches[0].clientY - startY);
+    if (!scrubbing && dy > 6) {
+      scrubbing = true;
+      ind.classList.add('scrub-attivo');
+    }
+    if (scrubbing) {
+      e.preventDefault();
+      scrubA(paginaDaY(e.touches[0].clientY));
+    }
   }, { passive: false });
 
-  ind.addEventListener('touchend', () => {
-    clearTimeout(holdTimer);
+  ind.addEventListener('touchend', e => {
+    e.stopPropagation();
     scrubbing = false;
     ind.classList.remove('scrub-attivo');
-  });
+  }, { passive: true });
 
-  ind.addEventListener('touchcancel', () => {
-    clearTimeout(holdTimer);
+  ind.addEventListener('touchcancel', e => {
+    e.stopPropagation();
     scrubbing = false;
     ind.classList.remove('scrub-attivo');
-  });
+  }, { passive: true });
 }
 
 // ── Nav mobile ──
