@@ -583,6 +583,8 @@ function generaContenutoProgetto(pr) {
   }
   const blocchi = pr.contenuto.map(blocco => {
     switch (blocco.tipo) {
+      case 'titolo':
+        return `<h3 class="progetto-interno-titolo">${blocco.valore}</h3>`;
       case 'testo':
         return `<p class="progetto-interno-testo">${blocco.valore.replace(/\n/g, '<br>')}</p>`;
       case 'immagine':
