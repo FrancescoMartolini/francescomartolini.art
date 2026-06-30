@@ -1015,10 +1015,11 @@ function costruisciIndicatore(tot) {
 
   ind.addEventListener('touchstart', e => {
     e.stopPropagation();
+    e.preventDefault();
     startY = e.touches[0].clientY;
     scrubbing = false;
     ind.classList.remove('scrub-attivo');
-  }, { passive: true });
+  }, { passive: false });
 
   ind.addEventListener('touchmove', e => {
     e.stopPropagation();
