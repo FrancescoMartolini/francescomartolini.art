@@ -740,7 +740,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .link-progetto::after { content: '→'; }
 
   .taccuino-wrap { display: flex; flex-direction: column; align-items: center; max-width: 680px; width: 100%; gap: 20px; }
-  .taccuino-frase { font-family: var(--font-taccuino); /*font-size: clamp(22px, 6.5vw, 40px);*/ max-width: 350px; line-height: 1.3; color: var(--nero); text-align: center; }
+  .taccuino-frase { font-family: var(--font-taccuino); font-size: clamp(22px, 7vw, 40px); max-width: 350px; line-height: 1.3; color: var(--nero); text-align: center; }
   .taccuino-data { font-size: 11px; font-weight: 300; letter-spacing: 0.2em; color: var(--grigio-medio); text-align: center; }
   .taccuino-foto { width: 100%; max-width: 360px; aspect-ratio: 4/3; overflow: hidden; background: var(--grigio-chiaro); }
   .taccuino-foto img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
