@@ -1273,3 +1273,140 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 }
 
 /* fine stile.css */
+
+/* ════════════════════════════════
+   BOTTONE LIBRO / OVERLAY MOBILE
+   ════════════════════════════════ */
+
+/* Bottone nell'header — solo desktop */
+#btn-libro {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-testo);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grigio-testo);
+  border: 1px solid var(--grigio-chiaro);
+  padding: 6px 12px;
+  cursor: pointer;
+  background: transparent;
+  transition: color var(--transizione), border-color var(--transizione);
+  white-space: nowrap;
+}
+
+#btn-libro:hover {
+  color: var(--nero);
+  border-color: var(--grigio-medio);
+}
+
+#btn-libro svg {
+  width: 11px;
+  height: 11px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+/* Overlay fullscreen */
+#overlay-libro {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(10, 10, 10, 0.82);
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+#overlay-libro.aperto {
+  display: flex;
+}
+
+#overlay-libro.visibile {
+  opacity: 1;
+}
+
+/* Cornice telefono */
+#cornice-libro {
+  position: relative;
+  width: 390px;
+  height: min(844px, calc(100vh - 48px));
+  border: 1px solid rgba(245, 244, 240, 0.18);
+  background: #0a0a0a;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Barra superiore minima della cornice */
+#cornice-libro-top {
+  flex-shrink: 0;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(245, 244, 240, 0.08);
+}
+
+#cornice-libro-label {
+  font-family: var(--font-testo);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(245, 244, 240, 0.3);
+}
+
+#btn-chiudi-libro {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(245, 244, 240, 0.4);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s;
+}
+
+#btn-chiudi-libro:hover {
+  color: rgba(245, 244, 240, 0.9);
+}
+
+#btn-chiudi-libro svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+/* Iframe libro */
+#iframe-libro {
+  flex: 1;
+  width: 100%;
+  border: none;
+  display: block;
+  background: #f5f4f0;
+}
+
+/* Sfondo cliccabile per chiudere */
+#overlay-libro-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+/* Nasconde il bottone su mobile (l'overlay non ha senso lì) */
+@media (max-width: 768px) {
+  #btn-libro { display: none; }
+}
