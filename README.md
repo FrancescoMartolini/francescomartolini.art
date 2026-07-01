@@ -1,5 +1,5 @@
 # Francesco Martolini .art
-## Guida completa al sito — v5.2
+## Guida completa al sito — v5.3
 
 ---
 
@@ -24,6 +24,9 @@ francescomartolini.art/
 │   ├── intro.json                ← testo introduzione
 │   ├── epiloghi.json             ← frasi di chiusura (pagina "fin")
 │   └── taccuino.json             ← frasi taccuino (fallback locale)
+│
+├── fonts/
+│   └── Francescomartolini-Regular.otf   ← font calligrafico personale (taccuino)
 │
 ├── images/
 │   ├── favicon.svg               ← icona dinamica (generata da JS)
@@ -72,6 +75,8 @@ Il sito si comporta in modo diverso in base al dispositivo:
 - Tap zona sinistra (< 35%) → pagina precedente
 - Frecce in basso
 - Ultima pagina: freccia sinistra / swipe destra → torna all'inizio
+- Bottone **"info utilizzo"** in alto a sinistra nella barra di navigazione, visibile solo sulla prima pagina (Home): apre un overlay ("Note") con le istruzioni di lettura del libro
+- Indicatore laterale a puntini (destra schermo): trascinabile per scorrere rapidamente tra le pagine ("scrub")
 
 ---
 
@@ -176,6 +181,7 @@ In alternativa a `testo_lungo` + `galleria`, puoi usare il campo `contenuto` per
 
 ```json
 "contenuto": [
+  { "tipo": "titolo",    "valore": "Sottotitolo interno" },
   { "tipo": "testo",     "valore": "Testo del progetto.\n\nSecondo paragrafo." },
   { "tipo": "immagine",  "valore": "https://...01.jpg" },
   { "tipo": "galleria",  "valore": ["https://...02.jpg", "https://...03.jpg"] },
@@ -184,7 +190,9 @@ In alternativa a `testo_lungo` + `galleria`, puoi usare il campo `contenuto` per
 ]
 ```
 
-Tipi disponibili: `testo`, `immagine`, `galleria`, `mappa`, `separatore`.
+Tipi disponibili: `titolo`, `testo`, `immagine`, `galleria`, `mappa`, `separatore`.
+
+**titolo:** inserisce un sottotitolo interno al blocco (`<h3>`), utile per suddividere un progetto lungo in sezioni.
 
 Quando `contenuto` è presente viene usato come struttura principale. Il campo `galleria` (se presente) viene aggiunto in fondo come blocco extra.
 
@@ -215,11 +223,19 @@ Quando `contenuto` è presente viene usato come struttura principale. Il campo `
   {
     "id": "Cliente1",
     "titolo": "Nome Cliente",
+    "descrizione": "",
     "anno": "2025",
-    "foto": "https://res.cloudinary.com/tuo-nome/image/upload/w_600,q_auto,f_auto/percorso/foto.jpg"
+    "foto": "https://res.cloudinary.com/tuo-nome/image/upload/w_600,q_auto,f_auto/percorso/foto.jpg",
+    "galleria": [
+      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/extra-01.jpg"
+    ]
   }
 ]
 ```
+
+**descrizione:** campo di testo opzionale, attualmente presente nello schema ma non ancora mostrato a video.
+
+**galleria:** array opzionale di immagini extra oltre alla `foto` di copertina. Se presente, il click sulla copertina apre il lightbox includendo anche queste immagini. Se vuoto `[]` o assente, il comportamento resta invariato (solo la copertina).
 
 Le collaborazioni appaiono in una pagina con scroll verticale nel mobile e in una griglia nell'overlay desktop.
 
@@ -441,11 +457,13 @@ Posizionato sopra il footer, non copre la navigazione.
 
 ### FONT
 
-- **Titoli, capitoli, taccuino, fin:** Playfair Display (serif)
+- **Titoli, capitoli, fin:** Playfair Display (serif)
 - **Menu, date, testi, UI:** Inter (sans-serif)
-- **Accenti scritti / note visive:** Caveat Brush
+- **Taccuino:** font calligrafico personale (`fonts/Francescomartolini-Regular.otf`, caricato via `@font-face` come `Custom_Font` in `css/stile.css`)
 
-I font vengono caricati direttamente in `index.html` con `preconnect`, non tramite `@import` nel CSS.
+Playfair Display e Inter vengono caricati direttamente in `index.html` con `preconnect`, non tramite `@import` nel CSS. Il font del taccuino è invece locale (file `.otf` nella cartella `fonts/`), creato con Calligraphr a partire dal template in `TEMPLATE/Calligraphr-Template.pdf`.
+
+Per tornare a un font di sistema (es. Caveat Brush) è sufficiente cambiare il valore di `--font-taccuino` in `css/stile.css` — la riga alternativa è già presente come commento.
 
 ---
 
@@ -566,6 +584,7 @@ La cartella `TEMPLATE/` contiene file di lavoro non deployati sul sito:
 | `Test_interfaccia_Descktop/fm_editorial_interface.html` | Prototipo interfaccia editoriale desktop |
 | `Test_interfaccia_Descktop/spatial_map_wireframe.html` | Prototipo wireframe con mappa spaziale |
 | `Test_interfaccia_Descktop/temporal_timeline_desktop.html` | Prototipo timeline temporale desktop |
+| `INSPO_Layout_Progetti/` | Screenshot di riferimento (Pinterest) per possibili layout futuri della pagina progetto |
 
 Questi file non influenzano il sito in produzione.
 
