@@ -437,6 +437,17 @@ function apriPagina(tipo) {
       return; // già aperto sopra, salta il codice finale
       break;
 
+    case 'come-funziona':
+      contenuto.innerHTML = `
+        <h1 class="overlay-titolo overlay-titolo-nota">Note</h1>
+        <div class="nota-testo">
+          <p>Questo sito si legge come un libro.</p>
+          <p>Tocca il lato destro della pagina per proseguire, il lato sinistro per tornare indietro. Puoi anche scorrere con il dito, come si sfoglia una pagina.</p>
+          <p>Il punto sul bordo destro segna la posizione nel libro: trascinalo per muoverti più rapidamente tra le pagine.</p>
+        </div>
+      `;
+      break;
+
     case 'chi-sono-pagina': {
       const SVG_MAIL = `<svg viewBox="0 0 24 24" class="contatto-icon"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>`;
       const SVG_IG = `<svg viewBox="0 0 24 24" class="contatto-icon"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/></svg>`;
@@ -1072,6 +1083,8 @@ function aggiornaUI() {
   document.querySelectorAll('.indicatore-dot').forEach((d, i) => d.classList.toggle('attivo', i === stato.paginaCorrente));
   const elNum = $('numero-nav');
   if (elNum) elNum.textContent = `${formatNum(stato.paginaCorrente + 1)} / ${formatNum(stato.totPagine)}`;
+  const nota = $('nota-nav');
+  if (nota) nota.style.display = stato.paginaCorrente === 0 ? '' : 'none';
   const sx = $('freccia-sx'), dx = $('freccia-dx');
   const isUltima = stato.paginaCorrente === stato.totPagine - 1;
   if (sx) sx.toggleAttribute('disabled', stato.paginaCorrente === 0);
