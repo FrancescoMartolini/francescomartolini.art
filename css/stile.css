@@ -699,8 +699,8 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
     transition: opacity 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
-  .pagina.pagina-progetto-mobile .pagina-header,
-  .pagina-progetto-mobile .pagina-header { position: absolute; top: 16px; left: 0; right: 0; justify-content: center; margin-bottom: 0;}
+  .pagina.pagina-progetto-mobile:has(.progetto-mobile-wrap) .pagina-header,
+  .pagina-progetto-mobile:has(.progetto-mobile-wrap) .pagina-header { position: absolute; top: 16px; left: 0; right: 0; justify-content: center; margin-bottom: 0;}
 
   .pagina-progetto-mobile.attiva { opacity: 1; pointer-events: all; transform: translateX(0); z-index: 2; }
   .pagina-progetto-mobile.uscita-sinistra { opacity: 0; transform: translateX(-60px); z-index: 1; }

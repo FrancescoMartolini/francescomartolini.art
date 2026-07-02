@@ -86,7 +86,8 @@ function parseCsv(csv) {
     for (let c = 0; c < riga.length; c++) {
       const ch = riga[c];
       if (ch === '"') { inQ = !inQ; continue; }
-      if (ch === ',' && !inQ && colIdx < 2) {
+      if (ch === ',' && !inQ && colIdx < 3) { 
+        //splitta fino alla colonna 3 divido le collonne nel google sheet in modo che la colonna 3 sia l'ultima e non ci siano problemi con le virgole nel testo
         celle.push(cell.trim()); cell = ''; colIdx++; continue;
       }
       cell += ch;
@@ -210,7 +211,7 @@ function creaPaginaTaccuinoMobile(v) {
     const img = crea('img'); img.src = v.foto; img.alt = ''; img.draggable = false;
     fw.appendChild(img); tw.appendChild(fw);
   }
-  tw.innerHTML += `<p class="taccuino-frase">${v.testo}</p><p class="taccuino-data">${formatData(v.data)}</p>${v.camera ? `<p class="taccuino-voce-camera">${v.camera}</p>` : ''}`;
+  tw.innerHTML += `<p class="taccuino-frase">${v.testo}</p>${v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p><p class="taccuino-data">${formatData(v.data)}</p>` : ''}`;
   pc.appendChild(tw); pt.appendChild(mpc);
   return pt;
 }
@@ -295,6 +296,7 @@ function popolaDesktop() {
       col.innerHTML = `
         <p class="taccuino-col-data">${formatData(v.data)}</p>
         <p class="taccuino-col-frase">${v.testo}</p>
+        ${v.camera ? `<p class="taccuino-voce-camera">📷 ${v.camera}</p>` : ''}
         <button class="taccuino-col-expand" onclick="apriTaccuino()">+</button>
       `;
       colonne.appendChild(col);
@@ -651,7 +653,8 @@ function apriTaccuino() {
     const voci = stato.taccuino.map(v => {
       const foto = v.foto
         ? `<div class="taccuino-voce-foto"><img src="${v.foto}" alt="" draggable="false" loading="lazy"></div>` : '';
-      return `<div class="taccuino-voce" data-testo="${v.testo.toLowerCase()}">${foto}<p class="taccuino-voce-frase">${v.testo}</p><p class="taccuino-voce-data">${formatData(v.data)}</p></div>`;
+      const cam = v.camera ? `<p class="taccuino-voce-camera">📷 ${v.camera}</p>` : '';
+      return `<div class="taccuino-voce" data-testo="${v.testo.toLowerCase()}">${foto}<p class="taccuino-voce-frase">${v.testo}</p><p class="taccuino-voce-data">${formatData(v.data)}</p>${cam}</div>`;
     }).join('');
     _cacheTaccuino = `
       <button class="progetto-torna" onclick="chiudiTaccuino()">Chiudi</button>
@@ -1177,7 +1180,7 @@ function gestisciTouchEnd(e) {
 
   // Controlla se il touch è partito da dentro un elemento scrollabile
   const target = e.target;
-  const scrollabile = target.closest('.pagina-corpo, .chi-sono-wrap');
+  const scrollabile = target.closest('.pagina-corpo, .chi-sono-wrap, .taccuino-wrap');
   if (scrollabile && scrollabile.scrollHeight > scrollabile.clientHeight) return;
 
   if (Math.abs(dx) > 40) {
