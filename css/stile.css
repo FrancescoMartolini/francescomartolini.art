@@ -565,12 +565,12 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .taccuino-cerca::placeholder { color: var(--grigio-medio); font-style: italic; }
 .taccuino-risultati { font-size: 11px; font-weight: 300; letter-spacing: 0.15em; color: var(--grigio-medio); white-space: nowrap; text-transform: uppercase; }
 
-.taccuino-voce { border-top: 1px solid var(--grigio-chiaro); padding: 28px 0; }
+.taccuino-voce { border-top: 1px solid var(--grigio-chiaro); padding: 28px 0; text-align: center}
 .taccuino-voce:last-child { border-bottom: 1px solid var(--grigio-chiaro); }
 .taccuino-voce-frase { font-family: var(--font-taccuino); font-size: clamp(20px, 2.8vw, 30px); line-height: 1.4; margin-bottom: 10px; }
 .taccuino-voce-foto { width: 100%; aspect-ratio: 3/2; overflow: hidden; margin-bottom: 16px; background: var(--grigio-chiaro); }
 .taccuino-voce-foto img { width: 100%; height: 100%; object-fit: cover;; }
-.taccuino-voce-data { font-size: 11px; font-weight: 300; letter-spacing: 0.2em; color: var(--grigio-medio); }
+.taccuino-voce-data { font-size: 11px; font-weight: 300; letter-spacing: 0.2em; color: var(--grigio-medio); margin-top: 10px; }
 
 /* ── CONTATTO BTN (shared) ── */
 .contatto-btn { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 400; color: var(--grigio-testo); padding: 14px 0; border-bottom: 1px solid var(--grigio-chiaro); transition: color var(--transizione); text-decoration: none; }

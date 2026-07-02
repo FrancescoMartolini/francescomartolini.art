@@ -653,8 +653,8 @@ function apriTaccuino() {
     const voci = stato.taccuino.map(v => {
       const foto = v.foto
         ? `<div class="taccuino-voce-foto"><img src="${v.foto}" alt="" draggable="false" loading="lazy"></div>` : '';
-      const cam = v.camera ? `<p class="taccuino-voce-camera">📷 ${v.camera}</p>` : '';
-      return `<div class="taccuino-voce" data-testo="${v.testo.toLowerCase()}">${foto}<p class="taccuino-voce-frase">${v.testo}</p><p class="taccuino-voce-data">${formatData(v.data)}</p>${cam}</div>`;
+      const cam = v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p>` : '';
+      return `<div class="taccuino-voce" data-testo="${v.testo.toLowerCase()}">${foto}<p class="taccuino-voce-frase">${v.testo}</p>${cam}<p class="taccuino-voce-data">${formatData(v.data)}</p></div>`;
     }).join('');
     _cacheTaccuino = `
       <button class="progetto-torna" onclick="chiudiTaccuino()">Chiudi</button>
