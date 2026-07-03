@@ -296,7 +296,6 @@ function popolaDesktop() {
       col.innerHTML = `
         <p class="taccuino-col-data">${formatData(v.data)}</p>
         <p class="taccuino-col-frase">${v.testo}</p>
-        ${v.camera ? `<p class="taccuino-voce-camera">📷 ${v.camera}</p>` : ''}
         <button class="taccuino-col-expand" onclick="apriTaccuino()">+</button>
       `;
       colonne.appendChild(col);
@@ -558,27 +557,100 @@ const _cacheProgetti = {};
 function apriProgetto(id) {
   const pr = stato.progetti.find(p => p.id === id);
   if (!pr || pr.pubblicato === false) return;
-  if (!pr) return;
   const el = $('pagina-progetto');
   const interno = el.querySelector('.progetto-interno');
 
+  // Applica tema colori solo se definito nel JSON (solo desktop)
+  const th = pr.theme;
+  if (!isMobile() && th) {
+    el.style.setProperty('--pr-bg',     th.background || '');
+    el.style.setProperty('--pr-text',   th.text       || '');
+    el.style.setProperty('--pr-accent', th.accent     || '');
+  }
+
   if (!_cacheProgetti[id]) {
-    _cacheProgetti[id] = `
-      <button class="progetto-torna" onclick="chiudiProgetto()">Torna</button>
+    const layout = pr.layoutType || 'base';
+    const hasNamedLayout = ['editorial','magazine','column','archivio','panoramico'].includes(layout);
+
+    // Cover a due colonne solo per i layout con identità visiva definita
+    // Per layout base: header semplice come l'originale
+    const coverHTML = (hasNamedLayout && pr.immagine_copertina) ? `
+      <div class="progetto-cover">
+        <div class="progetto-cover-img">
+          <img src="${pr.immagine_copertina}" alt="${pr.titolo}" draggable="false" loading="eager">
+        </div>
+        <div class="progetto-cover-testo">
+          <h1 class="progetto-cover-titolo">${pr.titolo}</h1>
+          <p class="progetto-cover-anno">${pr.anno}</p>
+          <p class="progetto-cover-desc">${pr.descrizione}</p>
+          ${pr.link_esterno
+            ? `<p style="margin-top:32px;"><a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">${pr.label_link || 'Vedi online'}</a></p>`
+            : ''}
+        </div>
+      </div>` : `
       <div class="progetto-interno-header">
         <div>
           <h1 class="progetto-interno-titolo">${pr.titolo}</h1>
           <p class="progetto-interno-anno">${pr.anno}</p>
         </div>
         ${pr.link_esterno ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">${pr.label_link || 'Vedi online'}</a>` : ''}
-      </div>
-      ${generaContenutoProgetto(pr)}
-    `;
+      </div>`;
+
+    _cacheProgetti[id] = `
+      <button class="progetto-torna" onclick="chiudiProgetto()">Torna</button>
+      ${coverHTML}
+      <div class="layout-${layout}">
+        <div class="progetto-body">
+          ${generaContenutoProgetto(pr)}
+        </div>
+      </div>`;
   }
 
   interno.innerHTML = _cacheProgetti[id];
   el.classList.add('aperta');
   el.scrollTop = 0;
+
+  // Scroll reveal
+  avviaReveal(el);
+
+  // Immagine sticky per layout archivio
+  if ((pr.layoutType || '') === 'archivio') {
+    avviaScrollArchivio(el, pr);
+  }
+}
+
+// Scroll-reveal per le sezioni
+function avviaReveal(overlayEl) {
+  const els = overlayEl.querySelectorAll(
+    '.section-text, .section-image, .section-imagetext, .section-quote, .section-gallery, .section-map'
+  );
+  els.forEach(e => e.classList.add('reveal'));
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('visible'); obs.unobserve(entry.target); }
+    });
+  }, { root: overlayEl, threshold: 0.06 });
+  els.forEach(e => obs.observe(e));
+}
+
+// Aggiorna l'immagine sticky nel layout archivio mentre si scorre
+function avviaScrollArchivio(overlayEl, pr) {
+  const stickyImg = overlayEl.querySelector('#archivio-sticky-img');
+  if (!stickyImg) return;
+  const markers = overlayEl.querySelectorAll('[data-archivio-img]');
+  if (!markers.length) return;
+  if (overlayEl._scrollHandler) overlayEl.removeEventListener('scroll', overlayEl._scrollHandler);
+  overlayEl._scrollHandler = () => {
+    let corrente = null;
+    markers.forEach(m => {
+      if (m.offsetTop <= overlayEl.scrollTop + overlayEl.clientHeight * 0.55) corrente = m.dataset.archivioImg;
+    });
+    if (corrente && stickyImg.getAttribute('src') !== corrente) {
+      stickyImg.style.opacity = '0';
+      setTimeout(() => { stickyImg.src = corrente; stickyImg.style.opacity = '1'; }, 240);
+    }
+  };
+  overlayEl.addEventListener('scroll', overlayEl._scrollHandler, { passive: true });
 }
 
 function generaImgHTML(src, titolo) {
@@ -586,61 +658,180 @@ function generaImgHTML(src, titolo) {
 }
 
 function generaContenutoProgetto(pr) {
-  if (!pr.contenuto) {
-    const galleria = pr.galleria.map(src => generaImgHTML(src, pr.titolo)).join('');
-    return `
-      <p class="progetto-interno-testo">${pr.testo_lungo.replace(/\n/g, '<br>')}</p>
-      ${generaMappaHTML(pr)}
-      <div class="progetto-galleria">${galleria}</div>
-    `;
-  }
-  const blocchi = pr.contenuto.map(blocco => {
-    switch (blocco.tipo) {
-      case 'titolo':
-        return `<h3 class="progetto-interno-titolo">${blocco.valore}</h3>`;
-      case 'testo':
-        return `<p class="progetto-interno-testo">${blocco.valore.replace(/\n/g, '<br>')}</p>`;
-      case 'immagine':
-        return generaImgHTML(blocco.valore, pr.titolo);
-      case 'galleria': {
-        const imgs = (Array.isArray(blocco.valore) ? blocco.valore : [blocco.valore])
-          .map(src => generaImgHTML(src, pr.titolo)).join('');
-        return `<div class="progetto-galleria-gruppo">${imgs}</div>`;
+  // Supporta sia il vecchio schema (contenuto[]) sia il nuovo (sections[])
+  const usaSections = Array.isArray(pr.sections) && pr.sections.length > 0;
+
+  if (usaSections) {
+    // ── Schema nuovo: sections[] ──
+    return pr.sections.map(s => {
+      switch (s.type) {
+        case 'text':
+          return `<div class="section-text">${
+            (s.content || '').split('\n\n').map(p =>
+              p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : ''
+            ).join('')
+          }</div>`;
+        case 'image':
+          return `<div class="section-image${s.fullscreen ? ' fullscreen' : ''}" ${pr.layoutType === 'archivio' ? `data-archivio-img="${s.src}"` : ''}>
+            <img src="${s.src}" alt="${pr.titolo}" draggable="false" loading="lazy">
+          </div>`;
+        case 'imageText':
+          return `<div class="section-imagetext ${s.position === 'right' ? 'position-right' : 'position-left'}">
+            <img src="${s.image}" alt="${pr.titolo}" draggable="false" loading="lazy">
+            <div class="section-imagetext-content">${(s.content || '').replace(/\n/g, '<br>')}</div>
+          </div>`;
+        case 'gallery':
+          return `<div class="section-gallery">${
+            (s.images || []).map(src =>
+              `<div class="gallery-img"><img src="${src}" alt="${pr.titolo}" draggable="false" loading="lazy"></div>`
+            ).join('')
+          }</div>`;
+        case 'quote':
+          return `<blockquote class="section-quote">${s.content || ''}</blockquote>`;
+        case 'map': {
+          const msrc = s.url || (s.lat && s.lng ? `https://maps.google.com/maps?q=${s.lat},${s.lng}&z=${s.zoom || 13}&output=embed` : '');
+          if (!msrc) return '';
+          return `<div class="section-map">
+            ${s.label ? `<p class="section-map-label">${s.label}</p>` : ''}
+            <iframe src="${msrc}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>`;
+        }
+        default: return '';
       }
-      case 'mappa':
-        return generaMappaHTML(pr);
-      case 'separatore':
-        return `<div class="progetto-separatore"></div>`;
-      default:
-        return '';
+    }).join('');
+  }
+
+  // ── Schema vecchio: contenuto[] ──
+  const layout = pr.layoutType || 'base';
+
+  // Per layout archivio: prima immagine va nella colonna sticky, le altre come marker
+  if (layout === 'archivio') {
+    const immagini = [pr.immagine_copertina, ...(pr.galleria || [])].filter(Boolean);
+    const primaImg = immagini[0] || '';
+    let html = '';
+
+    if (!pr.contenuto) {
+      html += `<div class="archivio-colonna-testo">
+        <div class="section-text"><p>${(pr.testo_lungo || '').replace(/\n/g, '<br>')}</p></div>
+        ${generaMappaHTML(pr)}
+        ${(pr.galleria || []).slice(1).map(src =>
+          `<div class="section-image" data-archivio-img="${src}">
+            <img src="${src}" alt="${pr.titolo}" draggable="false" loading="lazy">
+          </div>`).join('')}
+      </div>
+      <div class="archivio-colonna-img">
+        <img id="archivio-sticky-img" class="archivio-img-principale" src="${primaImg}" alt="${pr.titolo}" draggable="false">
+      </div>
+      <div class="archivio-footer-tipografico">
+        <span>francescomartolini.art</span>
+        <span>${pr.titolo.toUpperCase()}</span>
+        <span>${pr.anno}</span>
+      </div>`;
+      return html;
+    }
+
+    // Ha contenuto[]
+    let colonnaHTML = '';
+    pr.contenuto.forEach(b => {
+      switch (b.tipo) {
+        case 'titolo':
+          colonnaHTML += `<h3 class="section-titolo-interno">${b.valore}</h3>`; break;
+        case 'testo':
+          colonnaHTML += `<div class="section-text">${
+            b.valore.split('\n\n').map(p => p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : '').join('')
+          }</div>`; break;
+        case 'immagine':
+          colonnaHTML += `<div class="section-image" data-archivio-img="${b.valore}">
+            <img src="${b.valore}" alt="${pr.titolo}" draggable="false" loading="lazy">
+          </div>`; break;
+        case 'mappa':
+          colonnaHTML += generaMappaHTML(pr); break;
+        case 'separatore':
+          colonnaHTML += `<hr class="progetto-separatore">`; break;
+      }
+    });
+    if (pr.galleria?.length) {
+      pr.galleria.forEach(src => {
+        colonnaHTML += `<div class="section-image" data-archivio-img="${src}">
+          <img src="${src}" alt="${pr.titolo}" draggable="false" loading="lazy">
+        </div>`;
+      });
+    }
+
+    return `<div class="archivio-colonna-testo">${colonnaHTML}</div>
+      <div class="archivio-colonna-img">
+        <img id="archivio-sticky-img" class="archivio-img-principale" src="${primaImg}" alt="${pr.titolo}" draggable="false">
+      </div>
+      <div class="archivio-footer-tipografico">
+        <span>francescomartolini.art</span>
+        <span>${pr.titolo.toUpperCase()}</span>
+        <span>${pr.anno}</span>
+      </div>`;
+  }
+
+  // Per tutti gli altri layout: mappa blocchi al sistema section-*
+  if (!pr.contenuto) {
+    const galleria = (pr.galleria || []).map(src =>
+      `<div class="gallery-img">${generaImgHTML(src, pr.titolo)}</div>`
+    ).join('');
+    return `
+      <div class="section-text"><p>${(pr.testo_lungo || '').replace(/\n/g, '<br>')}</p></div>
+      ${generaMappaHTML(pr)}
+      ${galleria ? `<div class="section-gallery">${galleria}</div>` : ''}`;
+  }
+
+  const blocchi = pr.contenuto.map(b => {
+    switch (b.tipo) {
+      case 'titolo':
+        return `<h3 class="section-titolo-interno">${b.valore}</h3>`;
+      case 'testo':
+        return `<div class="section-text">${
+          b.valore.split('\n\n').map(p => p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : '').join('')
+        }</div>`;
+      case 'immagine':
+        return `<div class="section-image"><img src="${b.valore}" alt="${pr.titolo}" draggable="false" loading="lazy"></div>`;
+      case 'galleria': {
+        const imgs = (Array.isArray(b.valore) ? b.valore : [b.valore])
+          .map(src => `<div class="gallery-img">${generaImgHTML(src, pr.titolo)}</div>`).join('');
+        return `<div class="section-gallery">${imgs}</div>`;
+      }
+      case 'mappa': return generaMappaHTML(pr);
+      case 'separatore': return `<hr class="progetto-separatore">`;
+      default: return '';
     }
   }).join('');
-  const galleriaExtra = (pr.galleria?.length > 0)
-    ? `<div class="progetto-galleria">${pr.galleria.map(src => generaImgHTML(src, pr.titolo)).join('')}</div>`
+
+  const galleriaExtra = pr.galleria?.length
+    ? `<div class="section-gallery">${pr.galleria.map(src => `<div class="gallery-img">${generaImgHTML(src, pr.titolo)}</div>`).join('')}</div>`
     : '';
+
   return blocchi + galleriaExtra;
 }
 
 function generaMappaHTML(pr) {
   if (!pr.mappa) return '';
   const label = pr.mappa.label || 'Luogo';
-  let iframeSrc = '';
-  if (pr.mappa.url) {
-    iframeSrc = pr.mappa.url;
-  } else if (pr.mappa.lat && pr.mappa.lng) {
-    iframeSrc = `https://maps.google.com/maps?q=${pr.mappa.lat},${pr.mappa.lng}&z=${pr.mappa.zoom || 13}&output=embed`;
-  }
-  if (!iframeSrc) return '';
-  return `
-    <div class="progetto-mappa-wrap">
-      <p class="progetto-mappa-label">${label}</p>
-      <iframe class="progetto-mappa" src="${iframeSrc}"
-        allowfullscreen loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"></iframe>
-    </div>`;
+  let src = pr.mappa.url || '';
+  if (!src && pr.mappa.lat && pr.mappa.lng)
+    src = `https://maps.google.com/maps?q=${pr.mappa.lat},${pr.mappa.lng}&z=${pr.mappa.zoom || 13}&output=embed`;
+  if (!src) return '';
+  return `<div class="section-map">
+    <p class="section-map-label">${label}</p>
+    <iframe src="${src}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </div>`;
 }
 
-function chiudiProgetto() { $('pagina-progetto').classList.remove('aperta'); }
+function chiudiProgetto() {
+  const el = $('pagina-progetto');
+  el.classList.remove('aperta');
+  el.style.removeProperty('--pr-bg');
+  el.style.removeProperty('--pr-text');
+  el.style.removeProperty('--pr-accent');
+  if (el._scrollHandler) {
+    el.removeEventListener('scroll', el._scrollHandler);
+    el._scrollHandler = null;
+  }
+}
 
 // ── Taccuino archivio ──
 let _cacheTaccuino = null;
@@ -657,7 +848,7 @@ function apriTaccuino() {
       return `<div class="taccuino-voce" data-testo="${v.testo.toLowerCase()}">${foto}<p class="taccuino-voce-frase">${v.testo}</p>${cam}<p class="taccuino-voce-data">${formatData(v.data)}</p></div>`;
     }).join('');
     _cacheTaccuino = `
-      <button class="progetto-torna" onclick="chiudiTaccuino()">Chiudi</button>
+      <button class="taccuino-torna" onclick="chiudiTaccuino()">Chiudi</button>
       <h1>Taccuino</h1>
       <div class="taccuino-cerca-wrap">
         <input type="search" id="taccuino-cerca" class="taccuino-cerca"
@@ -949,45 +1140,6 @@ function costruisciMobile() {
     pListaPub.appendChild(mpcLista);
     containerPub.appendChild(pListaPub);
   }
-
-  /*VECCHIO BLOCCO PUBBLICAZIONI - RIMOSSO
-  if (containerCollab && stato.pubblicazioni.length > 0) {
-    // Pagina titolo capitolo
-    const pTitoloPub = crea('div');
-    pTitoloPub.className = 'page mobile-only';
-    pTitoloPub.dataset.favicon = 'P'; pTitoloPub.dataset.titolo = 'Scritto';
-    const { mpc: mpcPub, pc: pcPub } = creaMobilePageContent();
-    pcPub.innerHTML = `<div>
-      <p class="capitolo-label">Capitolo 05</p>
-      <h2 class="capitolo-titolo">Publications</h2>
-    </div>`;
-    pTitoloPub.appendChild(mpcPub);
-    containerCollab.appendChild(pTitoloPub);
-
-    // Pagina elenco pubblicazioni
-    const pListaPub = crea('div');
-    pListaPub.className = 'page mobile-only';
-    pListaPub.dataset.favicon = 'P'; pListaPub.dataset.titolo = 'Publications';
-    const { mpc: mpcLista, pc: pcLista } = creaMobilePageContent();
-    const listaWrap = crea('div'); listaWrap.className = 'pub-mobile-lista';
-    stato.pubblicazioni.forEach(pub => {
-      const item = crea('div'); item.className = 'pub-mobile-item';
-      item.innerHTML = `
-        ${pub.immagine ? `<div class="pub-mobile-img"></div>` : ''}
-        <div class="pub-mobile-info">
-          <p class="pub-mobile-titolo">${pub.titolo}</p>
-          <p class="pub-mobile-anno">${pub.anno}</p>
-          ${pub.link ? `<a class="pub-mobile-link" href="${pub.link}" target="_blank" rel="noopener" style="pointer-events:all;">Vedi →</a>` : ''}
-        </div>
-      `;
-      if (pub.immagine) item.querySelector('.pub-mobile-img').appendChild(creaImg(pub.immagine, pub.titolo));
-      listaWrap.appendChild(item);
-    });
-    pcLista.appendChild(listaWrap);
-    pListaPub.appendChild(mpcLista);
-    containerCollab.appendChild(pListaPub);
-  }
-  VECCHIO BLOCCO FINE */
 
   raccogliPagine();
 }
