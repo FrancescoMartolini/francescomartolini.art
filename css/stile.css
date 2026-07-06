@@ -173,6 +173,29 @@ body.tema-scuro {
   overflow-y: auto;
   width: 100%;
 }
+
+.lang-toggle {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  z-index: 50;
+  font-family: inherit;
+}
+.lang-option {
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+.lang-option.active {
+  opacity: 1;
+}
+.lang-sep {
+  opacity: 0.2;
+  margin: 0 6px;
+}
+
 /*#mobile-collaborazioni-container { display: none; }*/
 .desktop-hero { display: grid; }
 .desktop-section { display: flex; }

@@ -1,8 +1,8 @@
 [
   {
     "id": "sequenza-01",
-    "titolo": "Sequenza 01",
-    "descrizione": "Appunti visivi. Provini. Sequenze brevi.",
+    "titolo": { "it": "Sequenza 01", "en": "Sequence 01" },
+    "descrizione": { "it": "Appunti visivi. Provini. Sequenze brevi.", "en": "Visual notes. Contact sheets. Short sequences." },
     "immagini": [
       "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778415814/pisaStreet08082024-9_albncm.jpg",
       "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778415812/pisaStreet08082024-3_gwewnt.jpg",
@@ -15,8 +15,8 @@
   },
   {
     "id": "sequenza-02",
-    "titolo": "Sequenza 02",
-    "descrizione": "Intervalli di sguardo e di tempo.",
+    "titolo": { "it": "Sequenza 02", "en": "Sequence 02" },
+    "descrizione": { "it": "Intervalli di sguardo e di tempo.", "en": "Intervals of gaze and time." },
     "immagini": [
       "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778415166/ProveSangimignano-05-03-2023-13_geb1es.jpg",
       "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778415251/StreetFirenze08-03-2023-16_btqkbv.jpg",

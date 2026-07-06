@@ -11,6 +11,7 @@
 const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?output=csv';
 
 const stato = {
+  lang: localStorage.getItem('lang') || 'it',
   paginaCorrente: 0,
   totPagine: 0,
   inTransizione: false,
@@ -21,6 +22,18 @@ const stato = {
   intro: {},
   sliderIdx: 0
 };
+
+function t(field) {
+  if (field == null) return '';
+  if (typeof field === 'string') return field; // fallback per campi non ancora bilingue
+  return field[stato.lang] || field.it || '';
+}
+
+function setLang(lang) {
+  stato.lang = lang;
+  localStorage.setItem('lang', lang);
+  location.reload(); // semplice: ri-renderizza tutto da capo
+}
 
 const EPILOGHI = [
   'Il tempo lascia tracce.',
@@ -94,7 +107,7 @@ function parseCsv(csv) {
     }
     celle.push(cell.trim());
     return { id: i+1, testo: celle[0]||'', data: celle[1]||'', foto: celle[2]||null, camera: celle[3]||null };
-  }).filter(v => v.testo);
+  }).filter(v => t(v.testo));
 }
 
 // ── Fetch con timeout: non aspetta mai più di `ms' ──
@@ -219,7 +232,7 @@ function creaPaginaTaccuinoMobile(v) {
     const img = crea('img'); img.src = v.foto; img.alt = ''; img.draggable = false;
     fw.appendChild(img); tw.appendChild(fw);
   }
-  tw.innerHTML += `<p class="taccuino-frase">${v.testo}</p>${v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p><p class="taccuino-data">${formatData(v.data)}</p>` : ''}`;
+  tw.innerHTML += `<p class="taccuino-frase">${t(v.testo)}</p>${v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p><p class="taccuino-data">${formatData(v.data)}</p>` : ''}`;
   pc.appendChild(tw); pt.appendChild(mpc);
   return pt;
 }
@@ -303,7 +316,7 @@ function popolaDesktop() {
       const col = crea('div'); col.className = 'taccuino-col-voce';
       col.innerHTML = `
         <p class="taccuino-col-data">${formatData(v.data)}</p>
-        <p class="taccuino-col-frase">${v.testo}</p>
+        <p class="taccuino-col-frase">${t(v.testo)}</p>
         <button class="taccuino-col-expand" onclick="apriTaccuino()">+</button>
       `;
       colonne.appendChild(col);
@@ -358,12 +371,12 @@ function popolaSliderProgetti() {
     card.innerHTML = `
       <div class="progetto-card-img"></div>
       <p class="progetto-card-num">${formatNum(i + 1)}</p>
-      <p class="progetto-card-titolo">${pr.titolo.toUpperCase()}</p>
-      <p class="progetto-card-anno">${pr.anno}</p>
+      <p class="progetto-card-titolo">${t(pr.titolo).toUpperCase()}</p>
+      <p class="progetto-card-anno">${t(pr.anno)}</p>
     `;
 
     card.querySelector('.progetto-card-img').appendChild(
-      creaImg(pr.immagine_copertina, pr.titolo)
+      creaImg(t(pr.immagine_copertina), t(pr.titolo))
     );
 
     if (progettoPubblicato(pr)) {
@@ -407,12 +420,12 @@ function apriPagina(tipo) {
         card.innerHTML = `
           <div class="tutti-card-img"></div>
           <p class="tutti-card-num">0${i + 1}</p>
-          <h2 class="tutti-card-titolo">${pr.titolo}</h2>
-          <p class="tutti-card-anno">${pr.anno}</p>
-          <p class="tutti-card-desc">${pr.descrizione}</p>
+          <h2 class="tutti-card-titolo">${t(pr.titolo)}</h2>
+          <p class="tutti-card-anno">${t(pr.anno)}</p>
+          <p class="tutti-card-desc">${t(pr.descrizione)}</p>
           ${inLavorazione ? '<p class="tutti-card-wip">In lavorazione</p>' : ''}
         `;
-        card.querySelector('.tutti-card-img').appendChild(creaImg(pr.immagine_copertina, pr.titolo));
+        card.querySelector('.tutti-card-img').appendChild(creaImg(t(pr.immagine_copertina), t(pr.titolo)));
         if (!inLavorazione) card.addEventListener('click', () => apriProgetto(pr.id));
         $('tutti-proj-grid').appendChild(card);
       });
@@ -468,7 +481,7 @@ function apriPagina(tipo) {
           <div class="chi-sono-esteso-testo">
             <!-- <h2>Francesco Martolini</h2> -->
             <h2>Dove nasce il lavoro</h2>
-              <p class="introduzione-testo">${stato.intro.testo.replace(/\n/g, '<br>')}</p>
+              <p class="introduzione-testo">${t(stato.intro.testo).replace(/\n/g, '<br>')}</p>
             <h2>Biografia</h2>
             <p>Fotografo italiano. Il mio lavoro esplora il rapporto tra spazio, tempo e memoria — cercando nelle immagini le tracce di ciò che resta.</p>
             <p>Sono interessato alla fotografia come strumento di indagine, non di rappresentazione. Ogni progetto nasce da una domanda che il tempo continua a restituirmi.</p>
@@ -585,23 +598,23 @@ function apriProgetto(id) {
     const coverHTML = (hasNamedLayout && pr.immagine_copertina) ? `
       <div class="progetto-cover">
         <div class="progetto-cover-img">
-          <img src="${pr.immagine_copertina}" alt="${pr.titolo}" draggable="false" loading="eager">
+          <img src="${t(pr.immagine_copertina)}" alt="${t(pr.titolo)}" draggable="false" loading="eager">
         </div>
         <div class="progetto-cover-testo">
-          <h1 class="progetto-cover-titolo">${pr.titolo}</h1>
-          <p class="progetto-cover-anno">${pr.anno}</p>
-          <p class="progetto-cover-desc">${pr.descrizione}</p>
+          <h1 class="progetto-cover-titolo">${t(pr.titolo)}</h1>
+          <p class="progetto-cover-anno">${t(pr.anno)}</p>
+          <p class="progetto-cover-desc">${t(pr.descrizione)}</p>
           ${pr.link_esterno
-            ? `<p style="margin-top:32px;"><a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">${pr.label_link || 'Vedi online'}</a></p>`
+            ? `<p style="margin-top:32px;"><a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">${t(pr.label_link) || 'Vedi online'}</a></p>`
             : ''}
         </div>
       </div>` : `
       <div class="progetto-interno-header">
         <div>
-          <h1 class="progetto-interno-titolo">${pr.titolo}</h1>
-          <p class="progetto-interno-anno">${pr.anno}</p>
+          <h1 class="progetto-interno-titolo">${t(pr.titolo)}</h1>
+          <p class="progetto-interno-anno">${t(pr.anno)}</p>
         </div>
-        ${pr.link_esterno ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">${pr.label_link || 'Vedi online'}</a>` : ''}
+        ${pr.link_esterno ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">${t(pr.label_link) || 'Vedi online'}</a>` : ''}
       </div>`;
 
     _cacheProgetti[id] = `
@@ -681,27 +694,27 @@ function generaContenutoProgetto(pr) {
           }</div>`;
         case 'image':
           return `<div class="section-image${s.fullscreen ? ' fullscreen' : ''}" ${pr.layoutType === 'archivio' ? `data-archivio-img="${s.src}"` : ''}>
-            <img src="${s.src}" alt="${pr.titolo}" draggable="false" loading="lazy">
+            <img src="${t(s.src)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
           </div>`;
         case 'imageText':
           return `<div class="section-imagetext ${s.position === 'right' ? 'position-right' : 'position-left'}">
-            <img src="${s.image}" alt="${pr.titolo}" draggable="false" loading="lazy">
+            <img src="${t(s.image)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
             <div class="section-imagetext-content">${(s.content || '').replace(/\n/g, '<br>')}</div>
           </div>`;
         case 'gallery':
           return `<div class="section-gallery">${
             (s.images || []).map(src =>
-              `<div class="gallery-img"><img src="${src}" alt="${pr.titolo}" draggable="false" loading="lazy"></div>`
+              `<div class="gallery-img"><img src="${t(src)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy"></div>`
             ).join('')
           }</div>`;
         case 'quote':
-          return `<blockquote class="section-quote">${s.content || ''}</blockquote>`;
+          return `<blockquote class="section-quote">${t(s.content) || ''}</blockquote>`;
         case 'map': {
           const msrc = s.url || (s.lat && s.lng ? `https://maps.google.com/maps?q=${s.lat},${s.lng}&z=${s.zoom || 13}&output=embed` : '');
           if (!msrc) return '';
           return `<div class="section-map">
-            ${s.label ? `<p class="section-map-label">${s.label}</p>` : ''}
-            <iframe src="${msrc}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            ${s.label ? `<p class="section-map-label">${t(s.label)}</p>` : ''}
+            <iframe src="${t(msrc)}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
           </div>`;
         }
         default: return '';
@@ -720,20 +733,20 @@ function generaContenutoProgetto(pr) {
 
     if (!pr.contenuto) {
       html += `<div class="archivio-colonna-testo">
-        <div class="section-text"><p>${(pr.testo_lungo || '').replace(/\n/g, '<br>')}</p></div>
+        <div class="section-text"><p>${(pt(pr.testo_lungo) || '').replace(/\n/g, '<br>')}</p></div>
         ${generaMappaHTML(pr)}
         ${(pr.galleria || []).slice(1).map(src =>
           `<div class="section-image" data-archivio-img="${src}">
-            <img src="${src}" alt="${pr.titolo}" draggable="false" loading="lazy">
+            <img src="${t(src)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
           </div>`).join('')}
       </div>
       <div class="archivio-colonna-img">
-        <img id="archivio-sticky-img" class="archivio-img-principale" src="${primaImg}" alt="${pr.titolo}" draggable="false">
+        <img id="archivio-sticky-img" class="archivio-img-principale" src="${t(primaImg)}" alt="${t(pr.titolo)}" draggable="false">
       </div>
       <div class="archivio-footer-tipografico">
         <span>francescomartolini.art</span>
-        <span>${pr.titolo.toUpperCase()}</span>
-        <span>${pr.anno}</span>
+        <span>${t(pr.titolo).toUpperCase()}</span>
+        <span>${t(pr.anno)}</span>
       </div>`;
       return html;
     }
@@ -743,14 +756,14 @@ function generaContenutoProgetto(pr) {
     pr.contenuto.forEach(b => {
       switch (b.tipo) {
         case 'titolo':
-          colonnaHTML += `<h3 class="section-titolo-interno">${b.valore}</h3>`; break;
+          colonnaHTML += `<h3 class="section-titolo-interno">${t(b.valore)}</h3>`; break;
         case 'testo':
           colonnaHTML += `<div class="section-text">${
-            b.valore.split('\n\n').map(p => p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : '').join('')
+            t(b.valore).split('\n\n').map(p => p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : '').join('')
           }</div>`; break;
         case 'immagine':
-          colonnaHTML += `<div class="section-image" data-archivio-img="${b.valore}">
-            <img src="${b.valore}" alt="${pr.titolo}" draggable="false" loading="lazy">
+          colonnaHTML += `<div class="section-image" data-archivio-img="${t(b.valore)}">
+            <img src="${t(b.valore)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
           </div>`; break;
         case 'mappa':
           colonnaHTML += generaMappaHTML(pr); break;
@@ -761,29 +774,29 @@ function generaContenutoProgetto(pr) {
     if (pr.galleria?.length) {
       pr.galleria.forEach(src => {
         colonnaHTML += `<div class="section-image" data-archivio-img="${src}">
-          <img src="${src}" alt="${pr.titolo}" draggable="false" loading="lazy">
+          <img src="${src}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
         </div>`;
       });
     }
 
     return `<div class="archivio-colonna-testo">${colonnaHTML}</div>
       <div class="archivio-colonna-img">
-        <img id="archivio-sticky-img" class="archivio-img-principale" src="${primaImg}" alt="${pr.titolo}" draggable="false">
+        <img id="archivio-sticky-img" class="archivio-img-principale" src="${t(primaImg)}" alt="${t(pr.titolo)}" draggable="false">
       </div>
       <div class="archivio-footer-tipografico">
         <span>francescomartolini.art</span>
-        <span>${pr.titolo.toUpperCase()}</span>
-        <span>${pr.anno}</span>
+        <span>${t(pr.titolo).toUpperCase()}</span>
+        <span>${t(pr.anno)}</span>
       </div>`;
   }
 
   // Per tutti gli altri layout: mappa blocchi al sistema section-*
   if (!pr.contenuto) {
     const galleria = (pr.galleria || []).map(src =>
-      `<div class="gallery-img">${generaImgHTML(src, pr.titolo)}</div>`
+      `<div class="gallery-img">${generaImgHTML(src, t(pr.titolo))}</div>`
     ).join('');
     return `
-      <div class="section-text"><p>${(pr.testo_lungo || '').replace(/\n/g, '<br>')}</p></div>
+      <div class="section-text"><p>${(t(pr.testo_lungo) || '').replace(/\n/g, '<br>')}</p></div>
       ${generaMappaHTML(pr)}
       ${galleria ? `<div class="section-gallery">${galleria}</div>` : ''}`;
   }
@@ -791,16 +804,16 @@ function generaContenutoProgetto(pr) {
   const blocchi = pr.contenuto.map(b => {
     switch (b.tipo) {
       case 'titolo':
-        return `<h3 class="section-titolo-interno">${b.valore}</h3>`;
+        return `<h3 class="section-titolo-interno">${t(b.valore)}</h3>`;
       case 'testo':
         return `<div class="section-text">${
-          b.valore.split('\n\n').map(p => p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : '').join('')
+          t(b.valore).split('\n\n').map(p => p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : '').join('')
         }</div>`;
       case 'immagine':
-        return `<div class="section-image"><img src="${b.valore}" alt="${pr.titolo}" draggable="false" loading="lazy"></div>`;
+        return `<div class="section-image"><img src="${t(b.valore)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy"></div>`;
       case 'galleria': {
         const imgs = (Array.isArray(b.valore) ? b.valore : [b.valore])
-          .map(src => `<div class="gallery-img">${generaImgHTML(src, pr.titolo)}</div>`).join('');
+          .map(src => `<div class="gallery-img">${generaImgHTML(src, t(pr.titolo))}</div>`).join('');
         return `<div class="section-gallery">${imgs}</div>`;
       }
       case 'mappa': return generaMappaHTML(pr);
@@ -810,7 +823,7 @@ function generaContenutoProgetto(pr) {
   }).join('');
 
   const galleriaExtra = pr.galleria?.length
-    ? `<div class="section-gallery">${pr.galleria.map(src => `<div class="gallery-img">${generaImgHTML(src, pr.titolo)}</div>`).join('')}</div>`
+    ? `<div class="section-gallery">${pr.galleria.map(src => `<div class="gallery-img">${generaImgHTML(src, t(pr.titolo))}</div>`).join('')}</div>`
     : '';
 
   return blocchi + galleriaExtra;
@@ -853,7 +866,7 @@ function apriTaccuino() {
       const foto = v.foto
         ? `<div class="taccuino-voce-foto"><img src="${v.foto}" alt="" draggable="false" loading="lazy"></div>` : '';
       const cam = v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p>` : '';
-      return `<div class="taccuino-voce" data-testo="${v.testo.toLowerCase()}">${foto}<p class="taccuino-voce-frase">${v.testo}</p>${cam}<p class="taccuino-voce-data">${formatData(v.data)}</p></div>`;
+      return `<div class="taccuino-voce" data-testo="${t(v.testo).toLowerCase()}">${foto}<p class="taccuino-voce-frase">${t(v.testo)}</p>${cam}<p class="taccuino-voce-data">${formatData(v.data)}</p></div>`;
     }).join('');
     _cacheTaccuino = `
       <button class="taccuino-torna" onclick="chiudiTaccuino()">Chiudi</button>
@@ -902,8 +915,8 @@ function costruisciIndice() {
     if (pr.pubblicato === false) return;
     voci.push({
       num: formatNum(i + 1),
-      label: pr.titolo,
-      sub: pr.anno,
+      label: t(pr.titolo),
+      sub: t(pr.anno),
       azione: () => {
         // Naviga alla pagina capitolo Progetti e poi apre il progetto
         const progettiSection = $('progetti');
@@ -965,11 +978,11 @@ function costruisciMobile() {
 
     const pIntro = crea('div');
     pIntro.className = 'page mobile-only'; pIntro.id = 'intro-mobile';
-    pIntro.dataset.favicon = '∙'; pIntro.dataset.titolo = stato.intro.titolo || 'Introduzione';
+    pIntro.dataset.favicon = '∙'; pIntro.dataset.titolo = t(stato.intro.titolo) || 'Introduzione';
     const { mpc: mpcIntro, pc: pcIntro } = creaMobilePageContent();
     pcIntro.innerHTML = `
-      <p class="introduzione-testo">${stato.intro.testo.replace(/\n/g, '<br>')}</p>
-      <p class="introduzione-firma">${stato.intro.firma}<br><span>${stato.intro.anno}</span></p>
+      <p class="introduzione-testo">${t(stato.intro.testo).replace(/\n/g, '<br>')}</p>
+      <p class="introduzione-firma">${t(stato.intro.firma)}<br><span>${t(stato.intro.anno)}</span></p>
     `;
     pIntro.appendChild(mpcIntro);
 
@@ -983,7 +996,7 @@ function costruisciMobile() {
   // Taccuino prima frase
   const taccuinoFrase = $('taccuino-mobile-frase');
   if (taccuinoFrase && stato.taccuino[0]) {
-    taccuinoFrase.innerHTML = `<p class="taccuino-frase">${stato.taccuino[0].testo}</p><p class="taccuino-data">${formatData(stato.taccuino[0].data)}</p>`;
+    taccuinoFrase.innerHTML = `<p class="taccuino-frase">${t(stato.taccuino[0].testo)}</p><p class="taccuino-data">${formatData(t(stato.taccuino[0].data))}</p>`;
   }
 
   let tIdx = 0;
@@ -991,24 +1004,24 @@ function costruisciMobile() {
 
   stato.progetti.forEach(pr => {
     const inLavorazione = pr.pubblicato === false;
-    const p = creaPaginaMobile(pr.titolo[0].toUpperCase(), pr.titolo);
+    const p = creaPaginaMobile(t(pr.titolo)[0].toUpperCase(), t(pr.titolo));
     p.appendChild(creaHeader());
 
     const wrap = crea('div'); wrap.className = 'progetto-mobile-wrap';
     const imgDiv = crea('div');
     imgDiv.className = 'progetto-mobile-img' + (inLavorazione ? ' in-lavorazione' : '');
-    imgDiv.appendChild(creaImg(pr.immagine_copertina, pr.titolo));
+    imgDiv.appendChild(creaImg(pr.immagine_copertina, t(pr.titolo)));
 
     const testo = crea('div'); testo.className = 'progetto-mobile-testo';
     const linkEsterno = pr.link_esterno
-      ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">${pr.label_link || 'Vedi online'}</a>` : '';
+      ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">${t(pr.label_link) || 'Vedi online'}</a>` : '';
     const bottoneEntrata = inLavorazione
       ? `<p class="progetto-in-lavorazione">In lavorazione</p>`
       : `<button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>`;
     testo.innerHTML = `
-      <p class="progetto-anno">${pr.anno}</p>
-      <h2 class="progetto-titolo">${pr.titolo}</h2>
-      <p class="progetto-anno">${pr.descrizione}</p>
+      <p class="progetto-anno">${t(pr.anno)}</p>
+      <h2 class="progetto-titolo">${t(pr.titolo)}</h2>
+      <p class="progetto-anno">${t(pr.descrizione)}</p>
       ${bottoneEntrata}
       <!-- ${linkEsterno} -->
     `;
@@ -1025,14 +1038,14 @@ function costruisciMobile() {
 
   const containerIntervalli = $('mobile-intervalli-container');
   stato.intervalli.forEach(iv => {
-    const p = creaPaginaMobile('I', iv.titolo);
+    const p = creaPaginaMobile('I', t(iv.titolo));
     const { mpc, pc } = creaMobilePageContent();
     const wrap = crea('div'); wrap.className = 'intervallo-mobile-wrap';
-    wrap.innerHTML = `<p class="capitolo-label">Intervalli</p><h2 class="capitolo-titolo">${iv.titolo}</h2><p class="capitolo-descrizione">${iv.descrizione}</p>`;
+    wrap.innerHTML = `<p class="capitolo-label">Intervalli</p><h2 class="capitolo-titolo">${t(iv.titolo)}</h2><p class="capitolo-descrizione">${t(iv.descrizione)}</p>`;
     const gr = crea('div'); gr.className = 'intervallo-mobile-griglia';
     iv.immagini.forEach((src, i) => {
       const cell = crea('div'); cell.className = 'intervallo-mobile-cella';
-      cell.appendChild(creaImg(src, `${iv.titolo} ${i + 1}`));
+      cell.appendChild(creaImg(src, `${t(iv.titolo)} ${i + 1}`));
       gr.appendChild(cell);
     });
     wrap.appendChild(gr); pc.appendChild(wrap); p.appendChild(mpc);
@@ -1568,5 +1581,10 @@ async function init() {
   lightbox.init();
   inizializzaFin();
 }
+
+document.querySelectorAll('.lang-option').forEach(el => {
+  if (el.dataset.lang === stato.lang) el.classList.add('active');
+  el.addEventListener('click', () => setLang(el.dataset.lang));
+});
 
 document.addEventListener('DOMContentLoaded', init);
