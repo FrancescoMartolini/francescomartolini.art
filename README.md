@@ -1,5 +1,19 @@
 # Francesco Martolini .art
-## Guida completa al sito — v5.3
+## Guida completa al sito — v6.0
+
+---
+
+### CONCETTO
+
+Il sito non è un portfolio fotografico tradizionale.
+
+È concepito come un **libro digitale** che raccoglie progetti fotografici di lunga durata, note, riflessioni e ricerca visiva attorno a un tema comune: il **tempo**.
+
+L'identità del sito ruota attorno a questa dichiarazione:
+
+> *Il tempo lascia tracce. Io le cerco.*
+
+Ogni progetto è un capitolo di una ricerca più ampia. Il visitatore non naviga tra progetti: entra in un archivio personale e in uno spazio narrativo.
 
 ---
 
@@ -29,54 +43,47 @@ francescomartolini.art/
 │   └── Francescomartolini-Regular.otf   ← font calligrafico personale (taccuino)
 │
 ├── images/
-│   ├── favicon.svg               ← icona dinamica (generata da JS)
-│   ├── apple-touch-icon.svg      ← icona per schermata home iPhone
-│   ├── manifest.json             ← web app manifest
-│   ├── chi-sono-img.jpg          ← foto pagina chi sono
-│   ├── favicon-generate.js       ← script di documentazione (non usato dal sito)
-│   ├── stile.css                 ← copia di lavoro del CSS (non usata dal sito)
+│   ├── favicon.svg
+│   ├── apple-touch-icon.svg
+│   ├── manifest.json
+│   ├── chi-sono-img.jpg
 │   └── progetti/
 │       └── nome-progetto/
 │           ├── cover.jpg
 │           └── 01.jpg ...
 │
 └── TEMPLATE/                     ← materiali di supporto (non deployati)
-    ├── Calligraphr-Template.pdf  ← template font calligrafico
-    ├── taccuino_template.xlsx    ← foglio Excel per strutturare il taccuino
+    ├── Calligraphr-Template.pdf
+    ├── taccuino_template.xlsx
+    ├── INSPO_Layout_Progetti/    ← screenshot di riferimento per i layout
     └── Test_interfaccia_Descktop/
-        ├── fm_editorial_interface.html
-        ├── spatial_map_wireframe.html
-        └── temporal_timeline_desktop.html
 ```
 
 ---
 
 ### DUE ESPERIENZE, UN SOLO SITO
 
-Il sito si comporta in modo diverso in base al dispositivo:
+**Mobile (≤ 768px):** libro a pagine orizzontali. Swipe o tap per sfogliare. Nessun header visibile. Navigazione con frecce in basso. L'esperienza è quella di leggere un libro fotografico, non di navigare un sito.
 
-**Desktop (> 768px):** layout editoriale con scroll verticale, sezioni distinte, griglia progetti, menu in alto, overlay a pagina intera e cursore custom adattivo.
-
-**Mobile (≤ 768px):** libro a pagine orizzontali, swipe o tap per sfogliare, nessun header visibile, navigazione con frecce in basso.
+**Desktop (> 768px):** archivio editoriale. Scroll verticale. Menu in alto. Overlay a pagina intera per i progetti. Il sistema di layout permette a ogni progetto di avere un'identità visiva propria.
 
 ---
 
-### NAVIGAZIONE
+### NAVIGAZIONE DESKTOP
 
-**Desktop:**
 - Scroll verticale tra le sezioni
 - Menu in alto per saltare ai capitoli
 - Overlay per progetti, studi, chi sono, collaborazioni, taccuino
-- Apertura overlay tramite chiamate dirette a `apriPagina()` in `libro.js`
+- Apertura overlay tramite `apriPagina()` in `libro.js`
 
-**Mobile:**
+### NAVIGAZIONE MOBILE
+
 - Swipe sinistra/destra per sfogliare
 - Tap zona destra (> 65%) → pagina successiva
 - Tap zona sinistra (< 35%) → pagina precedente
 - Frecce in basso
-- Ultima pagina: freccia sinistra / swipe destra → torna all'inizio
-- Bottone **"info utilizzo"** in alto a sinistra nella barra di navigazione, visibile solo sulla prima pagina (Home): apre un overlay ("Note") con le istruzioni di lettura del libro
-- Indicatore laterale a puntini (destra schermo): trascinabile per scorrere rapidamente tra le pagine ("scrub")
+- Bottone **"info utilizzo"** (prima pagina): istruzioni di lettura
+- Indicatore laterale a puntini (destra schermo): trascinabile per scorrere rapidamente
 
 ---
 
@@ -91,42 +98,19 @@ Il sito si comporta in modo diverso in base al dispositivo:
 06  Progetto 1
 07  Taccuino
 08  Progetto 2
-09  Taccuino
 ...
     Capitolo 02 — Intervalli
-    Intervalli (sequenze)
-    Taccuino
-...
     Capitolo 03 — Chi sono
-    Chi sono
     Capitolo 04 — Commercial
-    Fotografie commerciali (pagina con scroll)
     Capitolo 05 — Pubblicazioni
-    Pubblicazioni (elenco con link)
     fin.
 ```
 
 ---
 
-### INDICE MOBILE
-
-Dopo l'introduzione appare una pagina indice generata dinamicamente che elenca:
-- Introduzione
-- Ogni progetto pubblicato (con numero e anno)
-- Intervalli
-- Chi sono
-- Taccuino
-- Pubblicazioni
-
-Ogni voce è cliccabile e porta direttamente alla sezione corrispondente. I progetti aprono direttamente la pagina di dettaglio.
-
-L'indice viene posizionato automaticamente dopo la pagina introduzione (o dopo home se l'introduzione è assente).
-
----
-
 ### JSON — STRUTTURA E CAMPI
 
-#### `json/progetti.json`
+#### `json/progetti.json` — schema base
 
 ```json
 [
@@ -136,10 +120,10 @@ L'indice viene posizionato automaticamente dopo la pagina introduzione (o dopo h
     "anno": "2025",
     "descrizione": "Breve descrizione (2-3 righe).",
     "testo_lungo": "Testo completo.\n\nUsa \\n\\n per i paragrafi.",
-    "immagine_copertina": "https://res.cloudinary.com/tuo-nome/image/upload/w_600,q_auto,f_auto/percorso/cover.jpg",
+    "immagine_copertina": "https://res.cloudinary.com/.../cover.jpg",
     "galleria": [
-      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/01.jpg",
-      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/02.jpg"
+      "https://res.cloudinary.com/.../01.jpg",
+      "https://res.cloudinary.com/.../02.jpg"
     ],
     "link_esterno": "",
     "label_link": "Vedi online",
@@ -149,11 +133,9 @@ L'indice viene posizionato automaticamente dopo la pagina introduzione (o dopo h
 ]
 ```
 
-**link_esterno:** se vuoto `""` il bottone non appare. Se presente appare il testo di `label_link`.
+**pubblicato:** se `false`, il progetto appare come "In lavorazione" ma non è apribile.
 
-**label_link:** etichetta personalizzabile del bottone link esterno. Se assente usa `"Vedi online"` come default.
-
-**pubblicato:** se `false`, il progetto appare come "In lavorazione" ma non è apribile, né da mobile né da desktop.
+**link_esterno:** se vuoto `""` il bottone non appare.
 
 **mappa** — tre opzioni:
 
@@ -161,30 +143,30 @@ L'indice viene posizionato automaticamente dopo la pagina introduzione (o dopo h
 "mappa": null
 
 "mappa": {
-  "url": "https://www.google.com/maps/d/embed?mid=XXXXXXXXXXXXXXXX",
+  "url": "https://www.google.com/maps/d/embed?mid=XXXXXXXX",
   "label": "Luoghi del progetto"
 }
 
 "mappa": {
-  "lat": 41.9028,
-  "lng": 12.4964,
+  "lat": 43.7696,
+  "lng": 11.2558,
   "zoom": 13,
-  "label": "Roma — luoghi del progetto"
+  "label": "Firenze — luoghi del progetto"
 }
 ```
 
-Per ottenere l'URL di Google My Maps: My Maps → Condividi → Incorpora nella pagina → copia il valore `src` dell'iframe.
+---
 
-#### Campo `contenuto` (layout avanzato opzionale)
+#### Campo `contenuto` (layout a blocchi)
 
-In alternativa a `testo_lungo` + `galleria`, puoi usare il campo `contenuto` per costruire il progetto a blocchi.
+In alternativa a `testo_lungo` + `galleria`, puoi usare `contenuto` per costruire il progetto a blocchi ordinati:
 
 ```json
 "contenuto": [
   { "tipo": "titolo",    "valore": "Sottotitolo interno" },
-  { "tipo": "testo",     "valore": "Testo del progetto.\n\nSecondo paragrafo." },
-  { "tipo": "immagine",  "valore": "https://...01.jpg" },
-  { "tipo": "galleria",  "valore": ["https://...02.jpg", "https://...03.jpg"] },
+  { "tipo": "testo",     "valore": "Testo.\n\nSecondo paragrafo." },
+  { "tipo": "immagine",  "valore": "https://.../01.jpg" },
+  { "tipo": "galleria",  "valore": ["https://.../02.jpg", "https://.../03.jpg"] },
   { "tipo": "mappa" },
   { "tipo": "separatore" }
 ]
@@ -192,13 +174,114 @@ In alternativa a `testo_lungo` + `galleria`, puoi usare il campo `contenuto` per
 
 Tipi disponibili: `titolo`, `testo`, `immagine`, `galleria`, `mappa`, `separatore`.
 
-**titolo:** inserisce un sottotitolo interno al blocco (`<h3>`), utile per suddividere un progetto lungo in sezioni.
-
 Quando `contenuto` è presente viene usato come struttura principale. Il campo `galleria` (se presente) viene aggiunto in fondo come blocco extra.
 
 ---
 
-#### `json/intervalli.json`
+### LAYOUT PROGETTO (desktop)
+
+Ogni progetto può avere un layout visivo diverso, selezionato tramite il campo `layoutType` in `progetti.json`. Se `layoutType` è assente, viene usato il layout base.
+
+#### Selezione del layout
+
+```json
+{
+  "id": "nome-progetto",
+  "titolo": "...",
+  "layoutType": "archivio",
+  ...
+}
+```
+
+#### Layout disponibili
+
+| `layoutType` | Carattere visivo | Ispirazione |
+|---|---|---|
+| *(assente)* | Colonna singola centrata, lettura semplice — aspetto originale del sito | — |
+| `editorial` | Grande spazio bianco, testo a colonna destra, immagini allineate a destra, quote centrata | Arch-Workman |
+| `magazine` | Font typewriter (Courier New), immagini in scala di grigi parziale, testo frammentato e asimmetrico | Dora Lazarevic |
+| `column` | Due colonne CSS, testo uppercase giustificato, quote enorme bold | Point62 |
+| `archivio` | Due colonne 58/42: testo giustificato a sinistra, immagine sticky a destra che si aggiorna con lo scroll | Rivista letteraria |
+| `panoramico` | Titolo enorme, testo alternato sinistra/destra, immagini con offset verticale, galleria in ratio XPan 65:24 | Formato Hasselblad XPan |
+
+**Su mobile tutti i layout collassano automaticamente a colonna singola.** Il `layoutType` è una proprietà esclusivamente desktop.
+
+---
+
+### TEMA COLORI PER PROGETTO (desktop)
+
+Ogni progetto può avere colori propri tramite il campo `theme`. Questi colori vengono applicati solo alla pagina di dettaglio del progetto quando è aperta su desktop.
+
+```json
+{
+  "id": "nome-progetto",
+  "titolo": "...",
+  "layoutType": "archivio",
+  "theme": {
+    "background": "#f2ede6",
+    "text": "#1a1a18",
+    "accent": "#8a7a6a"
+  }
+}
+```
+
+I tre valori controllano:
+
+| Proprietà CSS | Campo JSON | Effetto |
+|---|---|---|
+| `--pr-bg` | `background` | Sfondo dell'overlay progetto |
+| `--pr-text` | `text` | Colore del testo principale |
+| `--pr-accent` | `accent` | Anno, label, citazioni, bottoni secondari |
+
+**Se `theme` è assente**, il progetto usa i colori base del sito (bianco, nero, grigio). Non è necessario definire `theme` per ogni progetto: funziona correttamente anche senza.
+
+**Se `layoutType` è assente**, anche `theme` viene ignorato e la pagina usa l'aspetto originale.
+
+#### Combinazioni tipiche
+
+```json
+// Progetto chiaro, toni caldi
+"theme": {
+  "background": "#f2ede6",
+  "text": "#1a1a18",
+  "accent": "#8a7a6a"
+}
+
+// Progetto scuro, toni freddi
+"theme": {
+  "background": "#0f0f0d",
+  "text": "#f0ede8",
+  "accent": "#c8b89a"
+}
+
+// Neutro, quasi base
+"theme": {
+  "background": "#fafaf8",
+  "text": "#0a0a0a",
+  "accent": "#999999"
+}
+```
+
+**Nota:** su mobile il tema non viene applicato. L'esperienza mobile mantiene sempre i colori base del sito, indipendentemente da `theme`.
+
+---
+
+### AGGIUNGERE UN NUOVO PROGETTO — CHECKLIST
+
+- [ ] Aggiungi l'oggetto in `json/progetti.json`
+- [ ] Se il progetto non è pronto: `"pubblicato": false`
+- [ ] Applica le trasformazioni Cloudinary: `w_600` alla copertina, `w_1400` alla galleria
+- [ ] Scegli se usare `testo_lungo` + `galleria` (semplice) o `contenuto` (a blocchi)
+- [ ] Se vuoi un layout specifico: aggiungi `"layoutType"` con uno dei valori disponibili
+- [ ] Se vuoi colori propri: aggiungi `"theme"` con `background`, `text`, `accent`
+- [ ] Se non vuoi personalizzare: ometti `layoutType` e `theme` — il layout base funziona perfettamente
+- [ ] Se vuoi la mappa: compila `mappa` con URL o coordinate
+- [ ] Se vuoi il link esterno: compila `link_esterno` e `label_link`
+- [ ] Fai commit e push
+
+---
+
+### `json/intervalli.json`
 
 ```json
 [
@@ -207,8 +290,8 @@ Quando `contenuto` è presente viene usato come struttura principale. Il campo `
     "titolo": "Sequenza 01",
     "descrizione": "Breve descrizione.",
     "immagini": [
-      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/seq01-a.jpg",
-      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/seq01-b.jpg"
+      "https://res.cloudinary.com/.../seq01-a.jpg",
+      "https://res.cloudinary.com/.../seq01-b.jpg"
     ]
   }
 ]
@@ -216,38 +299,31 @@ Quando `contenuto` è presente viene usato come struttura principale. Il campo `
 
 ---
 
-#### `json/collaborazioni.json`
+### `json/collaborazioni.json`
 
 ```json
 [
   {
     "id": "Cliente1",
     "titolo": "Nome Cliente",
-    "descrizione": "",
     "anno": "2025",
-    "foto": "https://res.cloudinary.com/tuo-nome/image/upload/w_600,q_auto,f_auto/percorso/foto.jpg",
-    "galleria": [
-      "https://res.cloudinary.com/tuo-nome/image/upload/w_1400,q_auto,f_auto/percorso/extra-01.jpg"
-    ]
+    "foto": "https://res.cloudinary.com/.../cover.jpg",
+    "galleria": []
   }
 ]
 ```
 
-**descrizione:** campo di testo opzionale, attualmente presente nello schema ma non ancora mostrato a video.
-
-**galleria:** array opzionale di immagini extra oltre alla `foto` di copertina. Se presente, il click sulla copertina apre il lightbox includendo anche queste immagini. Se vuoto `[]` o assente, il comportamento resta invariato (solo la copertina).
-
-Le collaborazioni appaiono in una pagina con scroll verticale nel mobile e in una griglia nell'overlay desktop.
+**galleria:** array opzionale. Se presente, il click apre il lightbox con tutte le immagini.
 
 ---
 
-#### `json/pubblicazioni.json`
+### `json/pubblicazioni.json`
 
 ```json
 [
   {
     "id": 1,
-    "titolo": "Titolo pubblicazione o press",
+    "titolo": "Titolo pubblicazione",
     "anno": "2025",
     "link": "https://esempio.com/articolo",
     "immagine": ""
@@ -255,17 +331,9 @@ Le collaborazioni appaiono in una pagina con scroll verticale nel mobile e in un
 ]
 ```
 
-**link:** URL all'articolo, video o pagina esterna. Appare come "Vedi →".
-
-**immagine:** URL Cloudinary opzionale. Se vuoto `""`, la voce appare solo come testo.
-
-Le pubblicazioni appaiono:
-- **Mobile:** capitolo "Pubblicazioni" (Capitolo 04), con titolo, anno e link cliccabile
-- **Desktop:** sezione "Pubblicazioni" nella colonna destra di Chi sono, visibile solo se ci sono dati
-
 ---
 
-#### `json/intro.json`
+### `json/intro.json`
 
 ```json
 {
@@ -278,7 +346,7 @@ Le pubblicazioni appaiono:
 
 ---
 
-#### `json/epiloghi.json`
+### `json/epiloghi.json`
 
 ```json
 [
@@ -288,13 +356,11 @@ Le pubblicazioni appaiono:
 ]
 ```
 
-Array di stringhe — frasi brevi che appaiono nella pagina finale "fin", sia su mobile che su desktop.
-
-La frase visualizzata è attualmente fissa in `js/libro.js` (funzione `inizializzaFin()`). Se `epiloghi.json` è assente o vuoto, il sito usa un array di fallback hardcoded in `libro.js`. Per abilitare la selezione casuale tra le frasi, decommenta la riga corrispondente in `inizializzaFin()`.
+Array di frasi brevi per la pagina finale "fin.".
 
 ---
 
-#### `json/taccuino.json` (fallback locale)
+### `json/taccuino.json` (fallback locale)
 
 ```json
 [
@@ -307,113 +373,67 @@ La frase visualizzata è attualmente fissa in `js/libro.js` (funzione `inizializ
 ]
 ```
 
-`foto` può essere `null` oppure un URL Cloudinary ottimizzato:
-
-```json
-"foto": "https://res.cloudinary.com/tuo-nome/image/upload/w_600,q_auto,f_auto/percorso/taccuino.jpg"
-```
+`foto` può essere `null` o un URL Cloudinary (`w_600,q_auto,f_auto`).
 
 ---
 
 ### TACCUINO — GOOGLE SHEETS (fonte principale)
 
-Il taccuino si aggiorna automaticamente da Google Sheets. Ogni volta che apri il sito legge il foglio e mostra le frasi più recenti.
+Il taccuino si aggiorna automaticamente da Google Sheets.
 
 **Setup:**
 
-1. Vai su [sheets.google.com](https://sheets.google.com) e crea un nuovo foglio
-2. Prima riga esattamente:
-   ```
-   A1: testo    B1: data    C1: foto
-   ```
-3. Aggiungi le frasi nelle righe successive
-4. File → Condividi → Pubblica sul web → CSV → Pubblica
-5. Copia l'URL
-6. In `js/libro.js` sostituisci:
+1. Crea un foglio con intestazioni: `testo` / `data` / `foto`
+2. File → Condividi → Pubblica sul web → CSV
+3. In `js/libro.js` sostituisci:
    ```javascript
-   const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/XXXXXXXXXXXXXXXX/pub?output=csv';
+   const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/XXXXXXXX/pub?output=csv';
    ```
 
-**Fallback:** se Sheets non è raggiungibile, il sito carica `json/taccuino.json` automaticamente.
-
-**Aggiornare dal telefono:** apri Google Sheets, aggiungi una riga, il sito si aggiorna al prossimo caricamento.
+**Fallback:** se Sheets non è raggiungibile, carica `json/taccuino.json`.
 
 ---
 
 ### LIGHTBOX
 
-Le immagini di contenuto si aprono in un lightbox a schermo intero al click, sia su desktop che su mobile.
+Click su qualsiasi immagine di contenuto → lightbox a schermo intero.
 
-**Navigazione:**
-- Frecce laterali ← → (cliccabili o touch)
-- Swipe su mobile
+- Frecce ← → o swipe su mobile
 - Tasti `ArrowLeft` / `ArrowRight`
-- `Escape` o click fuori dall'immagine per chiudere
-- Contatore "N / TOT" visibile quando le immagini sono più di una
-
-**Contesti in cui il lightbox si apre:** gallerie di progetto, griglia intervalli, collaborazioni, foto taccuino, foto chi sono.
-
-**Esclusi dal lightbox:** copertine card progetto (aprono il progetto), favicon e immagini di interfaccia.
+- `Escape` o click fuori per chiudere
+- Contatore N / TOT se le immagini sono più di una
 
 ---
 
 ### IMMAGINI
 
-**Formato:** JPG consigliato
-**Copertine:** 1200×800px (orizzontale) o 800×1200px (verticale)
-**Galleria:** qualsiasi proporzione, il sito si adatta
-**Peso sorgente consigliato:** sotto i 500KB se usi immagini locali
+**Cloudinary — trasformazioni consigliate:**
 
-**Cloudinary — ottimizzazione automatica:**
 ```
-https://res.cloudinary.com/tuo-nome/image/upload/w_1200,q_auto,f_auto/percorso/immagine.jpg
+w_600,q_auto,f_auto   → copertine, anteprime, taccuino, collaborazioni
+w_1400,q_auto,f_auto  → gallerie progetto, intervalli, immagini grandi
 ```
-
-Parametri principali:
-- `w_600` → card, anteprime, collaborazioni, pubblicazioni, immagini piccole
-- `w_1400` → gallerie progetto, intervalli, immagini grandi
-- `q_auto` → qualità automatica
-- `f_auto` → formato automatico (WebP / AVIF quando disponibile)
-
-**Regola pratica usata nel sito:**
-- `immagine_copertina` → `w_600,q_auto,f_auto`
-- `galleria` / `intervalli` → `w_1400,q_auto,f_auto`
-- `collaborazioni` / `taccuino` / `pubblicazioni` → `w_600,q_auto,f_auto`
 
 ---
 
-### OTTIMIZZAZIONI PERFORMANCE
+### FONT
 
-- **Preconnect font** in `index.html` verso `fonts.googleapis.com` e `fonts.gstatic.com`
-- **Caricamento font in HTML** invece di `@import` nel CSS
-- **Lazy loading** su tutte le immagini generate dinamicamente, tranne l'hero
-- **`decoding="async"`** sulle immagini non prioritarie
-- **Cloudinary con trasformazioni attive** nei JSON (`w_`, `q_auto`, `f_auto`)
-- **Hero prioritaria** lasciata fuori dal lazy loading
-- **Cache HTML** per overlay progetto e taccuino (apertura istantanea dalla seconda volta)
-- **Inserimento a blocchi** con `requestAnimationFrame` per overlay studi e collaborazioni (6 elementi per frame)
+| Uso | Font |
+|---|---|
+| Titoli, capitoli, fin | Playfair Display |
+| Menu, testi, UI | Inter |
+| Taccuino | Francescomartolini-Regular (font calligrafico personale) |
 
----
-
-### PROTEZIONE IMMAGINI
-
-- Click destro bloccato
-- Drag & drop bloccato
-- Ctrl+S, Ctrl+U, Ctrl+P bloccati
-- Overlay trasparente sopra ogni immagine
-- `pointer-events: none` sulle img
-- `-webkit-user-drag: none`
-
-**Nota:** nessuna protezione lato client è inviolabile al 100%. La protezione scoraggia l'utente casuale.
+Il font calligrafico è generato con Calligraphr dal template in `TEMPLATE/Calligraphr-Template.pdf`.
 
 ---
 
 ### FAVICON DINAMICA
 
-Il tab del browser mostra una lettera diversa per ogni sezione:
+Il tab del browser mostra una lettera diversa per ogni sezione.
 
 | Sezione | Lettera |
-|---------|---------|
+|---|---|
 | Home | H |
 | Progetti | P |
 | Taccuino | T |
@@ -422,169 +442,80 @@ Il tab del browser mostra una lettera diversa per ogni sezione:
 | Commercial | F |
 | Pubblicazioni | P |
 | Indice | ≡ |
-| Introduzione | ∙ |
 | Fine | · |
-
-Il titolo del tab si aggiorna di conseguenza.
-Su iPhone, aggiungendo il sito alla schermata home appare come una mini-app con icona nera e la *f.* italic.
 
 ---
 
 ### TEMA CHIARO / SCURO
 
-Il bottone sole nell'header è attualmente **disabilitato** (commentato in `index.html`). Il codice è presente in `js/libro.js` nella funzione `avviaTema()` e può essere riattivato decommentando il bottone `#tema-toggle` nell'header.
-
-La scelta viene salvata in `localStorage` e ricordata alle visite successive.
-La sezione Progetti inverte i colori automaticamente in entrambi i temi.
+Il bottone sole nell'header è attualmente **disabilitato** (commentato in `index.html`). Il codice è presente in `js/libro.js` → `avviaTema()` e può essere riattivato decommentando `#tema-toggle`.
 
 ---
 
 ### CURSORE CUSTOM (desktop)
 
-Il cursore è un punto nero con anello. Cambia colore automaticamente in base allo sfondo:
+Punto nero con anello. Cambia colore automaticamente:
 - Su sfondo chiaro → cursore nero
 - Su sfondo scuro → cursore bianco
 
 ---
 
-### COOKIE BANNER
+### OTTIMIZZAZIONI PERFORMANCE
 
-Appare alla prima visita. L'utente sceglie tra "Solo essenziali" e "Ho capito".
-La scelta viene salvata in `localStorage` e non riappare.
-Posizionato sopra il footer, non copre la navigazione.
-
----
-
-### FONT
-
-- **Titoli, capitoli, fin:** Playfair Display (serif)
-- **Menu, date, testi, UI:** Inter (sans-serif)
-- **Taccuino:** font calligrafico personale (`fonts/Francescomartolini-Regular.otf`, caricato via `@font-face` come `Custom_Font` in `css/stile.css`)
-
-Playfair Display e Inter vengono caricati direttamente in `index.html` con `preconnect`, non tramite `@import` nel CSS. Il font del taccuino è invece locale (file `.otf` nella cartella `fonts/`), creato con Calligraphr a partire dal template in `TEMPLATE/Calligraphr-Template.pdf`.
-
-Per tornare a un font di sistema (es. Caveat Brush) è sufficiente cambiare il valore di `--font-taccuino` in `css/stile.css` — la riga alternativa è già presente come commento.
+- Preconnect font in `index.html`
+- Lazy loading su tutte le immagini tranne l'hero
+- Cache HTML per overlay progetto e taccuino (apertura istantanea dalla seconda volta)
+- Inserimento a blocchi con `requestAnimationFrame` per studi e collaborazioni
 
 ---
 
-### OROLOGIO LIVE
+### PROTEZIONE IMMAGINI
 
-Data e ora scorrono in tempo reale in ogni pagina.
-Su desktop è fisso in alto a destra (sticky), scompare quando l'hero è visibile perché l'hero ha il proprio orologio nel margine.
-Su mobile è centrato in cima ad ogni pagina.
-
----
-
-### SLIDER PROGETTI (desktop)
-
-Se ci sono più di 4 progetti, la griglia diventa uno slider con frecce sinistra/destra.
-Con 4 o meno progetti le frecce non appaiono.
-
----
-
-### PAGINE OVERLAY (desktop)
-
-| Link | Metodo | Contenuto |
-|------|--------|-----------|
-| Vedi tutti → (Progetti) | `apriPagina('tutti-progetti')` | Griglia tutti i progetti con copertina e descrizione |
-| Vedi tutti → (Intervalli) | `apriPagina('tutti-studi')` | Griglia tutte le immagini degli intervalli |
-| Scopri di più → (Chi sono) | `apriPagina('chi-sono-pagina')` | Biografia estesa, foto, contatti |
-| Vedi alcuni lavori → (Collaborazioni) | `apriPagina('collaborazioni-pagina')` | Griglia clienti con foto e anno |
-| Leggi tutti → (Taccuino) | `apriTaccuino()` | Archivio completo con barra di ricerca |
-
-I progetti con `pubblicato: false` compaiono nella griglia ma non aprono la pagina dettaglio.
-
----
-
-### CONTATTI
-
-Modificabili in due posti da tenere allineati:
-
-1. `index.html` → sezione `#chi-sono` (versione mobile)
-2. `js/libro.js` → funzione `apriPagina('chi-sono-pagina')` (versione desktop overlay)
-
-```html
-href="mailto:XXXXXXXXXX@XXXXXXXXXX"
-href="https://instagram.com/XXXXXXXXXX"
-href="tel:+39XXXXXXXXXX"
-```
-
----
-
-### PUBBLICAZIONE
-
-**GitHub Pages (attuale):**
-Il sito è pubblicato su GitHub Pages all'indirizzo:
-`https://francescomartolini.github.io/francescomartolini.art/`
-
-Per aggiornare: fai commit e push, GitHub Pages si aggiorna automaticamente.
-
-**Netlify (alternativa, consigliata per domini custom):**
-1. [netlify.com](https://netlify.com) → account gratuito
-2. Connetti il repository GitHub
-3. Ogni push aggiorna il sito automaticamente
-4. Puoi collegare un dominio personalizzato gratuitamente
+- Click destro bloccato
+- Drag & drop bloccato
+- Ctrl+S, Ctrl+U, Ctrl+P bloccati
+- `pointer-events: none` sulle immagini
 
 ---
 
 ### PERSONALIZZAZIONE RAPIDA
 
 | Cosa | Dove |
-|------|------|
+|---|---|
 | Titolo del libro | `index.html` → sezione `#home` mobile |
 | Testo hero desktop | `index.html` → `.hero-sinistra` |
 | Introduzione | `json/intro.json` |
 | Frasi taccuino | Google Sheets oppure `json/taccuino.json` |
-| Frasi pagina "fin" | `json/epiloghi.json` (o array `EPILOGHI` in `libro.js`) |
+| Frasi pagina "fin" | `json/epiloghi.json` |
 | Progetti | `json/progetti.json` |
+| Layout progetto | `json/progetti.json` → campo `layoutType` |
+| Tema colori progetto | `json/progetti.json` → campo `theme` |
 | Intervalli | `json/intervalli.json` |
 | Collaborazioni commerciali | `json/collaborazioni.json` |
 | Pubblicazioni e press | `json/pubblicazioni.json` |
-| Colori | `css/stile.css` → `:root` |
-| Font | `index.html` → `<head>` (`preconnect` + `<link href=...fonts...>`) |
+| Colori globali | `css/stile.css` → `:root` |
+| Font | `index.html` → `<head>` |
 | Contatti | `index.html` → `#chi-sono` + `js/libro.js` → `apriPagina('chi-sono-pagina')` |
 | URL Google Sheets | `js/libro.js` → `const SHEETS_URL` |
-| Testo cookie | `index.html` → `#cookie-banner` |
-| Soglia cursore scuro/chiaro | `js/libro.js` → `isColorDark()` → valore `0.4` |
-| Bottone tema chiaro/scuro | `index.html` → commenta/decommenta `#tema-toggle` nell'header |
 
 ---
 
-### AGGIUNGERE UN NUOVO PROGETTO — CHECKLIST
+### PUBBLICAZIONE
 
-- [ ] Aggiungi l'oggetto in `json/progetti.json`
-- [ ] Se il progetto non è pronto, imposta `"pubblicato": false`
-- [ ] Applica le trasformazioni Cloudinary: `w_600` alla copertina, `w_1400` alla galleria
-- [ ] Crea la cartella `images/progetti/nome-progetto/` solo se usi immagini locali
-- [ ] Imposta `immagine_copertina` e array `galleria` con i percorsi corretti
-- [ ] Se vuoi il layout avanzato, usa `contenuto` con i tipi: `testo`, `immagine`, `galleria`, `mappa`, `separatore`
-- [ ] Se vuoi la mappa: URL Google My Maps o coordinate lat/lng
-- [ ] Se vuoi il link esterno: compila `link_esterno` e `label_link`
-- [ ] Fai commit e push
+Il sito è pubblicato su GitHub Pages. Ogni commit e push aggiorna automaticamente il sito.
+
+Per un dominio personalizzato: connetti il repository a [Netlify](https://netlify.com) (gratuito).
 
 ---
 
-### AGGIUNGERE UNA PUBBLICAZIONE — CHECKLIST
-
-- [ ] Aggiungi l'oggetto in `json/pubblicazioni.json` con `id`, `titolo`, `anno`, `link`
-- [ ] Se hai un'immagine, inserisci l'URL Cloudinary in `immagine`; altrimenti lascia `""`
-- [ ] La voce appare automaticamente nel mobile (Capitolo Pubblicazioni) e nel desktop (sezione Chi sono)
-- [ ] Fai commit e push
-
----
-
-### MATERIALI DI SUPPORTO (cartella TEMPLATE/)
-
-La cartella `TEMPLATE/` contiene file di lavoro non deployati sul sito:
+### MATERIALI DI SUPPORTO (`TEMPLATE/`)
 
 | File | Descrizione |
-|------|-------------|
-| `Calligraphr-Template.pdf` | Template per creare font calligrafici personalizzati su Calligraphr |
-| `taccuino_template.xlsx` | Foglio Excel per strutturare e preparare le frasi del taccuino |
-| `Test_interfaccia_Descktop/fm_editorial_interface.html` | Prototipo interfaccia editoriale desktop |
-| `Test_interfaccia_Descktop/spatial_map_wireframe.html` | Prototipo wireframe con mappa spaziale |
-| `Test_interfaccia_Descktop/temporal_timeline_desktop.html` | Prototipo timeline temporale desktop |
-| `INSPO_Layout_Progetti/` | Screenshot di riferimento (Pinterest) per possibili layout futuri della pagina progetto |
+|---|---|
+| `Calligraphr-Template.pdf` | Template per creare font calligrafici su Calligraphr |
+| `taccuino_template.xlsx` | Foglio Excel per strutturare il taccuino |
+| `INSPO_Layout_Progetti/` | Screenshot di riferimento per i layout della pagina progetto |
+| `Test_interfaccia_Descktop/` | Prototipi HTML di interfacce desktop alternative |
 
 Questi file non influenzano il sito in produzione.
 
@@ -595,12 +526,8 @@ Questi file non influenzano il sito in produzione.
 - Zero dipendenze esterne oltre a Google Fonts
 - Dati gestiti interamente via JSON
 - Taccuino aggiornabile da smartphone via Google Sheets
-- Lazy loading su tutte le immagini tranne l'hero
-- Cache HTML per overlay progetto e taccuino (apertura istantanea dalla seconda volta)
-- Inserimento a blocchi con `requestAnimationFrame` per overlay studi e collaborazioni
 - Lightbox con navigazione frecce, swipe e tastiera
-- Indice mobile generato dinamicamente con navigazione diretta alle sezioni
+- Indice mobile generato dinamicamente
 - Compatibile con tutti i browser moderni
-- Accessibile: navigazione da tastiera completa (frecce, Escape)
+- Navigazione da tastiera completa (frecce, Escape)
 - PWA-ready: manifest e apple-touch-icon configurati
-- Accesso ai progetti controllato dal flag `pubblicato` in modo coerente tra mobile, slider desktop, overlay e apertura diretta
