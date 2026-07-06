@@ -97,30 +97,38 @@ function parseCsv(csv) {
   }).filter(v => v.testo);
 }
 
+// ── Fetch con timeout: non aspetta mai più di `ms' ──
+function fetchConTimeout(url, ms) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(timer));
+}
+
 // ── Carica dati ──
 async function caricaDati() {
-  const [progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi] = await Promise.all([
+  // Tutte le richieste partono insieme, inclusa quella a Google Sheets:
+  // se Sheets non risponde entro 1.5s, si passa subito al fallback locale
+  // senza far aspettare il resto della pagina.
+  const [progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi, taccuinoRisultato] = await Promise.all([
     fetch('json/progetti.json').then(r => r.json()),
     fetch('json/intervalli.json').then(r => r.json()),
     fetch('json/collaborazioni.json').then(r => r.json()),
     fetch('json/intro.json').then(r => r.json()).catch(() => ({ testo: '' })),
     fetch('json/pubblicazioni.json').then(r => r.json()).catch(() => []),
-    fetch('json/epiloghi.json').then(r => r.json()).catch(() => [])
+    fetch('json/epiloghi.json').then(r => r.json()).catch(() => []),
+    fetchConTimeout(SHEETS_URL, 1500)
+      .then(r => { if (!r.ok) throw new Error(); return r.text(); })
+      .then(csv => ({ fonte: 'sheets', dati: parseCsv(csv) }))
+      .catch(() =>
+        fetch('json/taccuino.json').then(r => r.json())
+          .then(dati => ({ fonte: 'locale', dati }))
+          .catch(() => ({ fonte: 'locale', dati: [] }))
+      )
   ]);
-  Object.assign(stato, { progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi});
 
-  try {
-    const r = await fetch(SHEETS_URL);
-    if (!r.ok) throw new Error();
-    stato.taccuino = parseCsv(await r.text()).sort((a, b) => new Date(b.data) - new Date(a.data));
-    _cacheTaccuino = null;
-  } catch {
-    try {
-      stato.taccuino = (await fetch('json/taccuino.json').then(r => r.json()))
-        .sort((a, b) => new Date(b.data) - new Date(a.data));
-    } catch { stato.taccuino = []; }
-    _cacheTaccuino = null;
-  }
+  Object.assign(stato, { progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi });
+  stato.taccuino = taccuinoRisultato.dati.sort((a, b) => new Date(b.data) - new Date(a.data));
+  _cacheTaccuino = null;
 }
 
 // ── Orologio ──
@@ -1527,11 +1535,23 @@ window.chiudiPagina = chiudiPagina;
 
 // ── Init ──
 async function init() {
+  // Fase 1 — subito, senza aspettare i dati:
+  // la home è già nel markup statico, quindi la mostriamo ora
+  // invece di lasciare lo schermo vuoto finché i fetch non finiscono.
+  if (isMobile()) {
+    document.querySelector('.page')?.classList.add('attiva');
+    $('freccia-sx')?.setAttribute('disabled', '');
+  }
+  avviaOrologio();
+  avviaTema();
+  avviaCookie();
+  avviaCursore();
+
+  // Fase 2 — quando i dati arrivano, si costruisce il resto del libro
   await caricaDati();
 
   if (isMobile()) {
     costruisciMobile();
-    document.querySelector('.page')?.classList.add('attiva');
     aggiornaUI();
     document.addEventListener('keydown', gestisciTastiera);
     document.addEventListener('touchstart', gestisciTouchStart, { passive: true });
@@ -1539,17 +1559,12 @@ async function init() {
     document.addEventListener('click', gestisciTap);
     $('freccia-sx')?.addEventListener('click', paginaPrecedente);
     $('freccia-dx')?.addEventListener('click', paginaSuccessiva);
-    $('freccia-sx')?.setAttribute('disabled', '');
   } else {
     popolaDesktop();
     inizializzaScrollDesktop();
     avviaOrologioSticky();
   }
 
-  avviaOrologio();
-  avviaTema();
-  avviaCookie();
-  avviaCursore();
   lightbox.init();
   inizializzaFin();
 }
