@@ -11,6 +11,7 @@
 const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?output=csv';
 
 const stato = {
+  lang: localStorage.getItem('lang') || 'it',
   paginaCorrente: 0,
   totPagine: 0,
   inTransizione: false,
@@ -21,6 +22,18 @@ const stato = {
   intro: {},
   sliderIdx: 0
 };
+
+function t(field) {
+  if (field == null) return '';
+  if (typeof field === 'string') return field; // fallback per campi non ancora bilingue
+  return field[stato.lang] || field.it || '';
+}
+
+function setLang(lang) {
+  stato.lang = lang;
+  localStorage.setItem('lang', lang);
+  location.reload(); // semplice: ri-renderizza tutto da capo
+}
 
 const EPILOGHI = [
   'Il tempo lascia tracce.',
@@ -86,40 +99,49 @@ function parseCsv(csv) {
     for (let c = 0; c < riga.length; c++) {
       const ch = riga[c];
       if (ch === '"') { inQ = !inQ; continue; }
-      if (ch === ',' && !inQ && colIdx < 2) {
+      if (ch === ',' && !inQ && colIdx < 3) { 
+        //splitta fino alla colonna 3 divido le collonne nel google sheet in modo che la colonna 3 sia l'ultima e non ci siano problemi con le virgole nel testo
         celle.push(cell.trim()); cell = ''; colIdx++; continue;
       }
       cell += ch;
     }
     celle.push(cell.trim());
     return { id: i+1, testo: celle[0]||'', data: celle[1]||'', foto: celle[2]||null, camera: celle[3]||null };
-  }).filter(v => v.testo);
+  }).filter(v => t(v.testo));
+}
+
+// ── Fetch con timeout: non aspetta mai più di `ms' ──
+function fetchConTimeout(url, ms) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(timer));
 }
 
 // ── Carica dati ──
 async function caricaDati() {
-  const [progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi] = await Promise.all([
+  // Tutte le richieste partono insieme, inclusa quella a Google Sheets:
+  // se Sheets non risponde entro 1.5s, si passa subito al fallback locale
+  // senza far aspettare il resto della pagina.
+  const [progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi, taccuinoRisultato] = await Promise.all([
     fetch('json/progetti.json').then(r => r.json()),
     fetch('json/intervalli.json').then(r => r.json()),
     fetch('json/collaborazioni.json').then(r => r.json()),
     fetch('json/intro.json').then(r => r.json()).catch(() => ({ testo: '' })),
     fetch('json/pubblicazioni.json').then(r => r.json()).catch(() => []),
-    fetch('json/epiloghi.json').then(r => r.json()).catch(() => [])
+    fetch('json/epiloghi.json').then(r => r.json()).catch(() => []),
+    fetchConTimeout(SHEETS_URL, 1500)
+      .then(r => { if (!r.ok) throw new Error(); return r.text(); })
+      .then(csv => ({ fonte: 'sheets', dati: parseCsv(csv) }))
+      .catch(() =>
+        fetch('json/taccuino.json').then(r => r.json())
+          .then(dati => ({ fonte: 'locale', dati }))
+          .catch(() => ({ fonte: 'locale', dati: [] }))
+      )
   ]);
-  Object.assign(stato, { progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi});
 
-  try {
-    const r = await fetch(SHEETS_URL);
-    if (!r.ok) throw new Error();
-    stato.taccuino = parseCsv(await r.text()).sort((a, b) => new Date(b.data) - new Date(a.data));
-    _cacheTaccuino = null;
-  } catch {
-    try {
-      stato.taccuino = (await fetch('json/taccuino.json').then(r => r.json()))
-        .sort((a, b) => new Date(b.data) - new Date(a.data));
-    } catch { stato.taccuino = []; }
-    _cacheTaccuino = null;
-  }
+  Object.assign(stato, { progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi });
+  stato.taccuino = taccuinoRisultato.dati.sort((a, b) => new Date(b.data) - new Date(a.data));
+  _cacheTaccuino = null;
 }
 
 // ── Orologio ──
@@ -210,7 +232,7 @@ function creaPaginaTaccuinoMobile(v) {
     const img = crea('img'); img.src = v.foto; img.alt = ''; img.draggable = false;
     fw.appendChild(img); tw.appendChild(fw);
   }
-  tw.innerHTML += `<p class="taccuino-frase">${v.testo}</p><p class="taccuino-data">${formatData(v.data)}</p>${v.camera ? `<p class="taccuino-voce-camera">${v.camera}</p>` : ''}`;
+  tw.innerHTML += `<p class="taccuino-frase">${t(v.testo)}</p>${v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p><p class="taccuino-data">${formatData(v.data)}</p>` : ''}`;
   pc.appendChild(tw); pt.appendChild(mpc);
   return pt;
 }
@@ -294,7 +316,7 @@ function popolaDesktop() {
       const col = crea('div'); col.className = 'taccuino-col-voce';
       col.innerHTML = `
         <p class="taccuino-col-data">${formatData(v.data)}</p>
-        <p class="taccuino-col-frase">${v.testo}</p>
+        <p class="taccuino-col-frase">${t(v.testo)}</p>
         <button class="taccuino-col-expand" onclick="apriTaccuino()">+</button>
       `;
       colonne.appendChild(col);
@@ -349,12 +371,12 @@ function popolaSliderProgetti() {
     card.innerHTML = `
       <div class="progetto-card-img"></div>
       <p class="progetto-card-num">${formatNum(i + 1)}</p>
-      <p class="progetto-card-titolo">${pr.titolo.toUpperCase()}</p>
-      <p class="progetto-card-anno">${pr.anno}</p>
+      <p class="progetto-card-titolo">${t(pr.titolo).toUpperCase()}</p>
+      <p class="progetto-card-anno">${t(pr.anno)}</p>
     `;
 
     card.querySelector('.progetto-card-img').appendChild(
-      creaImg(pr.immagine_copertina, pr.titolo)
+      creaImg(t(pr.immagine_copertina), t(pr.titolo))
     );
 
     if (progettoPubblicato(pr)) {
@@ -398,12 +420,12 @@ function apriPagina(tipo) {
         card.innerHTML = `
           <div class="tutti-card-img"></div>
           <p class="tutti-card-num">0${i + 1}</p>
-          <h2 class="tutti-card-titolo">${pr.titolo}</h2>
-          <p class="tutti-card-anno">${pr.anno}</p>
-          <p class="tutti-card-desc">${pr.descrizione}</p>
+          <h2 class="tutti-card-titolo">${t(pr.titolo)}</h2>
+          <p class="tutti-card-anno">${t(pr.anno)}</p>
+          <p class="tutti-card-desc">${t(pr.descrizione)}</p>
           ${inLavorazione ? '<p class="tutti-card-wip">In lavorazione</p>' : ''}
         `;
-        card.querySelector('.tutti-card-img').appendChild(creaImg(pr.immagine_copertina, pr.titolo));
+        card.querySelector('.tutti-card-img').appendChild(creaImg(t(pr.immagine_copertina), t(pr.titolo)));
         if (!inLavorazione) card.addEventListener('click', () => apriProgetto(pr.id));
         $('tutti-proj-grid').appendChild(card);
       });
@@ -437,6 +459,17 @@ function apriPagina(tipo) {
       return; // già aperto sopra, salta il codice finale
       break;
 
+    case 'come-funziona':
+      contenuto.innerHTML = `
+        <h1 class="overlay-titolo overlay-titolo-nota">Note</h1>
+        <div class="nota-testo">
+          <p>Questo sito si legge come un libro.</p>
+          <p>Tocca il lato destro della pagina per proseguire, il lato sinistro per tornare indietro. Puoi anche scorrere con il dito, come si sfoglia una pagina.</p>
+          <p>Il punto sul bordo destro segna la posizione nel libro: trascinalo per muoverti più rapidamente tra le pagine.</p>
+        </div>
+      `;
+      break;
+
     case 'chi-sono-pagina': {
       const SVG_MAIL = `<svg viewBox="0 0 24 24" class="contatto-icon"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>`;
       const SVG_IG = `<svg viewBox="0 0 24 24" class="contatto-icon"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/></svg>`;
@@ -448,7 +481,7 @@ function apriPagina(tipo) {
           <div class="chi-sono-esteso-testo">
             <!-- <h2>Francesco Martolini</h2> -->
             <h2>Dove nasce il lavoro</h2>
-              <p class="introduzione-testo">${stato.intro.testo.replace(/\n/g, '<br>')}</p>
+              <p class="introduzione-testo">${t(stato.intro.testo).replace(/\n/g, '<br>')}</p>
             <h2>Biografia</h2>
             <p>Fotografo italiano. Il mio lavoro esplora il rapporto tra spazio, tempo e memoria — cercando nelle immagini le tracce di ciò che resta.</p>
             <p>Sono interessato alla fotografia come strumento di indagine, non di rappresentazione. Ogni progetto nasce da una domanda che il tempo continua a restituirmi.</p>
@@ -545,27 +578,100 @@ const _cacheProgetti = {};
 function apriProgetto(id) {
   const pr = stato.progetti.find(p => p.id === id);
   if (!pr || pr.pubblicato === false) return;
-  if (!pr) return;
   const el = $('pagina-progetto');
   const interno = el.querySelector('.progetto-interno');
 
+  // Applica tema colori solo se definito nel JSON (solo desktop)
+  const th = pr.theme;
+  if (!isMobile() && th) {
+    el.style.setProperty('--pr-bg',     th.background || '');
+    el.style.setProperty('--pr-text',   th.text       || '');
+    el.style.setProperty('--pr-accent', th.accent     || '');
+  }
+
   if (!_cacheProgetti[id]) {
-    _cacheProgetti[id] = `
-      <button class="progetto-torna" onclick="chiudiProgetto()">Torna</button>
+    const layout = pr.layoutType || 'base';
+    const hasNamedLayout = ['editorial','magazine','column','archivio','panoramico'].includes(layout);
+
+    // Cover a due colonne solo per i layout con identità visiva definita
+    // Per layout base: header semplice come l'originale
+    const coverHTML = (hasNamedLayout && pr.immagine_copertina) ? `
+      <div class="progetto-cover">
+        <div class="progetto-cover-img">
+          <img src="${t(pr.immagine_copertina)}" alt="${t(pr.titolo)}" draggable="false" loading="eager">
+        </div>
+        <div class="progetto-cover-testo">
+          <h1 class="progetto-cover-titolo">${t(pr.titolo)}</h1>
+          <p class="progetto-cover-anno">${t(pr.anno)}</p>
+          <p class="progetto-cover-desc">${t(pr.descrizione)}</p>
+          ${pr.link_esterno
+            ? `<p style="margin-top:32px;"><a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">${t(pr.label_link) || 'Vedi online'}</a></p>`
+            : ''}
+        </div>
+      </div>` : `
       <div class="progetto-interno-header">
         <div>
-          <h1 class="progetto-interno-titolo">${pr.titolo}</h1>
-          <p class="progetto-interno-anno">${pr.anno}</p>
+          <h1 class="progetto-interno-titolo">${t(pr.titolo)}</h1>
+          <p class="progetto-interno-anno">${t(pr.anno)}</p>
         </div>
-        ${pr.link_esterno ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">${pr.label_link || 'Vedi online'}</a>` : ''}
-      </div>
-      ${generaContenutoProgetto(pr)}
-    `;
+        ${pr.link_esterno ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">${t(pr.label_link) || 'Vedi online'}</a>` : ''}
+      </div>`;
+
+    _cacheProgetti[id] = `
+      <button class="progetto-torna" onclick="chiudiProgetto()">Torna</button>
+      ${coverHTML}
+      <div class="layout-${layout}">
+        <div class="progetto-body">
+          ${generaContenutoProgetto(pr)}
+        </div>
+      </div>`;
   }
 
   interno.innerHTML = _cacheProgetti[id];
   el.classList.add('aperta');
   el.scrollTop = 0;
+
+  // Scroll reveal
+  avviaReveal(el);
+
+  // Immagine sticky per layout archivio
+  if ((pr.layoutType || '') === 'archivio') {
+    avviaScrollArchivio(el, pr);
+  }
+}
+
+// Scroll-reveal per le sezioni
+function avviaReveal(overlayEl) {
+  const els = overlayEl.querySelectorAll(
+    '.section-text, .section-image, .section-imagetext, .section-quote, .section-gallery, .section-map'
+  );
+  els.forEach(e => e.classList.add('reveal'));
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('visible'); obs.unobserve(entry.target); }
+    });
+  }, { root: overlayEl, threshold: 0.06 });
+  els.forEach(e => obs.observe(e));
+}
+
+// Aggiorna l'immagine sticky nel layout archivio mentre si scorre
+function avviaScrollArchivio(overlayEl, pr) {
+  const stickyImg = overlayEl.querySelector('#archivio-sticky-img');
+  if (!stickyImg) return;
+  const markers = overlayEl.querySelectorAll('[data-archivio-img]');
+  if (!markers.length) return;
+  if (overlayEl._scrollHandler) overlayEl.removeEventListener('scroll', overlayEl._scrollHandler);
+  overlayEl._scrollHandler = () => {
+    let corrente = null;
+    markers.forEach(m => {
+      if (m.offsetTop <= overlayEl.scrollTop + overlayEl.clientHeight * 0.55) corrente = m.dataset.archivioImg;
+    });
+    if (corrente && stickyImg.getAttribute('src') !== corrente) {
+      stickyImg.style.opacity = '0';
+      setTimeout(() => { stickyImg.src = corrente; stickyImg.style.opacity = '1'; }, 240);
+    }
+  };
+  overlayEl.addEventListener('scroll', overlayEl._scrollHandler, { passive: true });
 }
 
 function generaImgHTML(src, titolo) {
@@ -573,61 +679,180 @@ function generaImgHTML(src, titolo) {
 }
 
 function generaContenutoProgetto(pr) {
-  if (!pr.contenuto) {
-    const galleria = pr.galleria.map(src => generaImgHTML(src, pr.titolo)).join('');
-    return `
-      <p class="progetto-interno-testo">${pr.testo_lungo.replace(/\n/g, '<br>')}</p>
-      ${generaMappaHTML(pr)}
-      <div class="progetto-galleria">${galleria}</div>
-    `;
-  }
-  const blocchi = pr.contenuto.map(blocco => {
-    switch (blocco.tipo) {
-      case 'titolo':
-        return `<h3 class="progetto-interno-titolo">${blocco.valore}</h3>`;
-      case 'testo':
-        return `<p class="progetto-interno-testo">${blocco.valore.replace(/\n/g, '<br>')}</p>`;
-      case 'immagine':
-        return generaImgHTML(blocco.valore, pr.titolo);
-      case 'galleria': {
-        const imgs = (Array.isArray(blocco.valore) ? blocco.valore : [blocco.valore])
-          .map(src => generaImgHTML(src, pr.titolo)).join('');
-        return `<div class="progetto-galleria-gruppo">${imgs}</div>`;
+  // Supporta sia il vecchio schema (contenuto[]) sia il nuovo (sections[])
+  const usaSections = Array.isArray(pr.sections) && pr.sections.length > 0;
+
+  if (usaSections) {
+    // ── Schema nuovo: sections[] ──
+    return pr.sections.map(s => {
+      switch (s.type) {
+        case 'text':
+          return `<div class="section-text">${
+            (s.content || '').split('\n\n').map(p =>
+              p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : ''
+            ).join('')
+          }</div>`;
+        case 'image':
+          return `<div class="section-image${s.fullscreen ? ' fullscreen' : ''}" ${pr.layoutType === 'archivio' ? `data-archivio-img="${s.src}"` : ''}>
+            <img src="${t(s.src)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
+          </div>`;
+        case 'imageText':
+          return `<div class="section-imagetext ${s.position === 'right' ? 'position-right' : 'position-left'}">
+            <img src="${t(s.image)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
+            <div class="section-imagetext-content">${(s.content || '').replace(/\n/g, '<br>')}</div>
+          </div>`;
+        case 'gallery':
+          return `<div class="section-gallery">${
+            (s.images || []).map(src =>
+              `<div class="gallery-img"><img src="${t(src)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy"></div>`
+            ).join('')
+          }</div>`;
+        case 'quote':
+          return `<blockquote class="section-quote">${t(s.content) || ''}</blockquote>`;
+        case 'map': {
+          const msrc = s.url || (s.lat && s.lng ? `https://maps.google.com/maps?q=${s.lat},${s.lng}&z=${s.zoom || 13}&output=embed` : '');
+          if (!msrc) return '';
+          return `<div class="section-map">
+            ${s.label ? `<p class="section-map-label">${t(s.label)}</p>` : ''}
+            <iframe src="${t(msrc)}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>`;
+        }
+        default: return '';
       }
-      case 'mappa':
-        return generaMappaHTML(pr);
-      case 'separatore':
-        return `<div class="progetto-separatore"></div>`;
-      default:
-        return '';
+    }).join('');
+  }
+
+  // ── Schema vecchio: contenuto[] ──
+  const layout = pr.layoutType || 'base';
+
+  // Per layout archivio: prima immagine va nella colonna sticky, le altre come marker
+  if (layout === 'archivio') {
+    const immagini = [pr.immagine_copertina, ...(pr.galleria || [])].filter(Boolean);
+    const primaImg = immagini[0] || '';
+    let html = '';
+
+    if (!pr.contenuto) {
+      html += `<div class="archivio-colonna-testo">
+        <div class="section-text"><p>${(pt(pr.testo_lungo) || '').replace(/\n/g, '<br>')}</p></div>
+        ${generaMappaHTML(pr)}
+        ${(pr.galleria || []).slice(1).map(src =>
+          `<div class="section-image" data-archivio-img="${src}">
+            <img src="${t(src)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
+          </div>`).join('')}
+      </div>
+      <div class="archivio-colonna-img">
+        <img id="archivio-sticky-img" class="archivio-img-principale" src="${t(primaImg)}" alt="${t(pr.titolo)}" draggable="false">
+      </div>
+      <div class="archivio-footer-tipografico">
+        <span>francescomartolini.art</span>
+        <span>${t(pr.titolo).toUpperCase()}</span>
+        <span>${t(pr.anno)}</span>
+      </div>`;
+      return html;
+    }
+
+    // Ha contenuto[]
+    let colonnaHTML = '';
+    pr.contenuto.forEach(b => {
+      switch (b.tipo) {
+        case 'titolo':
+          colonnaHTML += `<h3 class="section-titolo-interno">${t(b.valore)}</h3>`; break;
+        case 'testo':
+          colonnaHTML += `<div class="section-text">${
+            t(b.valore).split('\n\n').map(p => p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : '').join('')
+          }</div>`; break;
+        case 'immagine':
+          colonnaHTML += `<div class="section-image" data-archivio-img="${t(b.valore)}">
+            <img src="${t(b.valore)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
+          </div>`; break;
+        case 'mappa':
+          colonnaHTML += generaMappaHTML(pr); break;
+        case 'separatore':
+          colonnaHTML += `<hr class="progetto-separatore">`; break;
+      }
+    });
+    if (pr.galleria?.length) {
+      pr.galleria.forEach(src => {
+        colonnaHTML += `<div class="section-image" data-archivio-img="${src}">
+          <img src="${src}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
+        </div>`;
+      });
+    }
+
+    return `<div class="archivio-colonna-testo">${colonnaHTML}</div>
+      <div class="archivio-colonna-img">
+        <img id="archivio-sticky-img" class="archivio-img-principale" src="${t(primaImg)}" alt="${t(pr.titolo)}" draggable="false">
+      </div>
+      <div class="archivio-footer-tipografico">
+        <span>francescomartolini.art</span>
+        <span>${t(pr.titolo).toUpperCase()}</span>
+        <span>${t(pr.anno)}</span>
+      </div>`;
+  }
+
+  // Per tutti gli altri layout: mappa blocchi al sistema section-*
+  if (!pr.contenuto) {
+    const galleria = (pr.galleria || []).map(src =>
+      `<div class="gallery-img">${generaImgHTML(src, t(pr.titolo))}</div>`
+    ).join('');
+    return `
+      <div class="section-text"><p>${(t(pr.testo_lungo) || '').replace(/\n/g, '<br>')}</p></div>
+      ${generaMappaHTML(pr)}
+      ${galleria ? `<div class="section-gallery">${galleria}</div>` : ''}`;
+  }
+
+  const blocchi = pr.contenuto.map(b => {
+    switch (b.tipo) {
+      case 'titolo':
+        return `<h3 class="section-titolo-interno">${t(b.valore)}</h3>`;
+      case 'testo':
+        return `<div class="section-text">${
+          t(b.valore).split('\n\n').map(p => p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : '').join('')
+        }</div>`;
+      case 'immagine':
+        return `<div class="section-image"><img src="${t(b.valore)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy"></div>`;
+      case 'galleria': {
+        const imgs = (Array.isArray(b.valore) ? b.valore : [b.valore])
+          .map(src => `<div class="gallery-img">${generaImgHTML(src, t(pr.titolo))}</div>`).join('');
+        return `<div class="section-gallery">${imgs}</div>`;
+      }
+      case 'mappa': return generaMappaHTML(pr);
+      case 'separatore': return `<hr class="progetto-separatore">`;
+      default: return '';
     }
   }).join('');
-  const galleriaExtra = (pr.galleria?.length > 0)
-    ? `<div class="progetto-galleria">${pr.galleria.map(src => generaImgHTML(src, pr.titolo)).join('')}</div>`
+
+  const galleriaExtra = pr.galleria?.length
+    ? `<div class="section-gallery">${pr.galleria.map(src => `<div class="gallery-img">${generaImgHTML(src, t(pr.titolo))}</div>`).join('')}</div>`
     : '';
+
   return blocchi + galleriaExtra;
 }
 
 function generaMappaHTML(pr) {
   if (!pr.mappa) return '';
   const label = pr.mappa.label || 'Luogo';
-  let iframeSrc = '';
-  if (pr.mappa.url) {
-    iframeSrc = pr.mappa.url;
-  } else if (pr.mappa.lat && pr.mappa.lng) {
-    iframeSrc = `https://maps.google.com/maps?q=${pr.mappa.lat},${pr.mappa.lng}&z=${pr.mappa.zoom || 13}&output=embed`;
-  }
-  if (!iframeSrc) return '';
-  return `
-    <div class="progetto-mappa-wrap">
-      <p class="progetto-mappa-label">${label}</p>
-      <iframe class="progetto-mappa" src="${iframeSrc}"
-        allowfullscreen loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"></iframe>
-    </div>`;
+  let src = pr.mappa.url || '';
+  if (!src && pr.mappa.lat && pr.mappa.lng)
+    src = `https://maps.google.com/maps?q=${pr.mappa.lat},${pr.mappa.lng}&z=${pr.mappa.zoom || 13}&output=embed`;
+  if (!src) return '';
+  return `<div class="section-map">
+    <p class="section-map-label">${label}</p>
+    <iframe src="${src}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </div>`;
 }
 
-function chiudiProgetto() { $('pagina-progetto').classList.remove('aperta'); }
+function chiudiProgetto() {
+  const el = $('pagina-progetto');
+  el.classList.remove('aperta');
+  el.style.removeProperty('--pr-bg');
+  el.style.removeProperty('--pr-text');
+  el.style.removeProperty('--pr-accent');
+  if (el._scrollHandler) {
+    el.removeEventListener('scroll', el._scrollHandler);
+    el._scrollHandler = null;
+  }
+}
 
 // ── Taccuino archivio ──
 let _cacheTaccuino = null;
@@ -640,10 +865,11 @@ function apriTaccuino() {
     const voci = stato.taccuino.map(v => {
       const foto = v.foto
         ? `<div class="taccuino-voce-foto"><img src="${v.foto}" alt="" draggable="false" loading="lazy"></div>` : '';
-      return `<div class="taccuino-voce" data-testo="${v.testo.toLowerCase()}">${foto}<p class="taccuino-voce-frase">${v.testo}</p><p class="taccuino-voce-data">${formatData(v.data)}</p></div>`;
+      const cam = v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p>` : '';
+      return `<div class="taccuino-voce" data-testo="${t(v.testo).toLowerCase()}">${foto}<p class="taccuino-voce-frase">${t(v.testo)}</p>${cam}<p class="taccuino-voce-data">${formatData(v.data)}</p></div>`;
     }).join('');
     _cacheTaccuino = `
-      <button class="progetto-torna" onclick="chiudiTaccuino()">Chiudi</button>
+      <button class="taccuino-torna" onclick="chiudiTaccuino()">Chiudi</button>
       <h1>Taccuino</h1>
       <div class="taccuino-cerca-wrap">
         <input type="search" id="taccuino-cerca" class="taccuino-cerca"
@@ -689,8 +915,8 @@ function costruisciIndice() {
     if (pr.pubblicato === false) return;
     voci.push({
       num: formatNum(i + 1),
-      label: pr.titolo,
-      sub: pr.anno,
+      label: t(pr.titolo),
+      sub: t(pr.anno),
       azione: () => {
         // Naviga alla pagina capitolo Progetti e poi apre il progetto
         const progettiSection = $('progetti');
@@ -752,11 +978,11 @@ function costruisciMobile() {
 
     const pIntro = crea('div');
     pIntro.className = 'page mobile-only'; pIntro.id = 'intro-mobile';
-    pIntro.dataset.favicon = '∙'; pIntro.dataset.titolo = stato.intro.titolo || 'Introduzione';
+    pIntro.dataset.favicon = '∙'; pIntro.dataset.titolo = t(stato.intro.titolo) || 'Introduzione';
     const { mpc: mpcIntro, pc: pcIntro } = creaMobilePageContent();
     pcIntro.innerHTML = `
-      <p class="introduzione-testo">${stato.intro.testo.replace(/\n/g, '<br>')}</p>
-      <p class="introduzione-firma">${stato.intro.firma}<br><span>${stato.intro.anno}</span></p>
+      <p class="introduzione-testo">${t(stato.intro.testo).replace(/\n/g, '<br>')}</p>
+      <p class="introduzione-firma">${t(stato.intro.firma)}<br><span>${t(stato.intro.anno)}</span></p>
     `;
     pIntro.appendChild(mpcIntro);
 
@@ -770,7 +996,7 @@ function costruisciMobile() {
   // Taccuino prima frase
   const taccuinoFrase = $('taccuino-mobile-frase');
   if (taccuinoFrase && stato.taccuino[0]) {
-    taccuinoFrase.innerHTML = `<p class="taccuino-frase">${stato.taccuino[0].testo}</p><p class="taccuino-data">${formatData(stato.taccuino[0].data)}</p>`;
+    taccuinoFrase.innerHTML = `<p class="taccuino-frase">${t(stato.taccuino[0].testo)}</p><p class="taccuino-data">${formatData(t(stato.taccuino[0].data))}</p>`;
   }
 
   let tIdx = 0;
@@ -778,24 +1004,24 @@ function costruisciMobile() {
 
   stato.progetti.forEach(pr => {
     const inLavorazione = pr.pubblicato === false;
-    const p = creaPaginaMobile(pr.titolo[0].toUpperCase(), pr.titolo);
+    const p = creaPaginaMobile(t(pr.titolo)[0].toUpperCase(), t(pr.titolo));
     p.appendChild(creaHeader());
 
     const wrap = crea('div'); wrap.className = 'progetto-mobile-wrap';
     const imgDiv = crea('div');
     imgDiv.className = 'progetto-mobile-img' + (inLavorazione ? ' in-lavorazione' : '');
-    imgDiv.appendChild(creaImg(pr.immagine_copertina, pr.titolo));
+    imgDiv.appendChild(creaImg(pr.immagine_copertina, t(pr.titolo)));
 
     const testo = crea('div'); testo.className = 'progetto-mobile-testo';
     const linkEsterno = pr.link_esterno
-      ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">${pr.label_link || 'Vedi online'}</a>` : '';
+      ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">${t(pr.label_link) || 'Vedi online'}</a>` : '';
     const bottoneEntrata = inLavorazione
       ? `<p class="progetto-in-lavorazione">In lavorazione</p>`
       : `<button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>`;
     testo.innerHTML = `
-      <p class="progetto-anno">${pr.anno}</p>
-      <h2 class="progetto-titolo">${pr.titolo}</h2>
-      <p class="progetto-anno">${pr.descrizione}</p>
+      <p class="progetto-anno">${t(pr.anno)}</p>
+      <h2 class="progetto-titolo">${t(pr.titolo)}</h2>
+      <p class="progetto-anno">${t(pr.descrizione)}</p>
       ${bottoneEntrata}
       <!-- ${linkEsterno} -->
     `;
@@ -812,14 +1038,14 @@ function costruisciMobile() {
 
   const containerIntervalli = $('mobile-intervalli-container');
   stato.intervalli.forEach(iv => {
-    const p = creaPaginaMobile('I', iv.titolo);
+    const p = creaPaginaMobile('I', t(iv.titolo));
     const { mpc, pc } = creaMobilePageContent();
     const wrap = crea('div'); wrap.className = 'intervallo-mobile-wrap';
-    wrap.innerHTML = `<p class="capitolo-label">Intervalli</p><h2 class="capitolo-titolo">${iv.titolo}</h2><p class="capitolo-descrizione">${iv.descrizione}</p>`;
+    wrap.innerHTML = `<p class="capitolo-label">Intervalli</p><h2 class="capitolo-titolo">${t(iv.titolo)}</h2><p class="capitolo-descrizione">${t(iv.descrizione)}</p>`;
     const gr = crea('div'); gr.className = 'intervallo-mobile-griglia';
     iv.immagini.forEach((src, i) => {
       const cell = crea('div'); cell.className = 'intervallo-mobile-cella';
-      cell.appendChild(creaImg(src, `${iv.titolo} ${i + 1}`));
+      cell.appendChild(creaImg(src, `${t(iv.titolo)} ${i + 1}`));
       gr.appendChild(cell);
     });
     wrap.appendChild(gr); pc.appendChild(wrap); p.appendChild(mpc);
@@ -936,45 +1162,6 @@ function costruisciMobile() {
     containerPub.appendChild(pListaPub);
   }
 
-  /*VECCHIO BLOCCO PUBBLICAZIONI - RIMOSSO
-  if (containerCollab && stato.pubblicazioni.length > 0) {
-    // Pagina titolo capitolo
-    const pTitoloPub = crea('div');
-    pTitoloPub.className = 'page mobile-only';
-    pTitoloPub.dataset.favicon = 'P'; pTitoloPub.dataset.titolo = 'Scritto';
-    const { mpc: mpcPub, pc: pcPub } = creaMobilePageContent();
-    pcPub.innerHTML = `<div>
-      <p class="capitolo-label">Capitolo 05</p>
-      <h2 class="capitolo-titolo">Publications</h2>
-    </div>`;
-    pTitoloPub.appendChild(mpcPub);
-    containerCollab.appendChild(pTitoloPub);
-
-    // Pagina elenco pubblicazioni
-    const pListaPub = crea('div');
-    pListaPub.className = 'page mobile-only';
-    pListaPub.dataset.favicon = 'P'; pListaPub.dataset.titolo = 'Publications';
-    const { mpc: mpcLista, pc: pcLista } = creaMobilePageContent();
-    const listaWrap = crea('div'); listaWrap.className = 'pub-mobile-lista';
-    stato.pubblicazioni.forEach(pub => {
-      const item = crea('div'); item.className = 'pub-mobile-item';
-      item.innerHTML = `
-        ${pub.immagine ? `<div class="pub-mobile-img"></div>` : ''}
-        <div class="pub-mobile-info">
-          <p class="pub-mobile-titolo">${pub.titolo}</p>
-          <p class="pub-mobile-anno">${pub.anno}</p>
-          ${pub.link ? `<a class="pub-mobile-link" href="${pub.link}" target="_blank" rel="noopener" style="pointer-events:all;">Vedi →</a>` : ''}
-        </div>
-      `;
-      if (pub.immagine) item.querySelector('.pub-mobile-img').appendChild(creaImg(pub.immagine, pub.titolo));
-      listaWrap.appendChild(item);
-    });
-    pcLista.appendChild(listaWrap);
-    pListaPub.appendChild(mpcLista);
-    containerCollab.appendChild(pListaPub);
-  }
-  VECCHIO BLOCCO FINE */
-
   raccogliPagine();
 }
 
@@ -1015,10 +1202,11 @@ function costruisciIndicatore(tot) {
 
   ind.addEventListener('touchstart', e => {
     e.stopPropagation();
+    e.preventDefault();
     startY = e.touches[0].clientY;
     scrubbing = false;
     ind.classList.remove('scrub-attivo');
-  }, { passive: true });
+  }, { passive: false });
 
   ind.addEventListener('touchmove', e => {
     e.stopPropagation();
@@ -1071,6 +1259,8 @@ function aggiornaUI() {
   document.querySelectorAll('.indicatore-dot').forEach((d, i) => d.classList.toggle('attivo', i === stato.paginaCorrente));
   const elNum = $('numero-nav');
   if (elNum) elNum.textContent = `${formatNum(stato.paginaCorrente + 1)} / ${formatNum(stato.totPagine)}`;
+  const nota = $('nota-nav');
+  if (nota) nota.style.display = stato.paginaCorrente === 0 ? '' : 'none';
   const sx = $('freccia-sx'), dx = $('freccia-dx');
   const isUltima = stato.paginaCorrente === stato.totPagine - 1;
   if (sx) sx.toggleAttribute('disabled', stato.paginaCorrente === 0);
@@ -1163,7 +1353,7 @@ function gestisciTouchEnd(e) {
 
   // Controlla se il touch è partito da dentro un elemento scrollabile
   const target = e.target;
-  const scrollabile = target.closest('.pagina-corpo, .chi-sono-wrap');
+  const scrollabile = target.closest('.pagina-corpo, .chi-sono-wrap, .taccuino-wrap');
   if (scrollabile && scrollabile.scrollHeight > scrollabile.clientHeight) return;
 
   if (Math.abs(dx) > 40) {
@@ -1358,11 +1548,23 @@ window.chiudiPagina = chiudiPagina;
 
 // ── Init ──
 async function init() {
+  // Fase 1 — subito, senza aspettare i dati:
+  // la home è già nel markup statico, quindi la mostriamo ora
+  // invece di lasciare lo schermo vuoto finché i fetch non finiscono.
+  if (isMobile()) {
+    document.querySelector('.page')?.classList.add('attiva');
+    $('freccia-sx')?.setAttribute('disabled', '');
+  }
+  avviaOrologio();
+  avviaTema();
+  avviaCookie();
+  avviaCursore();
+
+  // Fase 2 — quando i dati arrivano, si costruisce il resto del libro
   await caricaDati();
 
   if (isMobile()) {
     costruisciMobile();
-    document.querySelector('.page')?.classList.add('attiva');
     aggiornaUI();
     document.addEventListener('keydown', gestisciTastiera);
     document.addEventListener('touchstart', gestisciTouchStart, { passive: true });
@@ -1370,19 +1572,19 @@ async function init() {
     document.addEventListener('click', gestisciTap);
     $('freccia-sx')?.addEventListener('click', paginaPrecedente);
     $('freccia-dx')?.addEventListener('click', paginaSuccessiva);
-    $('freccia-sx')?.setAttribute('disabled', '');
   } else {
     popolaDesktop();
     inizializzaScrollDesktop();
     avviaOrologioSticky();
   }
 
-  avviaOrologio();
-  avviaTema();
-  avviaCookie();
-  avviaCursore();
   lightbox.init();
   inizializzaFin();
 }
+
+document.querySelectorAll('.lang-option').forEach(el => {
+  if (el.dataset.lang === stato.lang) el.classList.add('active');
+  el.addEventListener('click', () => setLang(el.dataset.lang));
+});
 
 document.addEventListener('DOMContentLoaded', init);

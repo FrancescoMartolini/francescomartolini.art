@@ -1,14 +1,14 @@
 [
-  "Il tempo lascia tracce.",
-  "Questo archivio rimane aperto.",
-  "Ogni immagine conserva una domanda.",
-  "Alcune tracce richiedono anni per diventare visibili.",
-  "Nessuna fotografia ferma il tempo.",
-  "Le immagini continuano a cambiare dopo essere state scattate.",
-  "Ogni progetto è un intervallo.",
-  "La memoria modifica ciò che conserva.",
-  "Ogni archivio è una forma di attesa.",
-  "Ciò che resta racconta più di ciò che accade.",
-  "Le tracce sopravvivono agli eventi.",
-  "Fotografare significa osservare una trasformazione."
+  { "it": "Il tempo lascia tracce.", "en": "Time leaves traces." },
+  { "it": "Questo archivio rimane aperto.", "en": "This archive remains open." },
+  { "it": "Ogni immagine conserva una domanda.", "en": "Every image holds a question." },
+  { "it": "Alcune tracce richiedono anni per diventare visibili.", "en": "Some traces take years to become visible." },
+  { "it": "Nessuna fotografia ferma il tempo.", "en": "No photograph stops time." },
+  { "it": "Le immagini continuano a cambiare dopo essere state scattate.", "en": "Images keep changing after they are taken." },
+  { "it": "Ogni progetto è un intervallo.", "en": "Every project is an interval." },
+  { "it": "La memoria modifica ciò che conserva.", "en": "Memory alters what it preserves." },
+  { "it": "Ogni archivio è una forma di attesa.", "en": "Every archive is a form of waiting." },
+  { "it": "Ciò che resta racconta più di ciò che accade.", "en": "What remains tells more than what happens." },
+  { "it": "Le tracce sopravvivono agli eventi.", "en": "Traces outlive events." },
+  { "it": "Fotografare significa osservare una trasformazione.", "en": "To photograph is to observe a transformation." }
 ]
