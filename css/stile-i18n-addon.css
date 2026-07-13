@@ -1,0 +1,42 @@
+
+/* ══ LANG TOGGLE — stesso linguaggio visivo di .ora-label / .capitolo-label ══ */
+.lang-toggle,
+.lang-toggle-mobile {
+  display: flex;
+  align-items: center;
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-family: var(--font-testo);
+  user-select: none;
+}
+.lang-option {
+  cursor: pointer;
+  color: var(--grigio-medio);
+  transition: color var(--transizione);
+}
+.lang-option.active { color: var(--nero); }
+.lang-sep { color: var(--grigio-medio); opacity: 0.5; margin: 0 6px; }
+
+@media (hover: hover) {
+  .lang-option:hover { color: var(--nero); }
+}
+
+/* Mobile: centrato in fondo alla pagina, appena sopra la barra di
+   navigazione fissa (#mobile-nav, alta 44px) — non nell'angolo in alto. */
+@media (max-width: 768px) {
+  .lang-toggle-mobile {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    justify-content: center;
+    z-index: 5;
+  }
+}
+
+/* Desktop: allineato alle voci di menu, invariato */
+@media (min-width: 769px) {
+  .menu-voci .lang-toggle { margin-left: 4px; font-size: 10px; }
+}

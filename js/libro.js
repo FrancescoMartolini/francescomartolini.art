@@ -638,6 +638,75 @@ function apriProgetto(id) {
   if ((pr.layoutType || '') === 'archivio') {
     avviaScrollArchivio(el, pr);
   }
+
+  // Sezioni Spotify: embed + carosello foto legato al brano in play
+  avviaSpotifySections(el);
+}
+
+// ── Spotify: embed playlist/brano + carosello foto sincronizzato col play ──
+let _spotifyAPI = null;
+let _spotifyAPIPromise = null;
+
+function caricaSpotifyIframeAPI() {
+  if (_spotifyAPIPromise) return _spotifyAPIPromise;
+  _spotifyAPIPromise = new Promise(resolve => {
+    if (_spotifyAPI) { resolve(_spotifyAPI); return; }
+    window.onSpotifyIframeApiReady = IFrameAPI => {
+      _spotifyAPI = IFrameAPI;
+      resolve(IFrameAPI);
+    };
+    const script = document.createElement('script');
+    script.src = 'https://open.spotify.com/embed/iframe-api/v1';
+    script.async = true;
+    document.body.appendChild(script);
+  });
+  return _spotifyAPIPromise;
+}
+
+function avviaSpotifySections(overlayEl) {
+  const holders = overlayEl.querySelectorAll('.spotify-embed-holder');
+  if (!holders.length) return;
+
+  caricaSpotifyIframeAPI().then(IFrameAPI => {
+    holders.forEach(holder => {
+      if (holder.dataset.spotifyInit === '1') return; // già inizializzato
+      holder.dataset.spotifyInit = '1';
+
+      const playlistId = holder.dataset.spotifyPlaylist;
+      const wrap = holder.closest('.section-spotify');
+      const carosello = wrap.querySelector('.spotify-carosello');
+      const img = wrap.querySelector('.spotify-carosello-img');
+
+      let tracce = [];
+      try { tracce = JSON.parse(wrap.dataset.tracks || '[]'); } catch (e) { tracce = []; }
+      const mappaFoto = {};
+      tracce.forEach(tr => { if (tr && tr.uri) mappaFoto[tr.uri] = tr.image; });
+
+      const options = { uri: `spotify:playlist:${playlistId}`, width: '100%', height: 352 };
+
+      IFrameAPI.createController(holder, options, controller => {
+        let uriCorrente = null;
+
+        controller.addListener('playback_update', e => {
+          const { isPaused, playingURI } = e.data || {};
+          if (!playingURI || isPaused) return; // niente foto finché non parte un play
+
+          if (playingURI === uriCorrente) return; // stesso brano, nessun cambio
+          uriCorrente = playingURI;
+
+          const src = mappaFoto[playingURI];
+          if (!src) { carosello.hidden = true; return; }
+
+          img.classList.remove('visibile');
+          setTimeout(() => {
+            img.src = src;
+            carosello.hidden = false;
+            requestAnimationFrame(() => img.classList.add('visibile'));
+          }, 180);
+        });
+      });
+    });
+  });
 }
 
 // Scroll-reveal per le sezioni
@@ -715,6 +784,17 @@ function generaContenutoProgetto(pr) {
           return `<div class="section-map">
             ${s.label ? `<p class="section-map-label">${t(s.label)}</p>` : ''}
             <iframe src="${t(msrc)}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>`;
+        }
+        case 'spotify': {
+          if (!s.playlistId) return '';
+          const tracksJSON = JSON.stringify(s.tracks || []).replace(/"/g, '&quot;');
+          const embedId = 'spotify-embed-' + Math.random().toString(36).slice(2, 9);
+          return `<div class="section-spotify" data-tracks="${tracksJSON}">
+            <div class="spotify-carosello" hidden>
+              <img class="spotify-carosello-img" alt="">
+            </div>
+            <div class="spotify-embed-holder" id="${embedId}" data-spotify-playlist="${t(s.playlistId)}"></div>
           </div>`;
         }
         default: return '';

@@ -178,6 +178,56 @@ Quando `contenuto` è presente viene usato come struttura principale. Il campo `
 
 ---
 
+#### Campo `sections` (schema esteso a blocchi)
+
+Schema più recente, alternativo a `contenuto`. Se `sections` è presente e non vuoto, ha la priorità su tutto il resto (`contenuto`, `testo_lungo`, `galleria` vengono ignorati).
+
+```json
+"sections": [
+  { "type": "text",      "content": "Testo.\n\nSecondo paragrafo." },
+  { "type": "image",     "src": "https://.../01.jpg", "fullscreen": false },
+  { "type": "imageText", "image": "https://.../02.jpg", "content": "Testo a fianco.", "position": "right" },
+  { "type": "gallery",   "images": ["https://.../03.jpg", "https://.../04.jpg"] },
+  { "type": "quote",     "content": "Una citazione." },
+  { "type": "map",       "url": "https://www.google.com/maps/d/embed?mid=XXXXXXXX", "label": "Luoghi" },
+  { "type": "spotify",   "playlistId": "XXXXXXXXXXXXXXXXXXXX", "tracks": [] }
+]
+```
+
+Tipi disponibili: `text`, `image`, `imageText`, `gallery`, `quote`, `map`, `spotify`.
+
+---
+
+#### Sezione `spotify` — embed playlist + foto sincronizzata al brano in play
+
+Usata nel progetto `PLAYLIST.01` e in generale ogni volta che si vuole collegare una playlist Spotify a un archivio fotografico: quando l'utente preme play su un brano, sopra il player appare in dissolvenza la foto associata a quel brano.
+
+```json
+{
+  "type": "spotify",
+  "playlistId": "6LIiTKNwUXfBmKRSApj9GJ",
+  "tracks": [
+    { "uri": "spotify:track:4uLU6hMCjMI75M1A2tKUQC", "image": "https://res.cloudinary.com/.../01.jpg" },
+    { "uri": "spotify:track:1301WleyT98MSxVHPZCA6M", "image": "https://res.cloudinary.com/.../02.jpg" }
+  ]
+}
+```
+
+**`playlistId`** — l'ID della playlist Spotify (non l'URL intero). Si trova nel link di condivisione: `open.spotify.com/playlist/`**`6LIiTKNwUXfBmKRSApj9GJ`**`?si=...` → è la parte tra `/playlist/` e `?`.
+
+**`tracks`** — un oggetto per ogni brano della playlist a cui vuoi associare una foto. Ogni traccia non elencata qui semplicemente non attiva nessuna foto quando viene suonata.
+
+**⚠️ Come trovare l'`uri` corretto di un brano** (l'errore più comune):
+Un URI Spotify valido è sempre nel formato `spotify:track:` seguito da **esattamente 22 caratteri alfanumerici** — es. `spotify:track:4uLU6hMCjMI75M1A2tKUQC`. Non va confuso con hash di altro tipo (es. i nomi file delle immagini su Cloudinary, che sono più lunghi).
+
+Per copiarlo correttamente:
+- **App Spotify (desktop/mobile):** tre puntini `...` sul brano (o tasto destro) → *Condividi* → tieni premuto `Alt` (Windows) / `Option` (Mac) mentre il menu è aperto → compare *"Copia URI Spotify"* → è già nel formato giusto, incollalo così com'è.
+- **Web player:** tre puntini → *Condividi* → *Copia link brano* → ottieni un URL tipo `https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC?si=...`. Prendi solo i 22 caratteri tra `/track/` e `?`, e scrivi `spotify:track:` davanti.
+
+Il player viene creato con la [Spotify iFrame API](https://developer.spotify.com/documentation/embeds/references/iframe-api) ufficiale (script caricato dinamicamente in `js/libro.js` → `caricaSpotifyIframeAPI()` / `avviaSpotifySections()`), che espone l'evento `playback_update` con l'URI del brano attualmente in ascolto. Se un ad-blocker (uBlock, Brave Shields, ecc.) è attivo, può bloccare lo script e l'embed non carica: testare in incognito senza estensioni in caso di pagina vuota.
+
+---
+
 ### LAYOUT PROGETTO (desktop)
 
 Ogni progetto può avere un layout visivo diverso, selezionato tramite il campo `layoutType` in `progetti.json`. Se `layoutType` è assente, viene usato il layout base.
@@ -490,6 +540,7 @@ Punto nero con anello. Cambia colore automaticamente:
 | Progetti | `json/progetti.json` |
 | Layout progetto | `json/progetti.json` → campo `layoutType` |
 | Tema colori progetto | `json/progetti.json` → campo `theme` |
+| Playlist Spotify + foto sincronizzate | `json/progetti.json` → sezione `sections` di tipo `spotify` |
 | Intervalli | `json/intervalli.json` |
 | Collaborazioni commerciali | `json/collaborazioni.json` |
 | Pubblicazioni e press | `json/pubblicazioni.json` |

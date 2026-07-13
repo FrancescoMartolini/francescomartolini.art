@@ -1,0 +1,80 @@
+{
+  "menu": {
+    "progetti": { "it": "Progetti", "en": "Projects" },
+    "intervalli": { "it": "Intervalli", "en": "Intervals" },
+    "chiSono": { "it": "Chi sono", "en": "About" },
+    "taccuino": { "it": "Taccuino", "en": "Notebook" }
+  },
+  "oraCorrente": { "it": "ORA CORRENTE", "en": "CURRENT TIME" },
+  "home": {
+    "sottotitolo": { "it": "Fotografia come indagine.<br>Progetti come mappe del tempo.", "en": "Photography as inquiry.<br>Projects as maps of time." },
+    "cta": { "it": "Scopri i progetti", "en": "Discover the projects" }
+  },
+  "capitolo": { "it": "Capitolo", "en": "Chapter" },
+  "progetti": {
+    "titolo": { "it": "Progetti", "en": "Projects" },
+    "descrizioneCapitolo": { "it": "I progetti principali. Serie fotografiche.", "en": "The main projects. Photographic series." },
+    "descrizioneSezione": { "it": "Ogni progetto nasce da una domanda che il tempo continua a restituirmi.", "en": "Every project begins with a question that time keeps giving back to me." },
+    "vediTutti": { "it": "Vedi tutti →", "en": "See all →" }
+  },
+  "intervalli": {
+    "titolo": { "it": "Intervalli", "en": "Intervals" },
+    "descrizione": { "it": "Fotografie che non appartengono a un progetto, ma al mio modo di guardare.", "en": "Photographs that do not belong to a project, but to my way of looking." },
+    "vediTutti": { "it": "Vedi tutti →", "en": "See all →" }
+  },
+  "taccuino": {
+    "descrizione": { "it": "Appunti, pensieri, osservazioni.<br>Frammenti di un percorso in corso.", "en": "Notes, thoughts, observations.<br>Fragments of a path underway." },
+    "leggiTutti": { "it": "Leggi tutti →", "en": "Read all →" }
+  },
+  "chiSono": {
+    "titolo": { "it": "Chi sono", "en": "About" },
+    "descrizioneCapitolo": { "it": "Un ritratto essenziale. Parole e immagini che raccontano il percorso.", "en": "An essential portrait. Words and images that tell the journey." },
+    "h2": { "it": "Un ritratto essenziale.<br><em>Parole e immagini che raccontano il percorso.</em>", "en": "An essential portrait.<br><em>Words and images that tell the journey.</em>" },
+    "p1": { "it": "Fotografo italiano. Il mio lavoro esplora il rapporto tra spazio, tempo e memoria — cercando nelle immagini le tracce di ciò che resta.", "en": "Italian photographer. My work explores the relationship between space, time and memory — looking in images for the traces of what remains." },
+    "p2": { "it": "Sono interessato alla fotografia come strumento di indagine, non di rappresentazione. Ogni progetto nasce da una domanda che il tempo continua a restituirmi.", "en": "I am interested in photography as a tool of inquiry, not of representation. Every project begins with a question that time keeps giving back to me." },
+    "p3": { "it": "Basato in Toscana, lavoro su progetti a lungo termine alternati a commissioni commerciali selezionate.", "en": "Based in Tuscany, I work on long-term projects alternated with selected commercial commissions." },
+    "contattiLabel": { "it": "Contatti", "en": "Contact" },
+    "contattiNota": { "it": "Non offro servizi di shooting su richiesta. Scrivimi se sei interessato a un'opera o vuoi costruire qualcosa insieme.", "en": "I do not offer on-request shooting services. Write to me if you are interested in a piece, or want to build something together." },
+    "bio": { "it": "Mi interessa il tempo.<br>Nelle sue forme,<br>nei suoi strati,<br>nelle sue assenze.", "en": "I am interested in time.<br>In its forms,<br>in its layers,<br>in its absences." },
+    "scopriDiPiu": { "it": "Scopri di più →", "en": "Discover more →" },
+    "commercialLabel": { "it": "Commercial", "en": "Commercial" },
+    "commercialDesc": { "it": "Lavoro su progetti commerciali ed editoriali in ambiti diversi.", "en": "I work on commercial and editorial projects across different fields." },
+    "vediLavori": { "it": "Vedi alcuni lavori →", "en": "See some work →" },
+    "pubblicazioniLabel": { "it": "Pubblicazioni", "en": "Publications" }
+  },
+  "fin": {
+    "titolo": { "it": "fin.", "en": "end." },
+    "tornaAllInizio": { "it": "← Torna all'inizio", "en": "← Back to start" },
+    "copyright": { "it": "Francesco Martolini", "en": "Francesco Martolini" }
+  },
+  "footer": {
+    "mail": { "it": "MAIL", "en": "MAIL" },
+    "telefono": { "it": "TELEFONO", "en": "PHONE" },
+    "diritti": { "it": "Tutti i diritti riservati", "en": "All rights reserved" }
+  },
+  "nav": {
+    "infoUtilizzo": { "it": "info utilizzo", "en": "how to read" },
+    "indietro": { "it": "← Indietro", "en": "← Back" },
+    "avanti": { "it": "Avanti →", "en": "Next →" }
+  },
+  "overlay": {
+    "chiudi": { "it": "Chiudi", "en": "Close" }
+  },
+  "libro": {
+    "modalita": { "it": "Modalità libro", "en": "Book mode" }
+  },
+  "cookie": {
+    "testo": { "it": "Questo sito usa solo cookie tecnici essenziali. Nessun cookie di profilazione.", "en": "This site only uses essential technical cookies. No profiling cookies." },
+    "soloEssenziali": { "it": "Solo essenziali", "en": "Essential only" },
+    "hoCapito": { "it": "Ho capito", "en": "Got it" }
+  },
+  "lightbox": {
+    "ariaLabel": { "it": "Immagine a schermo intero", "en": "Full screen image" },
+    "chiudi": { "it": "Chiudi", "en": "Close" },
+    "precedente": { "it": "Precedente", "en": "Previous" },
+    "successivo": { "it": "Successivo", "en": "Next" }
+  },
+  "meta": {
+    "description": { "it": "francescomartolini.art — Il tempo lascia tracce. Io le cerco.", "en": "francescomartolini.art — Time leaves traces. I look for them." }
+  }
+}
