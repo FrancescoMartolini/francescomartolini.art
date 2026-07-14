@@ -748,61 +748,7 @@ function generaImgHTML(src, titolo) {
 }
 
 function generaContenutoProgetto(pr) {
-  // Supporta sia il vecchio schema (contenuto[]) sia il nuovo (sections[])
-  const usaSections = Array.isArray(pr.sections) && pr.sections.length > 0;
-
-  if (usaSections) {
-    // ── Schema nuovo: sections[] ──
-    return pr.sections.map(s => {
-      switch (s.type) {
-        case 'text':
-          return `<div class="section-text">${
-            (s.content || '').split('\n\n').map(p =>
-              p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : ''
-            ).join('')
-          }</div>`;
-        case 'image':
-          return `<div class="section-image${s.fullscreen ? ' fullscreen' : ''}" ${pr.layoutType === 'archivio' ? `data-archivio-img="${s.src}"` : ''}>
-            <img src="${t(s.src)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
-          </div>`;
-        case 'imageText':
-          return `<div class="section-imagetext ${s.position === 'right' ? 'position-right' : 'position-left'}">
-            <img src="${t(s.image)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
-            <div class="section-imagetext-content">${(s.content || '').replace(/\n/g, '<br>')}</div>
-          </div>`;
-        case 'gallery':
-          return `<div class="section-gallery">${
-            (s.images || []).map(src =>
-              `<div class="gallery-img"><img src="${t(src)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy"></div>`
-            ).join('')
-          }</div>`;
-        case 'quote':
-          return `<blockquote class="section-quote">${t(s.content) || ''}</blockquote>`;
-        case 'map': {
-          const msrc = s.url || (s.lat && s.lng ? `https://maps.google.com/maps?q=${s.lat},${s.lng}&z=${s.zoom || 13}&output=embed` : '');
-          if (!msrc) return '';
-          return `<div class="section-map">
-            ${s.label ? `<p class="section-map-label">${t(s.label)}</p>` : ''}
-            <iframe src="${t(msrc)}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-          </div>`;
-        }
-        case 'spotify': {
-          if (!s.playlistId) return '';
-          const tracksJSON = JSON.stringify(s.tracks || []).replace(/"/g, '&quot;');
-          const embedId = 'spotify-embed-' + Math.random().toString(36).slice(2, 9);
-          return `<div class="section-spotify" data-tracks="${tracksJSON}">
-            <div class="spotify-carosello" hidden>
-              <img class="spotify-carosello-img" alt="">
-            </div>
-            <div class="spotify-embed-holder" id="${embedId}" data-spotify-playlist="${t(s.playlistId)}"></div>
-          </div>`;
-        }
-        default: return '';
-      }
-    }).join('');
-  }
-
-  // ── Schema vecchio: contenuto[] ──
+  // Sistema unico: contenuto[] (a blocchi tipo/valore)
   const layout = pr.layoutType || 'base';
 
   // Per layout archivio: prima immagine va nella colonna sticky, le altre come marker
@@ -847,6 +793,8 @@ function generaContenutoProgetto(pr) {
           </div>`; break;
         case 'mappa':
           colonnaHTML += generaMappaHTML(pr); break;
+        case 'spotify':
+          colonnaHTML += generaSpotifyHTML(b.valore); break;
         case 'separatore':
           colonnaHTML += `<hr class="progetto-separatore">`; break;
       }
@@ -897,6 +845,7 @@ function generaContenutoProgetto(pr) {
         return `<div class="section-gallery">${imgs}</div>`;
       }
       case 'mappa': return generaMappaHTML(pr);
+      case 'spotify': return generaSpotifyHTML(b.valore);
       case 'separatore': return `<hr class="progetto-separatore">`;
       default: return '';
     }
@@ -919,6 +868,18 @@ function generaMappaHTML(pr) {
   return `<div class="section-map">
     <p class="section-map-label">${label}</p>
     <iframe src="${src}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </div>`;
+}
+
+function generaSpotifyHTML(v) {
+  if (!v || !v.playlistId) return '';
+  const tracksJSON = JSON.stringify(v.tracks || []).replace(/"/g, '&quot;');
+  const embedId = 'spotify-embed-' + Math.random().toString(36).slice(2, 9);
+  return `<div class="section-spotify" data-tracks="${tracksJSON}">
+    <div class="spotify-carosello" hidden>
+      <img class="spotify-carosello-img" alt="">
+    </div>
+    <div class="spotify-embed-holder" id="${embedId}" data-spotify-playlist="${t(v.playlistId)}"></div>
   </div>`;
 }
 
