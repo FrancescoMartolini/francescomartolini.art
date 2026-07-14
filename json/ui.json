@@ -11,8 +11,6 @@
     "cta": { "it": "Scopri i progetti", "en": "Discover the projects" }
   },
   "capitolo": { "it": "Capitolo", "en": "Chapter" },
-<<<<<<< HEAD
-=======
   "capitoli": {
     "introduzione": { "it": "Introduzione", "en": "Introduction" }
   },
@@ -27,7 +25,6 @@
     "chiSonoSub": { "it": "Un ritratto essenziale.", "en": "An essential portrait." },
     "taccuinoSub": { "it": "Appunti", "en": "Notes" }
   },
->>>>>>> refs/remotes/origin/main
   "progetti": {
     "titolo": { "it": "Progetti", "en": "Projects" },
     "descrizioneCapitolo": { "it": "I progetti principali. Serie fotografiche.", "en": "The main projects. Photographic series." },
@@ -57,9 +54,6 @@
     "commercialLabel": { "it": "Commercial", "en": "Commercial" },
     "commercialDesc": { "it": "Lavoro su progetti commerciali ed editoriali in ambiti diversi.", "en": "I work on commercial and editorial projects across different fields." },
     "vediLavori": { "it": "Vedi alcuni lavori →", "en": "See some work →" },
-<<<<<<< HEAD
-    "pubblicazioniLabel": { "it": "Pubblicazioni", "en": "Publications" }
-=======
     "pubblicazioniLabel": { "it": "Pubblicazioni", "en": "Publications" },
     "doveNasce": { "it": "Dove nasce il lavoro", "en": "Where the work begins" },
     "biografia": { "it": "Biografia", "en": "Biography" },
@@ -86,7 +80,6 @@
     "cercaPlaceholder": { "it": "Cerca nel taccuino...", "en": "Search the notebook..." },
     "risultatoSing": { "it": "risultato", "en": "result" },
     "risultatiPlur": { "it": "risultati", "en": "results" }
->>>>>>> refs/remotes/origin/main
   },
   "fin": {
     "titolo": { "it": "fin.", "en": "end." },
@@ -104,9 +97,6 @@
     "avanti": { "it": "Avanti →", "en": "Next →" }
   },
   "overlay": {
-<<<<<<< HEAD
-    "chiudi": { "it": "Chiudi", "en": "Close" }
-=======
     "chiudi": { "it": "Chiudi", "en": "Close" },
     "tuttiProgetti": { "it": "Tutti i progetti", "en": "All projects" },
     "inLavorazione": { "it": "In lavorazione", "en": "Work in progress" },
@@ -116,7 +106,6 @@
       "p2": { "it": "Tocca il lato destro della pagina per proseguire, il lato sinistro per tornare indietro. Puoi anche scorrere con il dito, come si sfoglia una pagina.", "en": "Tap the right side of the page to move forward, the left side to go back. You can also swipe with your finger, as if turning a page." },
       "p3": { "it": "Il punto sul bordo destro segna la posizione nel libro: trascinalo per muoverti più rapidamente tra le pagine.", "en": "The dot on the right edge marks your position in the book: drag it to move more quickly between pages." }
     }
->>>>>>> refs/remotes/origin/main
   },
   "libro": {
     "modalita": { "it": "Modalità libro", "en": "Book mode" }
