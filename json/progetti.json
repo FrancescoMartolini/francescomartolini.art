@@ -215,6 +215,7 @@
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778786521/Scan_20260416_aijdfw.png",
     "galleria": [],
     "pagina_libro": 7,
+    "pubblicato": false,
     "contenuto": [
       {
         "tipo": "testo",
