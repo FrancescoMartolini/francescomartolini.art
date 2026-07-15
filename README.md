@@ -441,15 +441,23 @@ Array di frasi brevi per la pagina finale "fin.".
 ### TACCUINO — GOOGLE SHEETS (fonte principale)
 
 Il taccuino si aggiorna automaticamente da Google Sheets.
+Nel Google Sheets ho creato due fogli uno scritto in italiano uno in inglese.
+Va creato un collegamento per ogni foglio come scritto sotto e in base all'url va inserito nella variabile scritta sotto.
 
 **Setup:**
 
-1. Crea un foglio con intestazioni: `testo` / `data` / `foto`
+1. Crea un foglio con intestazioni: `testo` / `data` / `foto` / `con cosa è stata scattata la foto`
 2. File → Condividi → Pubblica sul web → CSV
 3. In `js/libro.js` sostituisci:
    ```javascript
-   const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/XXXXXXXX/pub?output=csv';
+   const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/XXXXXXXX/pub?gid=xxxxxxxx&single=true&output=csv';
+   const SHEETS_URL_EN = 'https://docs.google.com/spreadsheets/d/XXXXXXXX/pub?gid=xxxxxxxx&single=true&output=csv';
    ```
+
+Questo è la funzione che vede se è prenuto il tasto IT oppure EN e in base a questo il taccuino legge una o l'altra pagina usando la solita logica.
+  ```javascript
+   const r = await fetch(localStorage.getItem('lang') === 'en' ? SHEETS_URL_EN : SHEETS_URL);
+  ```
 
 **Fallback:** se Sheets non è raggiungibile, carica `json/taccuino.json`.
 

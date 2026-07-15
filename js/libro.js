@@ -1,5 +1,5 @@
 /* ============================================
-   LIBRO ENGINE v5 — Francesco Martolini .art
+   LIBRO ENGINE v6 — Francesco Martolini .art
    Desktop: scroll editoriale
    Mobile: libro a pagine
    + cursore adattivo, slider progetti, overlay pagine
