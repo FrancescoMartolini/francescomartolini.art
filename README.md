@@ -157,9 +157,9 @@ francescomartolini.art/
 
 ---
 
-#### Campo `contenuto` (layout a blocchi)
+#### Campo `contenuto` — sistema unico a blocchi
 
-In alternativa a `testo_lungo` + `galleria`, puoi usare `contenuto` per costruire il progetto a blocchi ordinati:
+Ogni progetto costruisce il proprio contenuto interno con `contenuto`: un array di blocchi ordinati, mostrati nell'ordine in cui li scrivi. **È l'unico sistema usato dal sito** — vale per testo, immagini, mappe e anche per l'embed Spotify.
 
 ```json
 "contenuto": [
@@ -168,13 +168,50 @@ In alternativa a `testo_lungo` + `galleria`, puoi usare `contenuto` per costruir
   { "tipo": "immagine",  "valore": "https://.../01.jpg" },
   { "tipo": "galleria",  "valore": ["https://.../02.jpg", "https://.../03.jpg"] },
   { "tipo": "mappa" },
-  { "tipo": "separatore" }
+  { "tipo": "separatore" },
+  { "tipo": "spotify",   "valore": { "playlistId": "XXXXXXXXXXXXXXXXXXXX", "tracks": [] } }
 ]
 ```
 
-Tipi disponibili: `titolo`, `testo`, `immagine`, `galleria`, `mappa`, `separatore`.
+Tipi disponibili: `titolo`, `testo`, `immagine`, `galleria`, `mappa`, `separatore`, `spotify`.
 
-Quando `contenuto` è presente viene usato come struttura principale. Il campo `galleria` (se presente) viene aggiunto in fondo come blocco extra.
+**I campi `valore` di tipo testo (`titolo`, `testo`) accettano sia una stringa semplice sia un oggetto bilingue** `{ "it": "...", "en": "..." }`.
+
+Quando `contenuto` è presente viene usato come struttura principale al posto di `testo_lungo`. Il campo `galleria` di primo livello (se presente) viene aggiunto in fondo come blocco extra, dopo tutti i blocchi di `contenuto`.
+
+**`mappa`**: il blocco `{ "tipo": "mappa" }` non contiene i dati della mappa — quelli vivono nel campo `mappa` di primo livello del progetto (vedi sopra, sezione `mappa`). Il blocco serve solo a dire *dove*, nell'ordine dei contenuti, la mappa deve apparire.
+
+---
+
+#### Blocco `spotify` — embed playlist + foto sincronizzata al brano in play
+
+Usato nel progetto `PLAYLIST.01` e in generale ogni volta che si vuole collegare una playlist Spotify a un archivio fotografico: quando l'utente preme play su un brano, sopra il player appare in dissolvenza la foto associata a quel brano.
+
+```json
+{
+  "tipo": "spotify",
+  "valore": {
+    "playlistId": "6LIiTKNwUXfBmKRSApj9GJ",
+    "tracks": [
+      { "uri": "spotify:track:4uLU6hMCjMI75M1A2tKUQC", "image": "https://res.cloudinary.com/.../01.jpg" },
+      { "uri": "spotify:track:1301WleyT98MSxVHPZCA6M", "image": "https://res.cloudinary.com/.../02.jpg" }
+    ]
+  }
+}
+```
+
+**`playlistId`** — l'ID della playlist Spotify (non l'URL intero). Si trova nel link di condivisione: `open.spotify.com/playlist/`**`6LIiTKNwUXfBmKRSApj9GJ`**`?si=...` → è la parte tra `/playlist/` e `?`.
+
+**`tracks`** — un oggetto per ogni brano della playlist a cui vuoi associare una foto. Ogni traccia non elencata qui semplicemente non attiva nessuna foto quando viene suonata.
+
+**⚠️ Come trovare l'`uri` corretto di un brano** (l'errore più comune):
+Un URI Spotify valido è sempre nel formato `spotify:track:` seguito da **esattamente 22 caratteri alfanumerici** — es. `spotify:track:4uLU6hMCjMI75M1A2tKUQC`. Non va confuso con hash di altro tipo (es. i nomi file delle immagini su Cloudinary, che sono più lunghi).
+
+Per copiarlo correttamente:
+- **App Spotify (desktop/mobile):** tre puntini `...` sul brano (o tasto destro) → *Condividi* → tieni premuto `Alt` (Windows) / `Option` (Mac) mentre il menu è aperto → compare *"Copia URI Spotify"* → è già nel formato giusto, incollalo così com'è.
+- **Web player:** tre puntini → *Condividi* → *Copia link brano* → ottieni un URL tipo `https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC?si=...`. Prendi solo i 22 caratteri tra `/track/` e `?`, e scrivi `spotify:track:` davanti.
+
+Il player viene creato con la [Spotify iFrame API](https://developer.spotify.com/documentation/embeds/references/iframe-api) ufficiale (script caricato dinamicamente in `js/libro.js` → `caricaSpotifyIframeAPI()` / `avviaSpotifySections()`), che espone l'evento `playback_update` con l'URI del brano attualmente in ascolto. Se un ad-blocker (uBlock, Brave Shields, ecc.) è attivo, può bloccare lo script e l'embed non carica: testare in incognito senza estensioni in caso di pagina vuota.
 
 ---
 
@@ -270,8 +307,8 @@ I tre valori controllano:
 
 - [ ] Aggiungi l'oggetto in `json/progetti.json`
 - [ ] Se il progetto non è pronto: `"pubblicato": false`
-- [ ] Applica le trasformazioni Cloudinary: `w_600` alla copertina, `w_1400` alla galleria
-- [ ] Scegli se usare `testo_lungo` + `galleria` (semplice) o `contenuto` (a blocchi)
+- [ ] Applica le trasformazioni Cloudinary: `w_600` alla copertina, `w_1400` alle immagini
+- [ ] Costruisci il contenuto con `contenuto[]` (testo, immagini, mappa, spotify...)
 - [ ] Se vuoi un layout specifico: aggiungi `"layoutType"` con uno dei valori disponibili
 - [ ] Se vuoi colori propri: aggiungi `"theme"` con `background`, `text`, `accent`
 - [ ] Se non vuoi personalizzare: ometti `layoutType` e `theme` — il layout base funziona perfettamente
@@ -490,6 +527,7 @@ Punto nero con anello. Cambia colore automaticamente:
 | Progetti | `json/progetti.json` |
 | Layout progetto | `json/progetti.json` → campo `layoutType` |
 | Tema colori progetto | `json/progetti.json` → campo `theme` |
+| Playlist Spotify + foto sincronizzate | `json/progetti.json` → blocco `contenuto` di tipo `spotify` |
 | Intervalli | `json/intervalli.json` |
 | Collaborazioni commerciali | `json/collaborazioni.json` |
 | Pubblicazioni e press | `json/pubblicazioni.json` |
