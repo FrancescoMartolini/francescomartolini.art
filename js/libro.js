@@ -624,9 +624,32 @@ function chiudiPagina() { $('overlay-pagina').classList.remove('aperta'); }
 // ── Progetto dettaglio ──
 const _cacheProgetti = {};
 
-function apriProgetto(id) {
+// ── Routing: URL parlanti per i progetti (/progetti/<id>) ──
+// L'URL cambia SOLO quando si apre/chiude un progetto, mai durante lo
+// sfogliare le pagine del libro (navigaA) o negli altri overlay: la
+// navigazione interna resta "silenziosa" com'era prima, così mantiene
+// la sensazione di libro. Serve solo per poter linkare/condividere un
+// singolo progetto.
+const TITOLO_DEFAULT = document.title;
+
+function slugProgettoDaURL() {
+  const m = location.pathname.match(/^\/progetti\/([^\/?#]+)\/?$/);
+  return m ? decodeURIComponent(m[1]) : null;
+}
+
+function apriProgetto(id, { aggiornaURL = true } = {}) {
   const pr = stato.progetti.find(p => p.id === id);
   if (!pr || pr.pubblicato === false) return;
+
+  if (aggiornaURL) {
+    const url = `/progetti/${id}`;
+    if (location.pathname !== url) {
+      history.pushState({ progetto: id }, '', url);
+    } else {
+      history.replaceState({ progetto: id }, '', url);
+    }
+  }
+  document.title = `${t(pr.titolo)} — francescomartolini.art`;
   const el = $('pagina-progetto');
   const interno = el.querySelector('.progetto-interno');
 
@@ -975,7 +998,7 @@ function generaSpotifyHTML(v) {
   </div>`;
 }
 
-function chiudiProgetto() {
+function chiudiProgetto({ aggiornaURL = true } = {}) {
   const el = $('pagina-progetto');
   el.classList.remove('aperta');
   el.style.removeProperty('--pr-bg');
@@ -985,7 +1008,22 @@ function chiudiProgetto() {
     el.removeEventListener('scroll', el._scrollHandler);
     el._scrollHandler = null;
   }
+  if (aggiornaURL && slugProgettoDaURL()) {
+    history.pushState({}, '', '/');
+  }
+  document.title = TITOLO_DEFAULT;
 }
+
+// ── Back/forward del browser: apre o chiude il progetto senza toccare
+// di nuovo la history (è già lì, ci stiamo solo muovendo dentro) ──
+window.addEventListener('popstate', e => {
+  const id = e.state?.progetto || slugProgettoDaURL();
+  if (id) {
+    apriProgetto(id, { aggiornaURL: false });
+  } else {
+    chiudiProgetto({ aggiornaURL: false });
+  }
+});
 
 // ── Taccuino archivio ──
 let _cacheTaccuino = null;
@@ -1712,6 +1750,19 @@ async function init() {
   avviaCursore();
   lightbox.init();
   inizializzaFin();
+
+  // Link diretto a un progetto (es. condiviso via messaggio): apri subito.
+  // replaceState (non pushState) così il tasto "indietro" torna alla home.
+  const slugIniziale = slugProgettoDaURL();
+  if (slugIniziale) {
+    const pr = stato.progetti.find(p => p.id === slugIniziale && p.pubblicato !== false);
+    if (pr) {
+      history.replaceState({ progetto: slugIniziale }, '', `/progetti/${slugIniziale}`);
+      apriProgetto(slugIniziale, { aggiornaURL: false });
+    } else {
+      history.replaceState({}, '', '/');
+    }
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);

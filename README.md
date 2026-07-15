@@ -23,6 +23,7 @@ Ogni progetto è un capitolo di una ricerca più ampia. Il visitatore non naviga
 francescomartolini.art/
 │
 ├── index.html                    ← pagina principale
+├── 404.html                      ← redirect per URL parlanti su GitHub Pages (vedi sezione URL)
 │
 ├── css/
 │   └── stile.css                 ← stile globale (desktop + mobile)
@@ -84,6 +85,29 @@ francescomartolini.art/
 - Frecce in basso
 - Bottone **"info utilizzo"** (prima pagina): istruzioni di lettura
 - Indicatore laterale a puntini (destra schermo): trascinabile per scorrere rapidamente
+
+---
+
+### URL PARLANTI E CONDIVISIONE PROGETTI
+
+Ogni progetto ha un URL dedicato per poter essere condiviso direttamente (es. via messaggio):
+
+```
+francescomartolini.art/progetti/<id>
+```
+
+dove `<id>` è lo stesso slug già presente in `json/progetti.json` (campo `id`).
+
+**Importante — dove cambia l'URL e dove no:**
+
+- L'URL cambia **solo** quando un progetto si apre o si chiude (`apriProgetto()` / `chiudiProgetto()` in `js/libro.js`).
+- Lo sfogliare le pagine del libro su mobile (`navigaA()`) **non tocca mai l'URL** — resta com'era, per non rompere la sensazione di libro.
+- Aprendo direttamente `francescomartolini.art/progetti/alberi` (link condiviso), il sito carica e apre subito quel progetto, su mobile e desktop.
+- Il tasto "indietro" del browser chiude il progetto e torna alla home.
+
+**Perché c'è `404.html`:** GitHub Pages è hosting statico, non gestisce redirect lato server. `404.html` intercetta l'accesso diretto a un percorso tipo `/progetti/alberi` (che altrimenti darebbe 404) e rimanda a `index.html`, che ripristina l'URL corretto tramite `history.replaceState` prima che la pagina sia visibile. Se in futuro si cambia hosting (es. Netlify, Vercel), questo file **non serve più**: basta un redirect `/* → /index.html` nella configurazione del nuovo host.
+
+**Limite noto — anteprime nei messaggi:** quando un link viene condiviso su WhatsApp/iMessage/Telegram, l'anteprima (immagine, titolo) è generata dai tag `<meta og:...>` statici in `index.html`, sempre gli stessi per tutto il sito. Il link si apre correttamente sul progetto giusto, ma l'anteprima mostrerà titolo/immagine generici del sito, non quelli del progetto specifico. Per anteprime per-progetto servirebbe pre-rendering lato server — non presente al momento.
 
 ---
 
@@ -535,12 +559,15 @@ Punto nero con anello. Cambia colore automaticamente:
 | Font | `index.html` → `<head>` |
 | Contatti | `index.html` → `#chi-sono` + `js/libro.js` → `apriPagina('chi-sono-pagina')` |
 | URL Google Sheets | `js/libro.js` → `const SHEETS_URL` |
+| URL diretto progetto (routing) | `js/libro.js` → `apriProgetto()` / `chiudiProgetto()` / `slugProgettoDaURL()` |
 
 ---
 
 ### PUBBLICAZIONE
 
 Il sito è pubblicato su GitHub Pages. Ogni commit e push aggiorna automaticamente il sito.
+
+`404.html` nella root è necessario per far funzionare gli URL diretti dei progetti (`/progetti/<id>`) su GitHub Pages — vedi sezione "URL PARLANTI E CONDIVISIONE PROGETTI". Se si migra a un host con redirect server-side (Netlify, Vercel...), `404.html` diventa superfluo.
 
 Per un dominio personalizzato: connetti il repository a [Netlify](https://netlify.com) (gratuito).
 
@@ -569,3 +596,4 @@ Questi file non influenzano il sito in produzione.
 - Compatibile con tutti i browser moderni
 - Navigazione da tastiera completa (frecce, Escape)
 - PWA-ready: manifest e apple-touch-icon configurati
+- URL parlanti per i progetti (`/progetti/<id>`), condivisibili direttamente — vedi sezione dedicata

@@ -2,6 +2,19 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
+  <script>
+    // Ripristina il vero URL dopo il redirect da 404.html (vedi 404.html per il contesto).
+    // Deve girare prima di qualsiasi altro script: sostituisce subito l'URL nella
+    // barra degli indirizzi senza ricaricare la pagina, così l'utente non vede
+    // mai il parametro ?redirect=.
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var redirect = params.get('redirect');
+      if (redirect) {
+        history.replaceState(null, '', redirect);
+      }
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="francescomartolini.art — Il tempo lascia tracce. Io le cerco.">
   <meta name="theme-color" content="#0a0a0a">

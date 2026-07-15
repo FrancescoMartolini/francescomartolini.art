@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>francescomartolini.art</title>
+<script>
+  // Trucco SPA per GitHub Pages (custom domain, nessuna sottocartella).
+  // Se qualcuno apre direttamente /progetti/alberi, GitHub Pages risponde
+  // con questo 404. Qui ricostruiamo l'URL originale come querystring e
+  // rimandiamo a index.html, che lo "ripulirà" subito con la History API
+  // prima che la pagina venga mostrata.
+  (function () {
+    var path = location.pathname + location.search + location.hash;
+    location.replace('/?redirect=' + encodeURIComponent(path));
+  })();
+</script>
+</head>
+<body></body>
+</html>
