@@ -80,7 +80,6 @@
       ui = await res.json();
     } catch (e) {
       console.error('i18n: impossibile caricare json/ui.json', e);
-      return;
     }
     applyI18n();
     initToggle();
@@ -89,5 +88,12 @@
   window.getCurrentLang = function () { return lang; };
   window.t_ui = function (path) { return getField(path, ui || {}); };
 
-  document.addEventListener('DOMContentLoaded', init);
+  // Promessa che libro.js può attendere prima di costruire le parti
+  // che usano tu()/t_ui() — evita la race condition tra i due script,
+  // che caricano i rispettivi JSON in modo indipendente e asincrono.
+  window.i18nReady = new Promise(function (resolve) {
+    document.addEventListener('DOMContentLoaded', function () {
+      init().then(resolve).catch(resolve); // risolve comunque, anche in caso di errore di rete
+    });
+  });
 })();

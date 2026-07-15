@@ -94,7 +94,9 @@
   "nav": {
     "infoUtilizzo": { "it": "info utilizzo", "en": "how to read" },
     "indietro": { "it": "← Indietro", "en": "← Back" },
-    "avanti": { "it": "Avanti →", "en": "Next →" }
+    "avanti": { "it": "Avanti →", "en": "Next →" },
+    "visualizzaComeLibro": { "it": "Visualizza come libro", "en": "View as book" },
+    "comeSiLegge": { "it": "Come si legge questo libro", "en": "How to read this book" }
   },
   "overlay": {
     "chiudi": { "it": "Chiudi", "en": "Close" },
@@ -108,7 +110,8 @@
     }
   },
   "libro": {
-    "modalita": { "it": "Modalità libro", "en": "Book mode" }
+    "modalita": { "it": "Modalità libro", "en": "Book mode" },
+    "anteprimaMobile": { "it": "Anteprima libro mobile", "en": "Mobile book preview" }
   },
   "cookie": {
     "testo": { "it": "Questo sito usa solo cookie tecnici essenziali. Nessun cookie di profilazione.", "en": "This site only uses essential technical cookies. No profiling cookies." },

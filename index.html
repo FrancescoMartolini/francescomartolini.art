@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -39,15 +38,15 @@
         <!--<li><a class="section-link" onclick="apriPagina('collaborazioni-pagina')">Collaborazioni</a></li> -->
         <li><a class="section-link" onclick="apriTaccuino()" data-i18n="menu.taccuino">Taccuino</a></li>
         <li><div class="menu-dot"></div></li>
-        <!--li>
+        <li>
           <div class="lang-toggle" aria-label="Cambia lingua">
             <span class="lang-option" data-lang="it">IT</span>
             <span class="lang-sep">—</span>
             <span class="lang-option" data-lang="en">EN</span>
           </div>
-        </li-->
+        </li>
         <!--li>
-          <button id="btn-libro" onclick="apriLibro()" aria-label="Visualizza come libro">
+          <button id="btn-libro" onclick="apriLibro()" aria-label="Visualizza come libro" data-i18n-attr="aria-label:nav.visualizzaComeLibro">
             <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="12" y2="15"/></svg>
             Libro
           </button>
@@ -123,8 +122,8 @@
           </div>
           <div class="progetti-slider-wrap">
             <div class="progetti-griglia" id="progetti-griglia-desktop"></div>
-            <button class="slider-arrow slider-arrow-sx" id="proj-sx" aria-label="Precedente">&#8592;</button>
-            <button class="slider-arrow slider-arrow-dx" id="proj-dx" aria-label="Successivo">&#8594;</button>
+            <button class="slider-arrow slider-arrow-sx" id="proj-sx" aria-label="Precedente" data-i18n-attr="aria-label:lightbox.precedente">&#8592;</button>
+            <button class="slider-arrow slider-arrow-dx" id="proj-dx" aria-label="Successivo" data-i18n-attr="aria-label:lightbox.successivo">&#8594;</button>
           </div>
         </div>
       </div>
@@ -265,7 +264,7 @@
 
   <!-- ══ MOBILE nav ══ -->
   <div id="mobile-nav">
-    <button class="nota-nav" id="nota-nav" aria-label="Come si legge questo libro" onclick="apriPagina('come-funziona')" data-i18n="nav.infoUtilizzo">info utilizzo</button>
+    <button class="nota-nav" id="nota-nav" aria-label="Come si legge questo libro" data-i18n-attr="aria-label:nav.comeSiLegge" onclick="apriPagina('come-funziona')" data-i18n="nav.infoUtilizzo">info utilizzo</button>
     <button class="freccia freccia-sx" id="freccia-sx" data-i18n="nav.indietro">← Indietro</button>
     <span id="numero-nav">01</span>
     <button class="freccia freccia-dx" id="freccia-dx" data-i18n="nav.avanti">Avanti →</button>
@@ -362,386 +361,18 @@
   </script>
 
   <!-- ══ OVERLAY LIBRO MOBILE ══ -->
-  <div id="overlay-libro" role="dialog" aria-modal="true" aria-label="Anteprima libro mobile">
+  <div id="overlay-libro" role="dialog" aria-modal="true" aria-label="Anteprima libro mobile" data-i18n-attr="aria-label:libro.anteprimaMobile">
     <div id="overlay-libro-bg" onclick="chiudiLibro()"></div>
     <div id="cornice-libro">
       <div id="cornice-libro-top">
         <span id="cornice-libro-label" data-i18n="libro.modalita">Modalità libro</span>
-        <button id="btn-chiudi-libro" onclick="chiudiLibro()" aria-label="Chiudi">
+        <button id="btn-chiudi-libro" onclick="chiudiLibro()" aria-label="Chiudi" data-i18n-attr="aria-label:overlay.chiudi">
           <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-      <iframe id="iframe-libro" title="Anteprima libro" loading="lazy"></iframe>
+      <iframe id="iframe-libro" title="Anteprima libro" data-i18n-attr="title:libro.anteprimaMobile" loading="lazy"></iframe>
     </div>
   </div>
 
 </body>
 </html>
-=======
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="francescomartolini.art — Il tempo lascia tracce. Io le cerco.">
-  <meta name="theme-color" content="#0a0a0a">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="FM.art">
-  <meta property="og:title" content="francescomartolini.art">
-  <meta property="og:description" content="Il tempo lascia tracce. Io le cerco.">
-  <meta property="og:type" content="website">
-  <title>francescomartolini.art</title>
-  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="images/icon.jpg">
-  <link rel="manifest" href="images/manifest.json">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500&family=Caveat+Brush&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/stile.css">
-</head>
-<body>
-
-  <!-- ══ HEADER desktop ══ -->
-  <header id="site-header">
-    <a class="header-logo" href="#home">
-      <span class="logo-sinistra"><span>Francesco</span><span>Martolini</span></span>
-      <span class="logo-destra">.art</span>
-    </a>
-    <nav>
-      <ul class="menu-voci">
-        <li><a class="section-link" onclick="apriPagina('tutti-progetti')">Progetti</a></li>
-        <li><a class="section-link" onclick="apriPagina('tutti-studi')">Intervalli</a></li>
-        <li><a class="section-link" onclick="apriPagina('chi-sono-pagina')">Chi sono</a></li>
-        <!--<li><a class="section-link" onclick="apriPagina('collaborazioni-pagina')">Collaborazioni</a></li> -->
-        <li><a class="section-link" onclick="apriTaccuino()">Taccuino</a></li>
-        <li><div class="menu-dot"></div></li>
-        <!--li>
-          <button id="btn-libro" onclick="apriLibro()" aria-label="Visualizza come libro">
-            <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="12" y2="15"/></svg>
-            Libro
-          </button>
-        </li-->
-        <!--button id="tema-toggle" aria-label="Tema chiaro/scuro">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-        </button-->
-        <!--li><div class="lang-toggle" aria-label="Cambia lingua">
-          <span class="lang-option" data-lang="it">IT</span>
-          <span class="lang-sep">—</span>
-          <span class="lang-option" data-lang="en">EN</span>
-        </div></li-->
-      </ul>
-    </nav>
-  </header>
-
-  <!-- ══ MAIN ══ -->
-  <main id="main-content">
-
-    <!-- HOME -->
-    <section class="page" id="home" data-favicon="H" data-titolo="Home">
-      <div class="mobile-page-content">
-        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
-        <div class="pagina-corpo"><div><p class="capitolo-label">FrancescoMartolini.art</p>
-          <h1 class="titolo-principale">Il tempo<br>lascia tracce.<br><em>Io le cerco.</em></h1>
-          <!--h1 class="hero-titolo">Il tempo lascia tracce.<br>Io lavoro nel punto esatto<br><em>in cui iniziano a scomparire.</em></h1-->
-        </div></div>
-      </div>
-      <div class="desktop-hero">
-        <div class="hero-sinistra">
-          <h1 class="hero-titolo">Il tempo<br>lascia tracce.<br><em>Io le cerco.</em></h1>
-          <!--h1 class="hero-titolo">Il tempo lascia tracce.<br>Io lavoro nel punto esatto<br><em>in cui iniziano a scomparire.</em></h1-->
-          <div class="hero-separatore"></div>
-          <p class="hero-sottotitolo">Fotografia come indagine.<br>Progetti come mappe del tempo.</p>
-          <a href="#progetti" class="hero-cta">Scopri i progetti <svg viewBox="0 0 24 24" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19,12 12,19 5,12"/></svg></a>
-        </div>
-        <div class="hero-destra"><div class="hero-immagine" id="hero-img"></div></div>
-        <div class="hero-margine-dx">
-          <span class="data-live"></span>
-          <div class="margine-separatore"></div>
-          <span class="ora-live"></span>
-        </div>
-      </div>
-    </section>
-
-    <!-- INDICE mobile (solo mobile, generato anche via JS per posizione dinamica) -->
-    <section class="page mobile-only" id="indice-mobile" data-favicon="≡" data-titolo="Indice">
-      <div class="mobile-page-content">
-        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
-        <div class="pagina-corpo">
-          <div class="indice-wrap" id="indice-lista">
-            <!-- Popolato da JS -->
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PROGETTI -->
-    <section class="page" id="progetti" data-favicon="P" data-titolo="Progetti">
-      <div class="mobile-page-content">
-        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
-        <div class="pagina-corpo"><div style="max-width: 300px;"><p class="capitolo-label">Capitolo 01</p><h2 class="capitolo-titolo">Progetti</h2><p class="capitolo-descrizione">I progetti principali. Serie fotografiche.</p></div></div>
-      </div>
-      <div class="desktop-section desktop-progetti">
-        <div class="section-header-row">
-          <div class="section-label-wrap">
-            <p class="section-label">Progetti</p>
-            <p class="section-desc">Ogni progetto nasce da una domanda che il tempo continua a restituirmi.</p>
-            <a href="#tutti-progetti" class="section-link" onclick="apriPagina('tutti-progetti')">Vedi tutti →</a>
-          </div>
-          <div class="progetti-slider-wrap">
-            <div class="progetti-griglia" id="progetti-griglia-desktop"></div>
-            <button class="slider-arrow slider-arrow-sx" id="proj-sx" aria-label="Precedente">&#8592;</button>
-            <button class="slider-arrow slider-arrow-dx" id="proj-dx" aria-label="Successivo">&#8594;</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- MOBILE: pagine singoli progetti -->
-    <div id="mobile-progetti-container"></div>
-
-    <!-- TACCUINO -->
-    <section class="page" id="taccuino-section" data-favicon="T" data-titolo="Taccuino">
-      <div class="mobile-page-content">
-        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
-        <div class="pagina-corpo"><div class="taccuino-wrap" id="taccuino-mobile-frase"><p class="taccuino-frase">—</p><p class="taccuino-data">—</p></div></div>
-      </div>
-      <div class="desktop-section desktop-taccuino">
-        <div class="section-header-col">
-          <p class="section-label">Taccuino</p>
-          <p class="section-desc">Appunti, pensieri, osservazioni.<br>Frammenti di un percorso in corso.</p>
-          <button class="section-link" onclick="apriTaccuino()">Leggi tutti →</button>
-        </div>
-        <div class="taccuino-colonne" id="taccuino-colonne-desktop"></div>
-      </div>
-    </section>
-
-    <!-- STUDI / INTERVALLI -->
-    <section class="page" id="intervalli" data-favicon="I" data-titolo="Intervalli">
-      <div class="mobile-page-content">
-        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
-        <div class="pagina-corpo"><div style="max-width: 300px;"><p class="capitolo-label">Capitolo 02</p><h2 class="capitolo-titolo">Intervalli</h2><p class="capitolo-descrizione">Fotografie che non appartengono a un progetto, ma al mio modo di guardare.</p></div></div>
-      </div>
-      <div class="desktop-section desktop-studi">
-        <div class="section-header-col">
-          <p class="section-label">Intervalli</p>
-          <p class="section-desc">Fotografie che non appartengono a un progetto, ma al mio modo di guardare.</p>
-          <a href="#tutti-studi" class="section-link" onclick="apriPagina('tutti-studi')">Vedi tutti →</a>
-        </div>
-        <div class="studi-griglia" id="studi-griglia-desktop"></div>
-      </div>
-    </section>
-
-    <!-- MOBILE: pagine singoli intervalli -->
-    <div id="mobile-intervalli-container"></div>
-
-    <!-- CHI SONO — pagina capitolo (solo mobile) -->
-    <section class="page mobile-only" id="chi-sono-capitolo" data-favicon="C" data-titolo="Chi sono">
-      <div class="mobile-page-content">
-        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
-        <div class="pagina-corpo"><div style="max-width: 300px;"><p class="capitolo-label">Capitolo 03</p><h2 class="capitolo-titolo">Chi sono</h2><p class="capitolo-descrizione">Un ritratto essenziale. Parole e immagini che raccontano il percorso.</p></div></div>
-      </div>
-    </section>
-
-    <!-- CHI SONO — contenuto -->
-    <section class="page" id="chi-sono" data-favicon="C" data-titolo="Chi sono">
-      <div class="mobile-page-content">
-        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
-          <div class="chi-sono-wrap">
-            <div class="chi-sono-testo">
-              <h2>Un ritratto essenziale.<br><em>Parole e immagini che raccontano il percorso.</em></h2>
-              <p>Fotografo italiano. Il mio lavoro esplora il rapporto tra spazio, tempo e memoria — cercando nelle immagini le tracce di ciò che resta.</p>
-              <p>Sono interessato alla fotografia come strumento di indagine, non di rappresentazione. Ogni progetto nasce da una domanda che il tempo continua a restituirmi.</p>
-              <p>Basato in Toscana, lavoro su progetti a lungo termine alternati a commissioni commerciali selezionate.</p>
-            </div>
-
-            <div class="chi-sono-contatti">
-              <p class="contatti-label">Contatti</p>
-              <p class="contatti-nota">Non offro servizi di shooting su richiesta. Scrivimi se sei interessato a un'opera o vuoi costruire qualcosa insieme.</p>
-              
-              <div class="contenitore">
-                <div class="box">
-                  <img style="height: 200px; " src="./images/chi-sono-img.jpg">
-                </div>
-                <div class="box">
-                  <a class="contatto-btn" href="mailto:info@francescomartolini.art"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>info@francescomartolini.art</a>
-                  <a class="contatto-btn" href="https://instagram.com/francesco_martolini_ph" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>@francesco_martolini_ph</a>
-                  <a class="contatto-btn" href="tel:+393930336642"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.09 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7a2 2 0 011.72 2.03z"/></svg>+39 3930336642</a>
-                  <a class="contatto-btn" href="https://wa.me/393930336642?text=Ciao%2C%20vorrei%20collaborare%20con%20te%0AQuesta%20%C3%A8%20la%20mia%20idea%20cosa%20ne%20pensi%3F" aria-label="Chat with us on WhatsApp" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" class="contatto-icon"><circle cx="12" cy="12" r="10"/><path d="M8.5 7.5c.3-.3.8-.3 1.1 0l1.2 1.2c.3.3.3.8 0 1.1l-.6.6c.6 1.2 1.6 2.2 2.8 2.8l.6-.6c.3-.3.8-.3 1.1 0l1.2 1.2c.3.3.3.8 0 1.1-.8.8-2 .9-3 .4-3-1.4-5.4-3.8-6.8-6.8-.5-1-.4-2.2.4-3z"fill="white"/></svg> Chat WhatsApp</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="desktop-section desktop-chi-sono" id="collaborazioni">
-        <div class="chi-sono-desktop-sx">
-          <p class="section-label">Chi sono</p>
-          <p class="chi-sono-bio">Mi interessa il tempo.<br>Nelle sue forme,<br>nei suoi strati,<br>nelle sue assenze.</p>
-          <a href="#" class="section-link" onclick="apriPagina('chi-sono-pagina')">Scopri di più →</a>
-        </div>
-        <div class="chi-sono-desktop-img" id="chi-sono-img"><div><img src="./images/chi-sono-img.jpg"></div></div>
-        <div class="chi-sono-desktop-dx">
-          <p class="section-label">Commercial</p>
-          <p class="chi-sono-collab">Lavoro su progetti commerciali ed editoriali in ambiti diversi.</p>
-          <a href="#" class="section-link" onclick="apriPagina('collaborazioni-pagina')">Vedi alcuni lavori →</a>
-          <div class="pub-desktop-sezione" id="pub-desktop-wrap" style="display:none">
-            <p class="section-label">Pubblicazioni</p>
-            <div id="pub-desktop-lista" style="max-width: 600px; max-height: 300px; padding: 10px; overflow-y: auto;"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- MOBILE: collaborazioni -->
-    <div id="mobile-collaborazioni-container"></div>
-
-    <!-- MOBILE: pubblicazioni -->
-    <div id="mobile-pubblicazioni-container"></div>
-
-    <!-- FIN mobile -->
-    <section class="page page-fin" id="fin" data-favicon="·" data-titolo="Fine">
-      <div class="mobile-page-content">
-        <div class="pagina-corpo"><div class="fin-wrap">
-          <p class="fin-titolo">fin.</p>
-          <button class="fin-link" onclick="navigaA(0)">← Torna all'inizio</button>
-          <p class="fin-epilogo" id="fin-epilogo"></p>
-          <div class="fin-footer">
-            <p class="fin-copyright">© <span id="fin-anno"></span> Francesco Martolini</p>
-          </div>
-        </div>
-      </div>
-    </section>
-    
-  </main>
-
-  <!-- ══ FOOTER desktop ══ -->
-  <footer id="site-footer-desktop">
-    <div id="epilogo-desktop" class="epilogo-desktop"></div>
-    <div class="footer-riga">
-      <span class="footer-logo">Francesco Martolini</span>
-      <div class="footer-centro">
-        <a href="mailto:info@francescomartolini.art"></svg>MAIL</a>
-        <a href="tel:+393930336642" target="_blank" rel="noopener">TELEFONO</a>
-        <a href="https://instagram.com/francesco_martolini_ph" target="_blank" rel="noopener">Instagram</a>
-        <a href="https://wa.me/393930336642?text=Ciao%2C%20vorrei%20collaborare%20con%20te%0AQuesta%20%C3%A8%20la%20mia%20idea%20cosa%20ne%20pensi%3F" aria-label="Chat with us on WhatsApp" target="_blank" rel="noopener noreferrer"> Chat WhatsApp</a>
-      </div>
-      <div class="footer-dx">© <span id="footer-anno"></span> Tutti i diritti riservati</div>
-    </div>
-  </footer>
-
-  <!-- ══ MOBILE nav ══ -->
-  <div id="mobile-nav">
-    <button class="nota-nav" id="nota-nav" aria-label="Come si legge questo libro" onclick="apriPagina('come-funziona')">info utilizzo</button>
-    <button class="freccia freccia-sx" id="freccia-sx">← Indietro</button>
-    <span id="numero-nav">01</span>
-    <button class="freccia freccia-dx" id="freccia-dx">Avanti →</button>
-  </div>
-
-  <div id="indicatore"></div>
-
-  <!-- ══ PAGINE OVERLAY (tutti i progetti, studi, chi sono, collaborazioni) ══ -->
-  <div id="overlay-pagina" class="overlay-pagina">
-    <div class="overlay-inner">
-      <button class="overlay-chiudi" onclick="chiudiPagina()">
-        <svg viewBox="0 0 24 24" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        Chiudi
-      </button>
-      <div id="overlay-contenuto"></div>
-    </div>
-  </div>
-
-  <!-- ══ OVERLAY progetto dettaglio ══ -->
-  <article id="pagina-progetto" aria-hidden="true">
-    <div class="progetto-interno"></div>
-  </article>
-
-  <!-- ══ OVERLAY taccuino archivio ══ -->
-  <section id="pagina-taccuino-archivio" aria-hidden="true">
-    <div class="taccuino-archivio-interno"></div>
-  </section>
-
-  <!-- ══ COOKIE ══ -->
-  <div id="cookie-banner">
-    <p class="cookie-testo">Questo sito usa solo cookie tecnici essenziali. Nessun cookie di profilazione.</p>
-    <div class="cookie-azioni">
-      <button class="cookie-btn cookie-btn-rifiuta" id="cookie-rifiuta">Solo essenziali</button>
-      <button class="cookie-btn cookie-btn-accetta" id="cookie-accetta">Ho capito</button>
-    </div>
-  </div>
-
-  <!-- ══ LIGHTBOX ══ -->
-  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Immagine a schermo intero">
-    <button id="lightbox-chiudi" aria-label="Chiudi">
-      <svg viewBox="0 0 24 24" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-    <button id="lightbox-prev" aria-label="Precedente">&#8592;</button>
-    <div id="lightbox-stage">
-      <img id="lightbox-img" src="" alt="" draggable="false">
-    </div>
-    <button id="lightbox-next" aria-label="Successivo">&#8594;</button>
-    <p id="lightbox-counter"></p>
-  </div>
-
-  <script src="js/libro.js"></script>
-  <!-- ══ LOGICA OVERLAY LIBRO ══ -->
-  <script>
-    (function () {
-      var overlay = null;
-      var iframe  = null;
-      var iframeCaricato = false;
-
-      function getEls() {
-        overlay = overlay || document.getElementById('overlay-libro');
-        iframe  = iframe  || document.getElementById('iframe-libro');
-      }
-
-      window.apriLibro = function () {
-        getEls();
-        if (!iframeCaricato) {
-          iframe.src = window.location.href.split('?')[0];
-          iframeCaricato = true;
-        }
-        overlay.classList.add('aperto');
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
-            overlay.classList.add('visibile');
-          });
-        });
-        document.body.style.overflow = 'hidden';
-      };
-
-      window.chiudiLibro = function () {
-        getEls();
-        overlay.classList.remove('visibile');
-        overlay.addEventListener('transitionend', function handler() {
-          overlay.classList.remove('aperto');
-          overlay.removeEventListener('transitionend', handler);
-        });
-        document.body.style.overflow = '';
-      };
-
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') window.chiudiLibro();
-      });
-    })();
-  </script>
-
-  <!-- ══ OVERLAY LIBRO MOBILE ══ -->
-  <div id="overlay-libro" role="dialog" aria-modal="true" aria-label="Anteprima libro mobile">
-    <div id="overlay-libro-bg" onclick="chiudiLibro()"></div>
-    <div id="cornice-libro">
-      <div id="cornice-libro-top">
-        <span id="cornice-libro-label">Modalità libro</span>
-        <button id="btn-chiudi-libro" onclick="chiudiLibro()" aria-label="Chiudi">
-          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <iframe id="iframe-libro" title="Anteprima libro" loading="lazy"></iframe>
-    </div>
-  </div>
-
-</body>
-</html>
->>>>>>> refs/remotes/origin/main

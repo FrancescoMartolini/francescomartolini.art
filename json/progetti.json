@@ -1,12 +1,28 @@
 [
   {
     "id": "la-pelle-della-citta",
-    "titolo": { "it": "La pelle della città", "en": "The Skin of the City" },
+    "titolo": {
+      "it": "La pelle della città",
+      "en": "The Skin of the City"
+    },
     "anno": "2025",
     "descrizione": {
       "it": "Ogni muro ha una storia. Basta avvicinarsi abbastanza.",
       "en": "Every wall has a story. You just have to get close enough."
     },
+    "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778416462/LaPelleDellaCitta40_ppttqh.jpg",
+    "galleria": [
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778416462/LaPelleDellaCitta40_ppttqh.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416462/LaPelleDellaCitta91_n4lpsb.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416462/LaPelleDellaCitta3_tcaiy5.png",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416455/LaPelleDellaCitta112_merfsj.jpg"
+    ],
+    "label_link": {
+      "it": "Ordina una stampa",
+      "en": "Order a print"
+    },
+    "link_esterno": "https://www.saal-digital.net/share/umDMBZb/",
+    "pagina_libro": 3,
     "contenuto": [
       {
         "tipo": "testo",
@@ -21,7 +37,10 @@
       },
       {
         "tipo": "titolo",
-        "valore": { "it": "La mappa interattiva", "en": "The interactive map" }
+        "valore": {
+          "it": "La mappa interattiva",
+          "en": "The interactive map"
+        }
       },
       {
         "tipo": "testo",
@@ -30,10 +49,15 @@
           "en": "Alongside the images, I have created an interactive map that gathers all the scans I have made, offering a direct exploration of Florence's streets. Each point on the map represents a snapshot, a microcosm of urban stories. I invite anyone viewing the images to virtually walk through the city, immersing themselves in its most hidden traces.\n\nThe map is updated every time I scan something new."
         }
       },
-      { "tipo": "mappa" },
+      {
+        "tipo": "mappa"
+      },
       {
         "tipo": "titolo",
-        "valore": { "it": "Il concetto del progetto", "en": "The concept of the project" }
+        "valore": {
+          "it": "Il concetto del progetto",
+          "en": "The concept of the project"
+        }
       },
       {
         "tipo": "testo",
@@ -48,7 +72,10 @@
       },
       {
         "tipo": "titolo",
-        "valore": { "it": "La relazione con il tempo e le persone", "en": "The relationship with time and people" }
+        "valore": {
+          "it": "La relazione con il tempo e le persone",
+          "en": "The relationship with time and people"
+        }
       },
       {
         "tipo": "testo",
@@ -63,7 +90,10 @@
       },
       {
         "tipo": "titolo",
-        "valore": { "it": "Il Processo Creativo", "en": "The Creative Process" }
+        "valore": {
+          "it": "Il Processo Creativo",
+          "en": "The Creative Process"
+        }
       },
       {
         "tipo": "testo",
@@ -78,7 +108,10 @@
       },
       {
         "tipo": "titolo",
-        "valore": { "it": "Esposizione e Formato", "en": "Exhibition and Format" }
+        "valore": {
+          "it": "Esposizione e Formato",
+          "en": "Exhibition and Format"
+        }
       },
       {
         "tipo": "testo",
@@ -88,26 +121,28 @@
         }
       }
     ],
-    "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778416462/LaPelleDellaCitta40_ppttqh.jpg",
-    "galleria": [
-      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778416462/LaPelleDellaCitta40_ppttqh.jpg",
-      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416462/LaPelleDellaCitta91_n4lpsb.jpg",
-      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416462/LaPelleDellaCitta3_tcaiy5.png",
-      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778416455/LaPelleDellaCitta112_merfsj.jpg"
-    ],
-    "label_link": { "it": "Ordina una stampa", "en": "Order a print" },
-    "link_esterno": "https://www.saal-digital.net/share/umDMBZb/",
     "mappa": {
       "url": "https://www.google.com/maps/d/embed?mid=1oONLATOAeXZ81Nm9tfSGbuGdIrLjrMw&ehbc=2E312F",
-      "label": { "it": "Firenze - La pelle della città", "en": "Florence - The Skin of the City" }
-    },
-    "pagina_libro": 3
+      "label": {
+        "it": "Firenze - La pelle della città",
+        "en": "Florence - The Skin of the City"
+      }
+    }
   },
   {
     "id": "PROGETTO-XPAN",
-    "titolo": { "it": "PROGETTO XPAN", "en": "XPAN PROJECT" },
-    "anno": { "it": "2020 - ad oggi", "en": "2020 - present" },
-    "descrizione": { "it": "Streetphotograpy in formato 65:24", "en": "Street photography in 65:24 format" },
+    "titolo": {
+      "it": "PROGETTO XPAN",
+      "en": "XPAN PROJECT"
+    },
+    "anno": {
+      "it": "2020 - ad oggi",
+      "en": "2020 - present"
+    },
+    "descrizione": {
+      "it": "Streetphotograpy in formato 65:24",
+      "en": "Street photography in 65:24 format"
+    },
     "testo_lungo": {
       "it": "Il progetto, nato nel 2020, prende ispirazione dalla leggendaria Hasselblad XPan, una fotocamera analogica capace di sfruttare in modo innovativo la pellicola da 35mm. A differenza delle comuni macchine fotografiche, l'XPan combinava due fotogrammi consecutivi, dando vita a immagini panoramiche nel formato unico di 65x24mm.\n\nQuesto progetto raccoglie e reinterpreta quella visione, adattandola alla fotografia contemporanea: le immagini di una fotocamera tradizionale vengono ritagliate per ricreare l'iconico formato panoramico, trasformando così il modo in cui osserviamo e raccontiamo la street photography. \nNe nasce un nuovo linguaggio visivo, capace di enfatizzare il dinamismo e la profondità della scena urbana, offrendo una prospettiva inedita e immersiva sul mondo che ci circonda.",
       "en": "The project, born in 2020, draws inspiration from the legendary Hasselblad XPan, an analogue camera capable of using 35mm film in an innovative way. Unlike ordinary cameras, the XPan combined two consecutive frames, giving rise to panoramic images in the unique 65x24mm format.\n\nThis project gathers and reinterprets that vision, adapting it to contemporary photography: images from a traditional camera are cropped to recreate the iconic panoramic format, transforming the way we look at and tell street photography. \nA new visual language emerges from this, capable of emphasizing the dynamism and depth of the urban scene, offering an unprecedented and immersive perspective on the world around us."
@@ -128,11 +163,108 @@
       "background": "#0f0f0d",
       "text": "#f0ede8",
       "accent": "#c8b89a"
-    }
+    },
+    "contenuto": [
+      {
+        "tipo": "testo",
+        "valore": {
+          "it": "Il progetto, nato nel 2020, prende ispirazione dalla leggendaria Hasselblad XPan, una fotocamera analogica capace di sfruttare in modo innovativo la pellicola da 35mm. A differenza delle comuni macchine fotografiche, l'XPan combinava due fotogrammi consecutivi, dando vita a immagini panoramiche nel formato unico di 65x24mm.\n\nQuesto progetto raccoglie e reinterpreta quella visione, adattandola alla fotografia contemporanea: le immagini di una fotocamera tradizionale vengono ritagliate per ricreare l'iconico formato panoramico, trasformando così il modo in cui osserviamo e raccontiamo la street photography. \nNe nasce un nuovo linguaggio visivo, capace di enfatizzare il dinamismo e la profondità della scena urbana, offrendo una prospettiva inedita e immersiva sul mondo che ci circonda.",
+          "en": "The project, born in 2020, draws inspiration from the legendary Hasselblad XPan, an analogue camera capable of using 35mm film in an innovative way. Unlike ordinary cameras, the XPan combined two consecutive frames, giving rise to panoramic images in the unique 65x24mm format.\n\nThis project gathers and reinterprets that vision, adapting it to contemporary photography: images from a traditional camera are cropped to recreate the iconic panoramic format, transforming the way we look at and tell street photography. \nA new visual language emerges from this, capable of emphasizing the dynamism and depth of the urban scene, offering an unprecedented and immersive perspective on the world around us."
+        }
+      }
+    ]
+  },
+  {
+    "id": "PLAYLIST.00",
+    "titolo": "PLAYLIST.00",
+    "anno": "2026",
+    "descrizione":  {
+      "it": "PLAYLIST è un progetto curatoriale che mette in relazione fotografia e musica.",
+      "en": "PLAYLIST is a curatorial project that brings photography and music into relation."
+    },
+    "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778786521/Scan_20260416_aijdfw.png",
+    "galleria": [],
+    "pagina_libro": 7,
+    "contenuto": [
+      {
+        "tipo": "testo",
+        "valore": {
+          "it": "Nasce dall'idea che un'immagine possa essere attraversata non solo con lo sguardo, ma anche con l'ascolto.\n Ogni fotografia è associata a un brano musicale selezionato dall'autore.\n Non come colonna sonora, ma come chiave di accesso emotiva e percettiva all'immagine.\n Il progetto prende forma attraverso una pubblicazione cartacea composta da immagini quadrate su fondo bianco, testi brevi e QR code che permettono di ascoltare i brani suggeriti. Il libro diventa così un oggetto contemplativo che si attiva nel momento in cui il lettore decide di ascoltare. \n PLAYLIST non è un progetto fotografico.\n\n È un modo di leggere i progetti fotografici. \n Le immagini presenti nei volumi provengono da lavori già esistenti e mantengono il loro significato originario. All'interno di PLAYLIST vengono rilette, accostate e messe in dialogo con un universo sonoro coerente. \n Ogni capitolo della serie, identificato da un numero progressivo (PLAYLIST.0, PLAYLIST.1, …), esplora la relazione tra un linguaggio fotografico e un ambito musicale specifico. \n Il progetto si sviluppa su più livelli: \n - il libro, come esperienza fisica e silenziosa; \n - il sito web, come spazio di approfondimento; \n\n - la playlist musicale, come estensione sonora permanente. \n PLAYLIST è un archivio visivo-sonoro in continua evoluzione. \n Un sistema aperto che permette alle immagini di essere ascoltate e alla musica di essere osservata. \n",
+          "en": "It is born from the idea that an image can be experienced not only through the eyes, but also through listening.\n Each photograph is paired with a piece of music chosen by the author.\n Not as a soundtrack, but as an emotional and perceptual key to the image.\n The project takes shape through a printed publication made of square images on a white background, short texts, and QR codes that allow the suggested tracks to be listened to. The book thus becomes a contemplative object that activates the moment the reader decides to listen. \n PLAYLIST is not a photographic project.\n\n It is a way of reading photographic projects. \n The images in the volumes come from already existing works and keep their original meaning. Within PLAYLIST they are reread, juxtaposed, and placed in dialogue with a coherent sound universe. \n Each chapter in the series, identified by a progressive number (PLAYLIST.0, PLAYLIST.1, …), explores the relationship between a photographic language and a specific musical field. \n The project unfolds on several levels: \n - the book, as a physical and silent experience; \n - the website, as a space for deeper exploration; \n\n - the music playlist, as a permanent sonic extension. \n PLAYLIST is a visual-sonic archive in constant evolution. \n An open system that allows images to be listened to and music to be observed. \n"
+        }
+      },
+      {
+        "tipo": "spotify",
+        "valore": {
+          "playlistId": "6LIiTKNwUXfBmKRSApj9GJ",
+          "tracks": [
+            {
+              "uri": "spotify:track:7hYZepSsfTicIOJ0gHJjwQ",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784058189/Tabula-Rasa-I_vsmwhp.jpg"
+            },
+            {
+              "uri": "spotify:track:2d9KBVxb6bUfVCjjv1JAVe",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784058275/Father_d8i6fy.jpg"
+            },
+            {
+              "uri": "spotify:track:2ej1A2Ze6P2EOW7KfIosZR",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784058591/the-big-ship_ec1vo4.jpg"
+            },
+            {
+              "uri": "spotify:track:4Ms0GKHCtr5Lpg4dKOhO2I",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784059349/Building-steam-with_q2mocm.jpg"
+            },
+            {
+              "uri": "spotify:track:5S3F5GL8LASIjPg2PMiU1Q",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784058181/Emerald-Ruch_eqmgoe.jpg"
+            },
+            {
+              "uri": "spotify:track:5HgyC7aSmkHaLjfWowVkMk", 
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784058178/Andata_sqexpc.jpg"
+            },
+            {
+              "uri": "spotify:track:03C5oWy8fjzjZ0flZf2YNU",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784059422/Virginal-II_ro9m18.jpg"
+            },
+            {
+              "uri": "spotify:track:3v65IsDl6LDOHDu9bU4ZOn",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784059481/Zodiac-Shit_xe05u5.jpg"
+            },
+            {
+              "uri": "spotify:track:6Xajr512QEGAZ20bqAWkyT", 
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784059526/Near-Light_yjeynx.jpg"
+            },
+            {
+              "uri": "spotify:track:6fymXW3eFHPmIOdDfnLXS4",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784059574/emerald-and-stone_rrzr72.jpg"
+            },
+            {
+              "uri": "spotify:track:3rkJH9BaiCWpRY718WTkBP",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784059645/faleise_aqklir.jpg"
+            },
+            {
+              "uri": "spotify:track:2ZIaH69kaz55RM4Pjx6KXl",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784059723/two-thousand_cowmbt.jpg"
+            },
+            {
+              "uri": "spotify:track:0vp09QgBhShrQOL2w7P8k4",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784059771/Recovery_tqbth5.jpg"
+            },
+            {
+              "uri": "spotify:track:38KFHXttkrIpnUd0tTvkZj",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784059835/Creature_-Pt1_fcfxbu.jpg"
+            }
+          ]
+        }
+      }
+    ]
   },
   {
     "id": "divina-commedia",
-    "titolo": { "it": "Divina Commedia", "en": "Divine Comedy" },
+    "titolo": {
+      "it": "Divina Commedia",
+      "en": "Divine Comedy"
+    },
     "anno": "",
     "descrizione": {
       "it": "Questo sarà un progetto che durerà anni! lo scopo finale è ritrarre 99 immagini una per ogni canto della divina commedia",
@@ -145,27 +277,24 @@
     },
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778787008/cover_z6yvxm.jpg",
     "galleria": [],
-    "pagina_libro": 7,
-    "pubblicato": false
-  },
-  {
-    "id": "PLAYLIST.01",
-    "titolo": "PLAYLIST.01",
-    "anno": "",
-    "descrizione": "PLAYLIST.01",
-    "testo_lungo": "",
-    "testo_lungo_bozza": {
-      "it": "PLAYLIST è un progetto curatoriale che mette in relazione fotografia e musica. \n Nasce dall'idea che un'immagine possa essere attraversata non solo con lo sguardo, ma anche con l'ascolto.\n Ogni fotografia è associata a un brano musicale selezionato dall'autore.\n Non come colonna sonora, ma come chiave di accesso emotiva e percettiva all'immagine.\n Il progetto prende forma attraverso una pubblicazione cartacea composta da immagini quadrate su fondo bianco, testi brevi e QR code che permettono di ascoltare i brani suggeriti. Il libro diventa così un oggetto contemplativo che si attiva nel momento in cui il lettore decide di ascoltare. \n PLAYLIST non è un progetto fotografico.\n\n È un modo di leggere i progetti fotografici. \n Le immagini presenti nei volumi provengono da lavori già esistenti e mantengono il loro significato originario. All'interno di PLAYLIST vengono rilette, accostate e messe in dialogo con un universo sonoro coerente. \n Ogni capitolo della serie, identificato da un numero progressivo (PLAYLIST.0, PLAYLIST.1, …), esplora la relazione tra un linguaggio fotografico e un ambito musicale specifico. \n Il progetto si sviluppa su più livelli: \n - il libro, come esperienza fisica e silenziosa; \n - il sito web, come spazio di approfondimento; \n\n - la playlist musicale, come estensione sonora permanente. \n PLAYLIST è un archivio visivo-sonoro in continua evoluzione. \n Un sistema aperto che permette alle immagini di essere ascoltate e alla musica di essere osservata. \n",
-      "en": "PLAYLIST is a curatorial project that brings photography and music into relation. \n It is born from the idea that an image can be experienced not only through the eyes, but also through listening.\n Each photograph is paired with a piece of music chosen by the author.\n Not as a soundtrack, but as an emotional and perceptual key to the image.\n The project takes shape through a printed publication made of square images on a white background, short texts, and QR codes that allow the suggested tracks to be listened to. The book thus becomes a contemplative object that activates the moment the reader decides to listen. \n PLAYLIST is not a photographic project.\n\n It is a way of reading photographic projects. \n The images in the volumes come from already existing works and keep their original meaning. Within PLAYLIST they are reread, juxtaposed, and placed in dialogue with a coherent sound universe. \n Each chapter in the series, identified by a progressive number (PLAYLIST.0, PLAYLIST.1, …), explores the relationship between a photographic language and a specific musical field. \n The project unfolds on several levels: \n - the book, as a physical and silent experience; \n - the website, as a space for deeper exploration; \n\n - the music playlist, as a permanent sonic extension. \n PLAYLIST is a visual-sonic archive in constant evolution. \n An open system that allows images to be listened to and music to be observed. \n"
-    },
-    "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778786521/Scan_20260416_aijdfw.png",
-    "galleria": [],
     "pagina_libro": 9,
-    "pubblicato": false
+    "pubblicato": false,
+    "contenuto": [
+      {
+        "tipo": "testo",
+        "valore": {
+          "it": "Non è un progetto su Dante. È un progetto sul viaggio — quella condizione strana in cui ci si trova in mezzo, senza sapere bene da dove si viene né dove si va.",
+          "en": "This is not a project about Dante. It is a project about the journey — that strange condition of finding yourself in the middle, without quite knowing where you came from or where you are going."
+        }
+      }
+    ]
   },
   {
     "id": "anatomia-degli-alberi",
-    "titolo": { "it": "Anatomia degli alberi", "en": "Anatomy of Trees" },
+    "titolo": {
+      "it": "Anatomia degli alberi",
+      "en": "Anatomy of Trees"
+    },
     "anno": "",
     "descrizione": {
       "it": "Sequenze verticali. La struttura nascosta delle cose che crescono lentamente.",
@@ -179,7 +308,16 @@
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778787290/pinterest_uobvby.jpg",
     "galleria": [],
     "pagina_libro": 11,
-    "pubblicato": false
+    "pubblicato": false,
+    "contenuto": [
+      {
+        "tipo": "testo",
+        "valore": {
+          "it": "Questo progetto nasce durante le mie uscite quotidiane, osservando alberi che, per forma o postura, sembrano sfuggire alla normalità. Non vengono fotografati per il paesaggio in cui si trovano, né per la specie a cui appartengono. Vengono scelti per la loro struttura. Ogni albero viene isolato dal suo contesto e ridotto alla sua ossatura principale. Rimangono solo il tronco e i rami che ne definiscono la postura, come se venisse messo a nudo il suo scheletro. Privato dello sfondo, dei dettagli secondari e del luogo in cui cresce, l'albero smette di essere parte del paesaggio e diventa un individuo. Una forma unica che esiste da sola.Questa raccolta diventa un atlante di posture vegetali: pieghe, tensioni, equilibri, gesti congelati nel tempo. Non è un lavoro sugli alberi. È un lavoro sulle forme.",
+          "en": "This project was born during my daily walks, observing trees that, by shape or posture, seem to escape the ordinary. They are not photographed for the landscape they stand in, nor for the species they belong to. They are chosen for their structure. Each tree is isolated from its context and reduced to its essential frame. Only the trunk and branches that define its posture remain, as if its skeleton were being laid bare. Stripped of background, secondary details, and the place where it grows, the tree stops being part of the landscape and becomes an individual — a unique form that exists on its own. This collection becomes an atlas of plant postures: folds, tensions, balances, gestures frozen in time. This is not a work about trees. It is a work about forms."
+        }
+      }
+    ]
   },
   {
     "id": "PROGETTO-3.3",
@@ -197,6 +335,15 @@
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778787452/inspo_emmyoy.jpg",
     "galleria": [],
     "pagina_libro": 13,
-    "pubblicato": false
+    "pubblicato": false,
+    "contenuto": [
+      {
+        "tipo": "testo",
+        "valore": {
+          "it": "Le immagini sono realizzate con una HP Photosmart 715, una fotocamera digitale dei primi anni 2000 con una risoluzione di 3.3 megapixel. Questa limitazione diventa il punto di partenza del progetto. La serie è composta da tre fotografie.\n Tutte le immagini sono: \n - scattate nello stesso punto della città\n\n - realizzate in tre giorni diversi\n - costruite attorno alla presenza di tre elementi ripetuti nella scena\n Ogni fotografia viene poi ritagliata in formato 1:1 e convertita in bianco e nero, per enfatizzare le forme, la ripetizione e il carattere grezzo del sensore digitale.\n Il progetto segue una struttura semplice e quasi matematica:\n - 3.3 megapixel — la risoluzione della fotocamera\n - 3 fotografie — la struttura della serie\n - 3 elementi — la composizione di ogni immagine\n - 3 giorni — il tempo in cui il progetto prende forma\n Lo stesso spazio urbano viene osservato più volte, lasciando che la città cambi naturalmente: persone, oggetti e luce si trasformano, mentre l'inquadratura rimane la stessa.\n Le tre fotografie della serie verranno aggiunte qui una volta completato il progetto.",
+          "en": "The images are made with an HP Photosmart 715, a digital camera from the early 2000s with a resolution of 3.3 megapixels. This limitation becomes the starting point of the project. The series is made up of three photographs.\n All the images are: \n - taken at the same spot in the city\n\n - made on three different days\n - built around the presence of three repeated elements in the scene\n Each photograph is then cropped to a 1:1 format and converted to black and white, to emphasize the shapes, the repetition, and the raw character of the digital sensor.\n The project follows a simple, almost mathematical structure:\n - 3.3 megapixels — the camera's resolution\n - 3 photographs — the structure of the series\n - 3 elements — the composition of each image\n - 3 days — the time in which the project takes shape\n The same urban space is observed several times, letting the city change naturally: people, objects, and light transform, while the framing stays the same.\n The three photographs of the series will be added here once the project is completed."
+        }
+      }
+    ]
   }
 ]
