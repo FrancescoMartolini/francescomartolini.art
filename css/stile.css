@@ -1195,7 +1195,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .nota-nav { position: absolute; left: 20px; top: 0; height: 44px; display: flex; align-items: center; font-family: var(--font-titolo); font-style: italic; font-size: 16px; color: var(--grigio-medio); background: none; border: none; padding: 0 6px; transition: color var(--transizione); }
   .nota-nav:hover { color: var(--nero); }
 
-  .freccia { width: 120px; font-size: 11px; font-weight: 300; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grigio-medio); padding: 0 20px; height: 44px; display: flex; align-items: center; transition: color var(--transizione); background: none; border: none; user-select: none; }
+  .freccia { justify-content: center; width: 120px; font-size: 11px; font-weight: 300; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grigio-medio); padding: 0 20px; height: 44px; display: flex; align-items: center; transition: color var(--transizione); background: none; border: none; user-select: none; }
   .freccia:hover { color: var(--nero); }
   .freccia[disabled] { opacity: 0; pointer-events: none; }
 

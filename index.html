@@ -3,10 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <script>
-    // Ripristina il vero URL dopo il redirect da 404.html (vedi 404.html per il contesto).
-    // Deve girare prima di qualsiasi altro script: sostituisce subito l'URL nella
-    // barra degli indirizzi senza ricaricare la pagina, così l'utente non vede
-    // mai il parametro ?redirect=.
+    // 1) Fissa la base per i percorsi relativi (css/, js/, images/, json/)
+    // PRIMA che il browser li incontri più sotto nel documento. Senza
+    // questo, aprire un URL profondo come /francescomartolini.art/progetti/alberi
+    // farebbe risolvere "css/stile.css" relativo a ".../progetti/", non
+    // alla cartella reale del sito — rompendo stile, script e dati.
+    // document.write qui è corretto e sicuro: gira in modo sincrono
+    // durante il parsing dell'head, prima di qualsiasi tag successivo.
+    (function () {
+      var base = location.hostname.endsWith('github.io')
+        ? '/' + (location.pathname.split('/').filter(Boolean)[0] || '')
+        : '';
+      document.write('<base href="' + base + '/">');
+    })();
+  </script>
+  <script>
+    // 2) Ripristina il vero URL dopo il redirect da 404.html (vedi 404.html
+    // per il contesto): sostituisce subito l'URL nella barra degli indirizzi
+    // senza ricaricare la pagina, così l'utente non vede mai ?redirect=.
+    // Questo non tocca la risoluzione dei percorsi relativi: se ne occupa
+    // già il <base> impostato sopra.
     (function () {
       var params = new URLSearchParams(location.search);
       var redirect = params.get('redirect');

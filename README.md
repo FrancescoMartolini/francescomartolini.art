@@ -24,6 +24,10 @@ francescomartolini.art/
 │
 ├── index.html                    ← pagina principale
 ├── 404.html                      ← redirect per URL parlanti su GitHub Pages (vedi sezione URL)
+├── serve-locale.py               ← server per testare in locale (vedi sezione URL)
+├── sitemap.xml                   ← generata automaticamente (vedi sezione Sitemap)
+├── genera-sitemap.py             ← script che la genera da json/progetti.json
+├── robots.txt                    ← punta alla sitemap
 │
 ├── css/
 │   └── stile.css                 ← stile globale (desktop + mobile)
@@ -90,24 +94,63 @@ francescomartolini.art/
 
 ### URL PARLANTI E CONDIVISIONE PROGETTI
 
-Ogni progetto ha un URL dedicato per poter essere condiviso direttamente (es. via messaggio):
+Oltre ai progetti, hanno un URL dedicato e condivisibile anche **Chi Sono**, **Fotografie Commerciali**, **Intervalli** e **Taccuino** — le pagine con un contenuto autonomo. Restano senza URL proprio l'indice "tutti i progetti" (ridondante con la home) e la nota "come funziona" (supporto, non una pagina a sé).
 
 ```
 francescomartolini.art/progetti/<id>
+francescomartolini.art/chi-sono
+francescomartolini.art/fotografie-commerciali
+francescomartolini.art/intervalli
+francescomartolini.art/taccuino
 ```
 
-dove `<id>` è lo stesso slug già presente in `json/progetti.json` (campo `id`).
+dove `<id>` è lo slug già presente in `json/progetti.json` (campo `id`). Le altre corrispondenze sono nella mappa `SEZIONI_URL` in `js/libro.js`.
 
 **Importante — dove cambia l'URL e dove no:**
 
-- L'URL cambia **solo** quando un progetto si apre o si chiude (`apriProgetto()` / `chiudiProgetto()` in `js/libro.js`).
+- L'URL cambia **solo** quando una di queste pagine si apre o si chiude (`apriProgetto()`/`chiudiProgetto()`, `apriPagina()`/`chiudiPagina()`, `apriTaccuino()`/`chiudiTaccuino()` in `js/libro.js`, tutte coordinate da `leggiRoute()`).
 - Lo sfogliare le pagine del libro su mobile (`navigaA()`) **non tocca mai l'URL** — resta com'era, per non rompere la sensazione di libro.
-- Aprendo direttamente `francescomartolini.art/progetti/alberi` (link condiviso), il sito carica e apre subito quel progetto, su mobile e desktop.
-- Il tasto "indietro" del browser chiude il progetto e torna alla home.
+- Aprendo direttamente uno di questi URL (link condiviso), il sito carica e apre subito quella pagina, su mobile e desktop.
+- Il tasto "indietro" del browser chiude la pagina e torna alla home.
 
 **Perché c'è `404.html`:** GitHub Pages è hosting statico, non gestisce redirect lato server. `404.html` intercetta l'accesso diretto a un percorso tipo `/progetti/alberi` (che altrimenti darebbe 404) e rimanda a `index.html`, che ripristina l'URL corretto tramite `history.replaceState` prima che la pagina sia visibile. Se in futuro si cambia hosting (es. Netlify, Vercel), questo file **non serve più**: basta un redirect `/* → /index.html` nella configurazione del nuovo host.
 
+**Sottopercorso GitHub Pages (Project Page):** finché non è collegato il dominio personalizzato `francescomartolini.art`, il sito vive su GitHub Pages sotto `francescomartolini.github.io/francescomartolini.art/` — cioè con un prefisso nel percorso, non alla radice del dominio. `BASE_PATH` (in `js/libro.js`, calcolato all'avvio guardando `location.hostname`/`location.pathname`) e il tag `<base>` generato dinamicamente in cima a `index.html` gestiscono questo automaticamente, sia per gli URL dei progetti sia per i percorsi relativi di CSS/JS/immagini/JSON. Se in futuro si collega il dominio personalizzato, il prefisso sparisce da solo, senza bisogno di modificare il codice.
+
 **Limite noto — anteprime nei messaggi:** quando un link viene condiviso su WhatsApp/iMessage/Telegram, l'anteprima (immagine, titolo) è generata dai tag `<meta og:...>` statici in `index.html`, sempre gli stessi per tutto il sito. Il link si apre correttamente sul progetto giusto, ma l'anteprima mostrerà titolo/immagine generici del sito, non quelli del progetto specifico. Per anteprime per-progetto servirebbe pre-rendering lato server — non presente al momento.
+
+#### Testare gli URL dei progetti in locale
+
+Aprire `index.html` con doppio click (`file://`) **non funziona**: i `fetch()` dei file JSON vengono bloccati dal browser su quel protocollo. Serve un server HTTP locale.
+
+Per testare anche il comportamento del link diretto (quello che su GitHub Pages passa da `404.html`), in root del repo c'è `serve-locale.py`: un piccolo server che replica lo stesso comportamento, servendo `404.html` per qualsiasi percorso che non corrisponde a un file reale — esattamente come farebbe GitHub Pages con `/progetti/<id>`.
+
+```bash
+python3 serve-locale.py
+```
+
+poi:
+
+- `http://localhost:8000/` → la home
+- `http://localhost:8000/progetti/PLAYLIST.00` (o qualsiasi altro id) aperto direttamente → deve caricare subito quel progetto, con lo stile corretto
+- `http://localhost:8000/chi-sono`, `/fotografie-commerciali`, `/intervalli`, `/taccuino` → stessa cosa per le altre pagine con URL dedicato
+- tasto "indietro" del browser → deve chiudere la pagina e tornare alla home
+
+Nota: in locale il sito gira alla radice (`localhost:8000/`), quindi `BASE_PATH` risulta vuoto — corrisponde allo scenario "dominio personalizzato collegato", non all'attuale sottopercorso di github.io. Il comportamento generale (apertura diretta, `indietro`, sfoglio pagine senza toccare l'URL) si verifica comunque correttamente.
+
+#### Sitemap
+
+`sitemap.xml` elenca solo le pagine con un URL reale: la home, Chi Sono, Fotografie Commerciali, Intervalli, Taccuino, e ogni progetto pubblicato (stesso criterio di `apriProgetto()`: escluso solo se `pubblicato: false`). L'indice "tutti i progetti" e la nota "come funziona" restano fuori — non hanno un URL proprio (vedi sezione precedente).
+
+Dominio usato: `https://francescomartolini.art` (il dominio finale, anche se non ancora collegato via DNS/CNAME). Se cambia, va aggiornata la costante `DOMINIO` in `genera-sitemap.py`.
+
+`sitemap.xml` **si rigenera da solo a ogni deploy** (vedi step "Genera sitemap.xml" in `.github/workflows/static.yml`), leggendo `json/progetti.json`: aggiungere o pubblicare un progetto non richiede nessun passaggio manuale in più. Per rigenerarla anche in locale (utile solo per controllarla, non serve prima di ogni push):
+
+```bash
+python3 genera-sitemap.py
+```
+
+`robots.txt` (in root) punta alla sitemap con la riga `Sitemap: https://francescomartolini.art/sitemap.xml`, così i motori di ricerca la trovano automaticamente.
 
 ---
 
@@ -441,23 +484,15 @@ Array di frasi brevi per la pagina finale "fin.".
 ### TACCUINO — GOOGLE SHEETS (fonte principale)
 
 Il taccuino si aggiorna automaticamente da Google Sheets.
-Nel Google Sheets ho creato due fogli uno scritto in italiano uno in inglese.
-Va creato un collegamento per ogni foglio come scritto sotto e in base all'url va inserito nella variabile scritta sotto.
 
 **Setup:**
 
-1. Crea un foglio con intestazioni: `testo` / `data` / `foto` / `con cosa è stata scattata la foto`
+1. Crea un foglio con intestazioni: `testo` / `data` / `foto`
 2. File → Condividi → Pubblica sul web → CSV
 3. In `js/libro.js` sostituisci:
    ```javascript
-   const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/XXXXXXXX/pub?gid=xxxxxxxx&single=true&output=csv';
-   const SHEETS_URL_EN = 'https://docs.google.com/spreadsheets/d/XXXXXXXX/pub?gid=xxxxxxxx&single=true&output=csv';
+   const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/XXXXXXXX/pub?output=csv';
    ```
-
-Questo è la funzione che vede se è prenuto il tasto IT oppure EN e in base a questo il taccuino legge una o l'altra pagina usando la solita logica.
-  ```javascript
-   const r = await fetch(localStorage.getItem('lang') === 'en' ? SHEETS_URL_EN : SHEETS_URL);
-  ```
 
 **Fallback:** se Sheets non è raggiungibile, carica `json/taccuino.json`.
 
