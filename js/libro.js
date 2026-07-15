@@ -624,16 +624,33 @@ function chiudiPagina() { $('overlay-pagina').classList.remove('aperta'); }
 // ── Progetto dettaglio ──
 const _cacheProgetti = {};
 
-// ── Routing: URL parlanti per i progetti (/progetti/<id>) ──
+// ── Routing: URL parlanti per i progetti (BASE/progetti/<id>) ──
 // L'URL cambia SOLO quando si apre/chiude un progetto, mai durante lo
 // sfogliare le pagine del libro (navigaA) o negli altri overlay: la
 // navigazione interna resta "silenziosa" com'era prima, così mantiene
 // la sensazione di libro. Serve solo per poter linkare/condividere un
 // singolo progetto.
+//
+// BASE_PATH gestisce automaticamente i due scenari di hosting:
+// - github.io (Project Page): il sito vive sotto /nome-repo/ (es.
+//   francescomartolini.github.io/francescomartolini.art/) → il primo
+//   segmento del path è il prefisso da mantenere in ogni URL.
+// - dominio personalizzato (es. francescomartolini.art): il sito vive
+//   alla radice → nessun prefisso.
+// Se in futuro si collega il dominio personalizzato, questo codice si
+// adatta da solo, senza bisogno di modifiche.
+const BASE_PATH = (() => {
+  if (!location.hostname.endsWith('github.io')) return '';
+  const primoSegmento = location.pathname.split('/').filter(Boolean)[0];
+  return primoSegmento ? `/${primoSegmento}` : '';
+})();
+
 const TITOLO_DEFAULT = document.title;
 
 function slugProgettoDaURL() {
-  const m = location.pathname.match(/^\/progetti\/([^\/?#]+)\/?$/);
+  const base = BASE_PATH.replace(/\/$/, '');
+  const re = new RegExp(`^${base}/progetti/([^/?#]+)/?$`);
+  const m = location.pathname.match(re);
   return m ? decodeURIComponent(m[1]) : null;
 }
 
@@ -642,7 +659,7 @@ function apriProgetto(id, { aggiornaURL = true } = {}) {
   if (!pr || pr.pubblicato === false) return;
 
   if (aggiornaURL) {
-    const url = `/progetti/${id}`;
+    const url = `${BASE_PATH}/progetti/${id}`;
     if (location.pathname !== url) {
       history.pushState({ progetto: id }, '', url);
     } else {
@@ -1009,7 +1026,7 @@ function chiudiProgetto({ aggiornaURL = true } = {}) {
     el._scrollHandler = null;
   }
   if (aggiornaURL && slugProgettoDaURL()) {
-    history.pushState({}, '', '/');
+    history.pushState({}, '', `${BASE_PATH}/`);
   }
   document.title = TITOLO_DEFAULT;
 }
@@ -1757,10 +1774,10 @@ async function init() {
   if (slugIniziale) {
     const pr = stato.progetti.find(p => p.id === slugIniziale && p.pubblicato !== false);
     if (pr) {
-      history.replaceState({ progetto: slugIniziale }, '', `/progetti/${slugIniziale}`);
+      history.replaceState({ progetto: slugIniziale }, '', `${BASE_PATH}/progetti/${slugIniziale}`);
       apriProgetto(slugIniziale, { aggiornaURL: false });
     } else {
-      history.replaceState({}, '', '/');
+      history.replaceState({}, '', `${BASE_PATH}/`);
     }
   }
 }

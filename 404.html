@@ -4,14 +4,21 @@
 <meta charset="utf-8">
 <title>francescomartolini.art</title>
 <script>
-  // Trucco SPA per GitHub Pages (custom domain, nessuna sottocartella).
-  // Se qualcuno apre direttamente /progetti/alberi, GitHub Pages risponde
-  // con questo 404. Qui ricostruiamo l'URL originale come querystring e
-  // rimandiamo a index.html, che lo "ripulirà" subito con la History API
-  // prima che la pagina venga mostrata.
+  // Trucco SPA per GitHub Pages. Se qualcuno apre direttamente
+  // /francescomartolini.art/progetti/alberi (Project Page: il repo si
+  // chiama francescomartolini.art, quindi il sito vive sotto quel
+  // sottopercorso, non alla radice del dominio), GitHub Pages risponde
+  // con questo 404. Qui salviamo il percorso originale COMPLETO
+  // (sottopercorso incluso) e rimandiamo alla home dello stesso
+  // sottopercorso, che lo "ripulirà" con la History API prima che la
+  // pagina venga mostrata. Se in futuro si collega un dominio
+  // personalizzato (che vive alla radice), il calcolo si adatta da solo.
   (function () {
-    var path = location.pathname + location.search + location.hash;
-    location.replace('/?redirect=' + encodeURIComponent(path));
+    var pathCompleto = location.pathname + location.search + location.hash;
+    var base = location.hostname.endsWith('github.io')
+      ? '/' + (location.pathname.split('/').filter(Boolean)[0] || '')
+      : '';
+    location.replace(base + '/?redirect=' + encodeURIComponent(pathCompleto));
   })();
 </script>
 </head>
