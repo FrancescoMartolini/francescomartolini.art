@@ -8,7 +8,8 @@
 
 'use strict';
 
-const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?output=csv';
+const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?gid=1174325309&single=true&output=csv';
+const SHEETS_URL_EN = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?gid=1079818483&single=true&output=csv';
 
 const stato = {
   lang: localStorage.getItem('lang') || 'it',
@@ -23,17 +24,23 @@ const stato = {
   sliderIdx: 0
 };
 
+// ── i18n: legge un campo bilingue { it, en } con fallback su IT ──
+// Funziona anche su semplici stringhe (retrocompatibile con dati non ancora tradotti).
 function t(field) {
   if (field == null) return '';
-  if (typeof field === 'string') return field; // fallback per campi non ancora bilingue
-  return field[stato.lang] || field.it || '';
+  if (typeof field === 'string') return field;
+  const lang = (typeof getCurrentLang === 'function' && getCurrentLang()) || localStorage.getItem('lang') || 'it';
+  return field[lang] || field.it || '';
+}
+// Stringhe di interfaccia (menu, bottoni...) — definite in i18n.js
+function tu(key) {
+  return (typeof t_ui === 'function' && t_ui(key)) || '';
 }
 
-function setLang(lang) {
-  stato.lang = lang;
-  localStorage.setItem('lang', lang);
-  location.reload(); // semplice: ri-renderizza tutto da capo
-}
+const FRASE_FIN = {
+  it: 'Alcune tracce richiedono anni per diventare visibili.',
+  en: 'Some traces take years to become visible.'
+};
 
 const EPILOGHI = [
   'Il tempo lascia tracce.',
@@ -52,7 +59,7 @@ const EPILOGHI = [
 function inizializzaFin() {
   const elenco = stato.epiloghi?.length ? stato.epiloghi : EPILOGHI;
   //const frase = elenco[Math.floor(Math.random() * elenco.length)]; // => Elenco dinamico come da variabile sopra
-  const frase = "Alcune tracce richiedono anni per diventare visibili.";
+  const frase = t(FRASE_FIN);
 
   // Mobile — inietta il testo; la transizione parte in aggiornaUI quando si arriva a #fin
   const elMobile = document.getElementById('fin-epilogo');
@@ -63,7 +70,7 @@ function inizializzaFin() {
   // Desktop — appare subito con fade (già visibile da scroll)
   const elDesktop = document.getElementById('epilogo-desktop');
   if (elDesktop) {
-    elDesktop.textContent = "Alcune tracce richiedono anni per diventare visibili.";
+    elDesktop.textContent = t(FRASE_FIN);
     requestAnimationFrame(() => elDesktop.classList.add('visibile'));
   }
 }
@@ -93,55 +100,97 @@ function aggiorneFavicon(lettera) {
 }
 
 // ── CSV Parser ──
-function parseCsv(csv) {
-  return csv.trim().split('\n').slice(1).map((riga, i) => {
-    const celle = []; let inQ = false, cell = '', colIdx = 0;
-    for (let c = 0; c < riga.length; c++) {
-      const ch = riga[c];
-      if (ch === '"') { inQ = !inQ; continue; }
-      if (ch === ',' && !inQ && colIdx < 3) { 
-        //splitta fino alla colonna 3 divido le collonne nel google sheet in modo che la colonna 3 sia l'ultima e non ci siano problemi con le virgole nel testo
-        celle.push(cell.trim()); cell = ''; colIdx++; continue;
-      }
-      cell += ch;
-    }
-    celle.push(cell.trim());
-    return { id: i+1, testo: celle[0]||'', data: celle[1]||'', foto: celle[2]||null, camera: celle[3]||null };
-  }).filter(v => t(v.testo));
+// ── Parser CSV robusto: legge l'intestazione delle colonne invece di
+//    assumere una posizione fissa, così funziona sia col foglio vecchio
+//    (senza colonna EN) sia con quello nuovo, in qualunque ordine tu le metta ──
+function parseRigaCsv(riga) {
+  const celle = []; let inQ = false, cell = '';
+  for (let c = 0; c < riga.length; c++) {
+    const ch = riga[c];
+    if (ch === '"') { inQ = !inQ; continue; }
+    if (ch === ',' && !inQ) { celle.push(cell.trim()); cell = ''; continue; }
+    cell += ch;
+  }
+  celle.push(cell.trim());
+  return celle;
 }
 
-// ── Fetch con timeout: non aspetta mai più di `ms' ──
-function fetchConTimeout(url, ms) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), ms);
-  return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(timer));
+function normalizzaHeader(h) {
+  return h.toLowerCase().trim()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // rimuove accenti
+}
+
+const ALIAS_COLONNE = {
+  testo:  ['testo', 'testo it', 'nota', 'nota it'],
+  testoEn:['testo en', 'en', 'english', 'nota en'],
+  data:   ['data', 'date'],
+  foto:   ['foto', 'photo', 'immagine'],
+  camera: ['camera']
+};
+
+function trovaIndiceColonna(headers, chiave) {
+  const alias = ALIAS_COLONNE[chiave];
+  return headers.findIndex(h => alias.includes(normalizzaHeader(h)));
+}
+
+function parseCsv(csv) {
+  const righe = csv.trim().split('\n');
+  const headerRiga = parseRigaCsv(righe[0]).map(normalizzaHeader);
+
+  // Trova ogni colonna per nome; se non la trova usa la posizione classica
+  // (0=testo,1=data,2=foto,3=camera) come fallback per compatibilità.
+  let idxTesto   = trovaIndiceColonna(headerRiga, 'testo');
+  let idxTestoEn = trovaIndiceColonna(headerRiga, 'testoEn');
+  let idxData    = trovaIndiceColonna(headerRiga, 'data');
+  let idxFoto    = trovaIndiceColonna(headerRiga, 'foto');
+  let idxCamera  = trovaIndiceColonna(headerRiga, 'camera');
+
+  if (idxTesto === -1) idxTesto = 0;
+  if (idxData  === -1) idxData  = 1;
+  if (idxFoto  === -1) idxFoto  = 2;
+  if (idxCamera === -1) idxCamera = 3;
+  // idxTestoEn resta -1 se la colonna non esiste ancora: nessun fallback,
+  // così le voci restano semplicemente in italiano finché non la aggiungi.
+
+  return righe.slice(1).map((riga, i) => {
+    const celle = parseRigaCsv(riga);
+    const testoIt = celle[idxTesto] || '';
+    const testoEn = idxTestoEn !== -1 ? (celle[idxTestoEn] || '') : '';
+    return {
+      id: i + 1,
+      testo: testoEn ? { it: testoIt, en: testoEn } : testoIt,
+      data: celle[idxData] || '',
+      foto: celle[idxFoto] || null,
+      camera: celle[idxCamera] || null
+    };
+  }).filter(v => (typeof v.testo === 'string' ? v.testo : v.testo.it));
 }
 
 // ── Carica dati ──
 async function caricaDati() {
-  // Tutte le richieste partono insieme, inclusa quella a Google Sheets:
-  // se Sheets non risponde entro 1.5s, si passa subito al fallback locale
-  // senza far aspettare il resto della pagina.
-  const [progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi, taccuinoRisultato] = await Promise.all([
+  const [progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi] = await Promise.all([
     fetch('json/progetti.json').then(r => r.json()),
     fetch('json/intervalli.json').then(r => r.json()),
     fetch('json/collaborazioni.json').then(r => r.json()),
     fetch('json/intro.json').then(r => r.json()).catch(() => ({ testo: '' })),
     fetch('json/pubblicazioni.json').then(r => r.json()).catch(() => []),
-    fetch('json/epiloghi.json').then(r => r.json()).catch(() => []),
-    fetchConTimeout(SHEETS_URL, 1500)
-      .then(r => { if (!r.ok) throw new Error(); return r.text(); })
-      .then(csv => ({ fonte: 'sheets', dati: parseCsv(csv) }))
-      .catch(() =>
-        fetch('json/taccuino.json').then(r => r.json())
-          .then(dati => ({ fonte: 'locale', dati }))
-          .catch(() => ({ fonte: 'locale', dati: [] }))
-      )
+    fetch('json/epiloghi.json').then(r => r.json()).catch(() => [])
   ]);
+  Object.assign(stato, { progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi});
 
-  Object.assign(stato, { progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi });
-  stato.taccuino = taccuinoRisultato.dati.sort((a, b) => new Date(b.data) - new Date(a.data));
-  _cacheTaccuino = null;
+  try {
+    //const r = await fetch(SHEETS_URL);
+    const r = await fetch(localStorage.getItem('lang') === 'en' ? SHEETS_URL_EN : SHEETS_URL);
+    if (!r.ok) throw new Error();
+    stato.taccuino = parseCsv(await r.text()).sort((a, b) => new Date(b.data) - new Date(a.data));
+    _cacheTaccuino = null;
+  } catch {
+    try {
+      stato.taccuino = (await fetch('json/taccuino.json').then(r => r.json()))
+        .sort((a, b) => new Date(b.data) - new Date(a.data));
+    } catch { stato.taccuino = []; }
+    _cacheTaccuino = null;
+  }
 }
 
 // ── Orologio ──
@@ -304,7 +353,7 @@ function popolaDesktop() {
   // Hero image
   const heroImg = $('hero-img');
   if (heroImg && stato.progetti[0]) {
-    heroImg.appendChild(creaImg(stato.progetti[0].immagine_copertina, stato.progetti[0].titolo, true));
+    heroImg.appendChild(creaImg(stato.progetti[0].immagine_copertina, t(stato.progetti[0].titolo), true));
   }
 
   popolaSliderProgetti();
@@ -376,7 +425,7 @@ function popolaSliderProgetti() {
     `;
 
     card.querySelector('.progetto-card-img').appendChild(
-      creaImg(t(pr.immagine_copertina), t(pr.titolo))
+      creaImg(pr.immagine_copertina, t(pr.titolo))
     );
 
     if (progettoPubblicato(pr)) {
@@ -410,10 +459,13 @@ function apriPagina(tipo) {
   const contenuto = $('overlay-contenuto');
   contenuto.innerHTML = '';
 
+  const infoSezione = SEZIONI_URL[tipo];
+  if (infoSezione) document.title = `${infoSezione.titolo} — francescomartolini.art`;
+
   switch (tipo) {
 
     case 'tutti-progetti':
-      contenuto.innerHTML = `<h1 class="overlay-titolo">Tutti i progetti</h1><div class="tutti-progetti-griglia" id="tutti-proj-grid"></div>`;
+      contenuto.innerHTML = `<h1 class="overlay-titolo">${tu('overlay.tuttiProgetti')}</h1><div class="tutti-progetti-griglia" id="tutti-proj-grid"></div>`;
       stato.progetti.forEach((pr, i) => {
         const inLavorazione = pr.pubblicato === false;
         const card = crea('div'); card.className = 'tutti-card' + (inLavorazione ? ' in-lavorazione' : '');
@@ -423,9 +475,9 @@ function apriPagina(tipo) {
           <h2 class="tutti-card-titolo">${t(pr.titolo)}</h2>
           <p class="tutti-card-anno">${t(pr.anno)}</p>
           <p class="tutti-card-desc">${t(pr.descrizione)}</p>
-          ${inLavorazione ? '<p class="tutti-card-wip">In lavorazione</p>' : ''}
+          ${inLavorazione ? `<p class="tutti-card-wip">${tu('overlay.inLavorazione')}</p>` : ''}
         `;
-        card.querySelector('.tutti-card-img').appendChild(creaImg(t(pr.immagine_copertina), t(pr.titolo)));
+        card.querySelector('.tutti-card-img').appendChild(creaImg(pr.immagine_copertina, t(pr.titolo)));
         if (!inLavorazione) card.addEventListener('click', () => apriProgetto(pr.id));
         $('tutti-proj-grid').appendChild(card);
       });
@@ -433,8 +485,8 @@ function apriPagina(tipo) {
 
     case 'tutti-studi':
       contenuto.innerHTML = `
-        <h1 class="overlay-titolo">Intervalli</h1>
-        <p class="overlay-sottotitolo">Fotografie che non appartengono a un progetto, ma al mio modo di guardare.</p>
+        <h1 class="overlay-titolo">${tu('menu.intervalli')}</h1>
+        <p class="overlay-sottotitolo">${tu('intervalli.descrizione')}</p>
         <div class="tutti-studi-griglia" id="tutti-studi-grid"></div>
       `;
       // Apri subito l'overlay, poi inserisci le immagini a blocchi
@@ -461,11 +513,11 @@ function apriPagina(tipo) {
 
     case 'come-funziona':
       contenuto.innerHTML = `
-        <h1 class="overlay-titolo overlay-titolo-nota">Note</h1>
+        <h1 class="overlay-titolo overlay-titolo-nota">${tu('overlay.note.titolo')}</h1>
         <div class="nota-testo">
-          <p>Questo sito si legge come un libro.</p>
-          <p>Tocca il lato destro della pagina per proseguire, il lato sinistro per tornare indietro. Puoi anche scorrere con il dito, come si sfoglia una pagina.</p>
-          <p>Il punto sul bordo destro segna la posizione nel libro: trascinalo per muoverti più rapidamente tra le pagine.</p>
+          <p>${tu('overlay.note.p1')}</p>
+          <p>${tu('overlay.note.p2')}</p>
+          <p>${tu('overlay.note.p3')}</p>
         </div>
       `;
       break;
@@ -476,23 +528,23 @@ function apriPagina(tipo) {
       const SVG_TEL = `<svg viewBox="0 0 24 24" class="contatto-icon"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.09 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7a2 2 0 011.72 2.03z"/></svg>`;
       const SVG_WA = `<svg viewBox="0 0 24 24" class="contatto-icon"><circle cx="12" cy="12" r="10"/><path d="M8.5 7.5c.3-.3.8-.3 1.1 0l1.2 1.2c.3.3.3.8 0 1.1l-.6.6c.6 1.2 1.6 2.2 2.8 2.8l.6-.6c.3-.3.8-.3 1.1 0l1.2 1.2c.3.3.3.8 0 1.1-.8.8-2 .9-3 .4-3-1.4-5.4-3.8-6.8-6.8-.5-1-.4-2.2.4-3z"fill="white"/></svg>`;
       contenuto.innerHTML = `
-        <h1 class="overlay-titolo">Chi sono</h1>
+        <h1 class="overlay-titolo">${tu('chiSono.titolo')}</h1>
         <div class="chi-sono-esteso">
           <div class="chi-sono-esteso-testo">
             <!-- <h2>Francesco Martolini</h2> -->
-            <h2>Dove nasce il lavoro</h2>
+            <h2>${tu('chiSono.doveNasce')}</h2>
               <p class="introduzione-testo">${t(stato.intro.testo).replace(/\n/g, '<br>')}</p>
-            <h2>Biografia</h2>
-            <p>Fotografo italiano. Il mio lavoro esplora il rapporto tra spazio, tempo e memoria — cercando nelle immagini le tracce di ciò che resta.</p>
-            <p>Sono interessato alla fotografia come strumento di indagine, non di rappresentazione. Ogni progetto nasce da una domanda che il tempo continua a restituirmi.</p>
-            <p>Basato in un paesino vicino Firenze, lavoro su progetti a lungo termine alternati a commissioni commerciali selezionate.</p>
+            <h2>${tu('chiSono.biografia')}</h2>
+            <p>${tu('chiSono.overlayP1')}</p>
+            <p>${tu('chiSono.overlayP2')}</p>
+            <p>${tu('chiSono.overlayP3')}</p>
             <div class="chi-sono-contatti-esteso">
-              <p class="contatti-label" style="margin-bottom:4px;">Contatti</p>
-              <p class="overlay-nota-contatti">Non offro servizi di shooting su richiesta. Scrivimi se sei interessato a un'opera o vuoi costruire qualcosa insieme.</p>
+              <p class="contatti-label" style="margin-bottom:4px;">${tu('chiSono.contattiLabel')}</p>
+              <p class="overlay-nota-contatti">${tu('chiSono.contattiNota')}</p>
               <a class="contatto-btn" href="mailto:info@francescomartolini.art">${SVG_MAIL}info@francescomartolini.art</a>
               <a class="contatto-btn" href="https://instagram.com/francesco_martolini_ph" target="_blank" rel="noopener">${SVG_IG}francesco_martolini_ph</a>
               <a class="contatto-btn" href="tel:+393930336642">${SVG_TEL}+39 393 033 6642</a>
-              <a class="contatto-btn" href="https://wa.me/393930336642?text=Ciao%2C%20vorrei%20collaborare%20con%20te%0AQuesta%20%C3%A8%20la%20mia%20idea%20cosa%20ne%20pensi%3F" aria-label="Chat with us on WhatsApp" target="_blank" rel="noopener noreferrer">${SVG_WA} Chat WhatsApp</a>
+              <a class="contatto-btn" href="https://wa.me/393930336642?text=Ciao%2C%20vorrei%20collaborare%20con%20te%0AQuesta%20%C3%A8%20la%20mia%20idea%20cosa%20ne%20pensi%3F" aria-label="Chat with us on WhatsApp" target="_blank" rel="noopener noreferrer">${SVG_WA} ${tu('chiSono.chatWhatsapp')}</a>
             </div>
           </div>
           <div class="chi-sono-esteso-img" id="chi-sono-overlay-img"></div>
@@ -507,11 +559,11 @@ function apriPagina(tipo) {
 
     case 'collaborazioni-pagina':
       contenuto.innerHTML = `
-        <h1 class="overlay-titolo">Collaborazioni fotografiche</h1>
-        <p class="collab-intro">Lavoro su progetti commerciali ed editoriali in ambiti diversi — architettura, ritratto, still life, reportage aziendale. Ogni collaborazione è un progetto su misura.</p>
+        <h1 class="overlay-titolo">${tu('collab.titolo')}</h1>
+        <p class="collab-intro">${tu('collab.intro')}</p>
         <div class="collab-griglia" id="collab-grid"></div>
         <div class="collab-footer">
-          <p class="overlay-sottotitolo">Per collaborazioni e commissioni:</p>
+          <p class="overlay-sottotitolo">${tu('collab.perCollaborazioni')}</p>
           <a href="mailto:info@francescomartolini.art" class="section-link">info@francescomartolini.art →</a>
         </div>
         ${stato.pubblicazioni.length > 0 ? `
@@ -555,7 +607,7 @@ function apriPagina(tipo) {
             <div class="pub-info">
               <p class="pub-titolo">${pub.titolo}</p>
               <p class="pub-anno">${pub.anno}</p>
-              ${pub.link ? `<a class="pub-link" href="${pub.link}" target="_blank" rel="noopener">Vedi →</a>` : ''}
+              ${pub.link ? `<a class="pub-link" href="${pub.link}" target="_blank" rel="noopener">${tu('common.vedi')}</a>` : ''}
             </div>
           `;
           if (pub.immagine) item.querySelector('.pub-img').appendChild(creaImg(pub.immagine, pub.titolo));
@@ -570,14 +622,76 @@ function apriPagina(tipo) {
   overlay.scrollTop = 0;
 }
 
-function chiudiPagina() { $('overlay-pagina').classList.remove('aperta'); }
+function chiudiPagina() {
+  $('overlay-pagina').classList.remove('aperta');
+  document.title = TITOLO_DEFAULT;
+}
 
 // ── Progetto dettaglio ──
 const _cacheProgetti = {};
 
+// ── Routing "silenzioso": link diretti funzionanti, URL sempre nascosto ──
+// L'utente non vede MAI un URL diverso dal dominio base mentre naviga:
+// aprire/chiudere un progetto o una sezione non tocca la barra degli
+// indirizzi (a differenza di una webapp normale). Serve solo per poter
+// condividere un link diretto a una pagina precisa (es. via messaggio):
+// all'avvio, se l'URL con cui si è arrivati corrisponde a una pagina
+// nota, quella pagina si apre subito — poi l'URL viene silenziosamente
+// riportato alla radice (vedi fondo di init()), così anche durante la
+// visualizzazione di quel contenuto la barra resta pulita.
+//
+// Escluse volutamente: 'tutti-progetti' (indice, ridondante con la home)
+// e 'come-funziona' (nota di supporto, non una pagina a sé).
+//
+// BASE_PATH gestisce automaticamente i due scenari di hosting:
+// - github.io (Project Page): il sito vive sotto /nome-repo/ (es.
+//   francescomartolini.github.io/francescomartolini.art/) → il primo
+//   segmento del path è il prefisso da mantenere in ogni URL.
+// - dominio personalizzato (es. francescomartolini.art): il sito vive
+//   alla radice → nessun prefisso.
+// Se in futuro si collega il dominio personalizzato, questo codice si
+// adatta da solo, senza bisogno di modifiche.
+const BASE_PATH = (() => {
+  if (!location.hostname.endsWith('github.io')) return '';
+  const primoSegmento = location.pathname.split('/').filter(Boolean)[0];
+  return primoSegmento ? `/${primoSegmento}` : '';
+})();
+
+const TITOLO_DEFAULT = document.title;
+
+// tipo passato ad apriPagina() → { slug URL, titolo pagina }
+const SEZIONI_URL = {
+  'chi-sono-pagina':       { slug: 'chi-sono',               titolo: 'Chi sono' },
+  'collaborazioni-pagina': { slug: 'fotografie-commerciali', titolo: 'Fotografie Commerciali' },
+  'tutti-studi':           { slug: 'intervalli',             titolo: 'Intervalli' },
+};
+
+// Legge l'URL corrente (al netto di BASE_PATH) e dice a quale pagina
+// corrisponde, se corrisponde a qualcosa. Unica fonte di verità usata
+// sia all'avvio sia dal tasto indietro/avanti del browser.
+function leggiRoute() {
+  const base = BASE_PATH.replace(/\/$/, '');
+  let path = location.pathname;
+  if (base && path.startsWith(base)) path = path.slice(base.length);
+  path = path.replace(/\/+$/, '') || '/';
+
+  if (path === '/taccuino') return { tipo: 'taccuino' };
+
+  const mProgetto = path.match(/^\/progetti\/([^/?#]+)$/);
+  if (mProgetto) return { tipo: 'progetto', id: decodeURIComponent(mProgetto[1]) };
+
+  for (const [pagina, info] of Object.entries(SEZIONI_URL)) {
+    if (path === `/${info.slug}`) return { tipo: 'sezione', pagina };
+  }
+
+  return null; // home
+}
+
 function apriProgetto(id) {
   const pr = stato.progetti.find(p => p.id === id);
   if (!pr || pr.pubblicato === false) return;
+
+  document.title = `${t(pr.titolo)} — francescomartolini.art`;
   const el = $('pagina-progetto');
   const interno = el.querySelector('.progetto-interno');
 
@@ -598,14 +712,14 @@ function apriProgetto(id) {
     const coverHTML = (hasNamedLayout && pr.immagine_copertina) ? `
       <div class="progetto-cover">
         <div class="progetto-cover-img">
-          <img src="${t(pr.immagine_copertina)}" alt="${t(pr.titolo)}" draggable="false" loading="eager">
+          <img src="${pr.immagine_copertina}" alt="${t(pr.titolo)}" draggable="false" loading="eager">
         </div>
         <div class="progetto-cover-testo">
           <h1 class="progetto-cover-titolo">${t(pr.titolo)}</h1>
           <p class="progetto-cover-anno">${t(pr.anno)}</p>
           <p class="progetto-cover-desc">${t(pr.descrizione)}</p>
           ${pr.link_esterno
-            ? `<p style="margin-top:32px;"><a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">${t(pr.label_link) || 'Vedi online'}</a></p>`
+            ? `<p style="margin-top:32px;"><a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">${t(pr.label_link) || tu('common.vediOnline')}</a></p>`
             : ''}
         </div>
       </div>` : `
@@ -614,11 +728,11 @@ function apriProgetto(id) {
           <h1 class="progetto-interno-titolo">${t(pr.titolo)}</h1>
           <p class="progetto-interno-anno">${t(pr.anno)}</p>
         </div>
-        ${pr.link_esterno ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">${t(pr.label_link) || 'Vedi online'}</a>` : ''}
+        ${pr.link_esterno ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">${t(pr.label_link) || tu('common.vediOnline')}</a>` : ''}
       </div>`;
 
     _cacheProgetti[id] = `
-      <button class="progetto-torna" onclick="chiudiProgetto()">Torna</button>
+      <button class="progetto-torna" onclick="chiudiProgetto()">${tu('common.torna')}</button>
       ${coverHTML}
       <div class="layout-${layout}">
         <div class="progetto-body">
@@ -646,13 +760,6 @@ function apriProgetto(id) {
 // ── Spotify: embed playlist/brano + carosello foto sincronizzato col play ──
 let _spotifyAPI = null;
 let _spotifyAPIPromise = null;
-let _spotifyControllersAttivi = [];
-
-function pausaSpotifyAttivi() {
-  _spotifyControllersAttivi.forEach(c => {
-    try { c.pause(); } catch (e) { /* controller già distrutto: ignora */ }
-  });
-}
 
 function caricaSpotifyIframeAPI() {
   if (_spotifyAPIPromise) return _spotifyAPIPromise;
@@ -680,7 +787,6 @@ function avviaSpotifySections(overlayEl) {
       holder.dataset.spotifyInit = '1';
 
       const playlistId = holder.dataset.spotifyPlaylist;
-      const tema = holder.dataset.spotifyTheme === 'light' ? '1' : '0';
       const wrap = holder.closest('.section-spotify');
       const carosello = wrap.querySelector('.spotify-carosello');
       const img = wrap.querySelector('.spotify-carosello-img');
@@ -690,16 +796,9 @@ function avviaSpotifySections(overlayEl) {
       const mappaFoto = {};
       tracce.forEach(tr => { if (tr && tr.uri) mappaFoto[tr.uri] = tr.image; });
 
-      // Il tema (chiaro/scuro) si passa come query param sull'URL completo:
-      // l'API dell'iFrame lo preserva nell'src generato.
-      const options = {
-        uri: `https://open.spotify.com/playlist/${playlistId}?theme=${tema}`,
-        width: '100%',
-        height: 352
-      };
+      const options = { uri: `spotify:playlist:${playlistId}`, width: '100%', height: 352 };
 
       IFrameAPI.createController(holder, options, controller => {
-        _spotifyControllersAttivi.push(controller);
         let uriCorrente = null;
 
         controller.addListener('playback_update', e => {
@@ -763,7 +862,50 @@ function generaImgHTML(src, titolo) {
 }
 
 function generaContenutoProgetto(pr) {
-  // Sistema unico: contenuto[] (a blocchi tipo/valore)
+  // Supporta sia il vecchio schema (contenuto[]) sia il nuovo (sections[])
+  const usaSections = Array.isArray(pr.sections) && pr.sections.length > 0;
+
+  if (usaSections) {
+    // ── Schema nuovo: sections[] ──
+    return pr.sections.map(s => {
+      switch (s.type) {
+        case 'text':
+          return `<div class="section-text">${
+            (s.content || '').split('\n\n').map(p =>
+              p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : ''
+            ).join('')
+          }</div>`;
+        case 'image':
+          return `<div class="section-image${s.fullscreen ? ' fullscreen' : ''}" ${pr.layoutType === 'archivio' ? `data-archivio-img="${s.src}"` : ''}>
+            <img src="${t(s.src)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
+          </div>`;
+        case 'imageText':
+          return `<div class="section-imagetext ${s.position === 'right' ? 'position-right' : 'position-left'}">
+            <img src="${t(s.image)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
+            <div class="section-imagetext-content">${(s.content || '').replace(/\n/g, '<br>')}</div>
+          </div>`;
+        case 'gallery':
+          return `<div class="section-gallery">${
+            (s.images || []).map(src =>
+              `<div class="gallery-img"><img src="${t(src)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy"></div>`
+            ).join('')
+          }</div>`;
+        case 'quote':
+          return `<blockquote class="section-quote">${t(s.content) || ''}</blockquote>`;
+        case 'map': {
+          const msrc = s.url || (s.lat && s.lng ? `https://maps.google.com/maps?q=${s.lat},${s.lng}&z=${s.zoom || 13}&output=embed` : '');
+          if (!msrc) return '';
+          return `<div class="section-map">
+            ${s.label ? `<p class="section-map-label">${t(s.label)}</p>` : ''}
+            <iframe src="${t(msrc)}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>`;
+        }
+        default: return '';
+      }
+    }).join('');
+  }
+
+  // ── Schema vecchio: contenuto[] ──
   const layout = pr.layoutType || 'base';
 
   // Per layout archivio: prima immagine va nella colonna sticky, le altre come marker
@@ -774,15 +916,15 @@ function generaContenutoProgetto(pr) {
 
     if (!pr.contenuto) {
       html += `<div class="archivio-colonna-testo">
-        <div class="section-text"><p>${(pt(pr.testo_lungo) || '').replace(/\n/g, '<br>')}</p></div>
+        <div class="section-text"><p>${(t(pr.testo_lungo) || '').replace(/\n/g, '<br>')}</p></div>
         ${generaMappaHTML(pr)}
         ${(pr.galleria || []).slice(1).map(src =>
           `<div class="section-image" data-archivio-img="${src}">
-            <img src="${t(src)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
+            <img src="${src}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
           </div>`).join('')}
       </div>
       <div class="archivio-colonna-img">
-        <img id="archivio-sticky-img" class="archivio-img-principale" src="${t(primaImg)}" alt="${t(pr.titolo)}" draggable="false">
+        <img id="archivio-sticky-img" class="archivio-img-principale" src="${primaImg}" alt="${t(pr.titolo)}" draggable="false">
       </div>
       <div class="archivio-footer-tipografico">
         <span>francescomartolini.art</span>
@@ -803,8 +945,8 @@ function generaContenutoProgetto(pr) {
             t(b.valore).split('\n\n').map(p => p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : '').join('')
           }</div>`; break;
         case 'immagine':
-          colonnaHTML += `<div class="section-image" data-archivio-img="${t(b.valore)}">
-            <img src="${t(b.valore)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
+          colonnaHTML += `<div class="section-image" data-archivio-img="${b.valore}">
+            <img src="${b.valore}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
           </div>`; break;
         case 'mappa':
           colonnaHTML += generaMappaHTML(pr); break;
@@ -824,7 +966,7 @@ function generaContenutoProgetto(pr) {
 
     return `<div class="archivio-colonna-testo">${colonnaHTML}</div>
       <div class="archivio-colonna-img">
-        <img id="archivio-sticky-img" class="archivio-img-principale" src="${t(primaImg)}" alt="${t(pr.titolo)}" draggable="false">
+        <img id="archivio-sticky-img" class="archivio-img-principale" src="${primaImg}" alt="${t(pr.titolo)}" draggable="false">
       </div>
       <div class="archivio-footer-tipografico">
         <span>francescomartolini.art</span>
@@ -853,7 +995,7 @@ function generaContenutoProgetto(pr) {
           t(b.valore).split('\n\n').map(p => p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : '').join('')
         }</div>`;
       case 'immagine':
-        return `<div class="section-image"><img src="${t(b.valore)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy"></div>`;
+        return `<div class="section-image"><img src="${b.valore}" alt="${t(pr.titolo)}" draggable="false" loading="lazy"></div>`;
       case 'galleria': {
         const imgs = (Array.isArray(b.valore) ? b.valore : [b.valore])
           .map(src => `<div class="gallery-img">${generaImgHTML(src, t(pr.titolo))}</div>`).join('');
@@ -875,7 +1017,7 @@ function generaContenutoProgetto(pr) {
 
 function generaMappaHTML(pr) {
   if (!pr.mappa) return '';
-  const label = pr.mappa.label || 'Luogo';
+  const label = t(pr.mappa.label) || tu('common.luogo');
   let src = pr.mappa.url || '';
   if (!src && pr.mappa.lat && pr.mappa.lng)
     src = `https://maps.google.com/maps?q=${pr.mappa.lat},${pr.mappa.lng}&z=${pr.mappa.zoom || 13}&output=embed`;
@@ -904,11 +1046,11 @@ function chiudiProgetto() {
   el.style.removeProperty('--pr-bg');
   el.style.removeProperty('--pr-text');
   el.style.removeProperty('--pr-accent');
-  pausaSpotifyAttivi();
   if (el._scrollHandler) {
     el.removeEventListener('scroll', el._scrollHandler);
     el._scrollHandler = null;
   }
+  document.title = TITOLO_DEFAULT;
 }
 
 // ── Taccuino archivio ──
@@ -918,6 +1060,8 @@ function apriTaccuino() {
   const el = $('pagina-taccuino-archivio');
   const interno = el.querySelector('.taccuino-archivio-interno');
 
+  document.title = `${tu('menu.taccuino')} — francescomartolini.art`;
+
   if (!_cacheTaccuino) {
     const voci = stato.taccuino.map(v => {
       const foto = v.foto
@@ -926,11 +1070,11 @@ function apriTaccuino() {
       return `<div class="taccuino-voce" data-testo="${t(v.testo).toLowerCase()}">${foto}<p class="taccuino-voce-frase">${t(v.testo)}</p>${cam}<p class="taccuino-voce-data">${formatData(v.data)}</p></div>`;
     }).join('');
     _cacheTaccuino = `
-      <button class="taccuino-torna" onclick="chiudiTaccuino()">Chiudi</button>
-      <h1>Taccuino</h1>
+      <button class="taccuino-torna" onclick="chiudiTaccuino()">${tu('overlay.chiudi')}</button>
+      <h1>${tu('menu.taccuino')}</h1>
       <div class="taccuino-cerca-wrap">
         <input type="search" id="taccuino-cerca" class="taccuino-cerca"
-          placeholder="Cerca nel taccuino..." autocomplete="off" spellcheck="false">
+          placeholder="${tu('taccuino_extra.cercaPlaceholder')}" autocomplete="off" spellcheck="false">
         <span id="taccuino-risultati" class="taccuino-risultati"></span>
       </div>
       <div id="taccuino-lista">${voci}</div>
@@ -946,13 +1090,16 @@ function apriTaccuino() {
       v.style.display = match ? '' : 'none';
       if (match) vis++;
     });
-    risultati.textContent = q ? `${vis} risultat${vis === 1 ? 'o' : 'i'}` : '';
+    risultati.textContent = q ? `${vis} ${vis === 1 ? tu('taccuino_extra.risultatoSing') : tu('taccuino_extra.risultatiPlur')}` : '';
   });
   setTimeout(() => input.focus(), 300);
   el.classList.add('aperta'); el.scrollTop = 0;
 }
 
-function chiudiTaccuino() { $('pagina-taccuino-archivio').classList.remove('aperta'); }
+function chiudiTaccuino() {
+  $('pagina-taccuino-archivio').classList.remove('aperta');
+  document.title = TITOLO_DEFAULT;
+}
 
 // ════════════════════════════════
 // MOBILE — Pagina indice
@@ -964,7 +1111,7 @@ function costruisciIndice() {
 
   // Voci statiche + progetti dinamici
   const voci = [
-    { num: '—',  label: 'Introduzione',  sub: null,               azione: () => { const p = $('intro-mobile'); if (p) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(p)); } },
+    { num: '—',  label: tu('capitoli.introduzione'),  sub: null,               azione: () => { const p = $('intro-mobile'); if (p) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(p)); } },
   ];
 
   // Progetti pubblicati
@@ -988,13 +1135,13 @@ function costruisciIndice() {
 
   // Voci fisse finali
   voci.push(
-    { num: '—', label: 'Intervalli', sub: 'Fotografie che non appartengono a un progetto, ma al mio modo di guardare.', azione: () => { const el = $('intervalli'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
-    { num: '—', label: 'Chi sono',   sub: 'Un ritratto essenziale.', azione: () => { const el = $('chi-sono-capitolo') || $('chi-sono'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
-    { num: '—', label: 'Taccuino',   sub: 'Appunti', azione: () => { apriTaccuino(); } },
-    { num: '—', label: 'Pubblicazioni', sub: '', azione: () => { const el = document.querySelector('#mobile-pubblicazioni-container .page'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); }}
+    { num: '—', label: tu('menu.intervalli'), sub: tu('intervalli.descrizione'), azione: () => { const el = $('intervalli'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
+    { num: '—', label: tu('chiSono.titolo'),   sub: tu('indice.chiSonoSub'), azione: () => { const el = $('chi-sono-capitolo') || $('chi-sono'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); } },
+    { num: '—', label: tu('menu.taccuino'),   sub: tu('indice.taccuinoSub'), azione: () => { apriTaccuino(); } },
+    { num: '—', label: tu('chiSono.pubblicazioniLabel'), sub: '', azione: () => { const el = document.querySelector('#mobile-pubblicazioni-container .page'); if (el) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(el)); }}
   )
 
-  lista.innerHTML = `<p class="indice-titolo">Indice</p>`;
+  lista.innerHTML = `<p class="indice-titolo">${tu('indice.titolo')}</p>`;
 
   voci.forEach((v, i) => {
     const riga = crea('div');
@@ -1028,18 +1175,18 @@ function costruisciMobile() {
   if (stato.intro?.testo) {
     const pTitoloIntro = crea('div');
     pTitoloIntro.className = 'page mobile-only';
-    pTitoloIntro.dataset.favicon = '∙'; pTitoloIntro.dataset.titolo = 'Introduzione';
+    pTitoloIntro.dataset.favicon = '∙'; pTitoloIntro.dataset.titolo = tu('capitoli.introduzione');
     const { mpc: mpcT, pc: pcT } = creaMobilePageContent();
-    pcT.innerHTML = `<div><p class="capitolo-label">Capitolo 0</p><h2 class="capitolo-titolo">Introduzione</h2></div>`;
+    pcT.innerHTML = `<div><p class="capitolo-label">${tu('capitolo')} 0</p><h2 class="capitolo-titolo">${tu('capitoli.introduzione')}</h2></div>`;
     pTitoloIntro.appendChild(mpcT);
 
     const pIntro = crea('div');
     pIntro.className = 'page mobile-only'; pIntro.id = 'intro-mobile';
-    pIntro.dataset.favicon = '∙'; pIntro.dataset.titolo = t(stato.intro.titolo) || 'Introduzione';
+    pIntro.dataset.favicon = '∙'; pIntro.dataset.titolo = t(stato.intro.titolo) || tu('capitoli.introduzione');
     const { mpc: mpcIntro, pc: pcIntro } = creaMobilePageContent();
     pcIntro.innerHTML = `
       <p class="introduzione-testo">${t(stato.intro.testo).replace(/\n/g, '<br>')}</p>
-      <p class="introduzione-firma">${t(stato.intro.firma)}<br><span>${t(stato.intro.anno)}</span></p>
+      <p class="introduzione-firma">${stato.intro.firma}<br><span>${stato.intro.anno}</span></p>
     `;
     pIntro.appendChild(mpcIntro);
 
@@ -1053,7 +1200,7 @@ function costruisciMobile() {
   // Taccuino prima frase
   const taccuinoFrase = $('taccuino-mobile-frase');
   if (taccuinoFrase && stato.taccuino[0]) {
-    taccuinoFrase.innerHTML = `<p class="taccuino-frase">${t(stato.taccuino[0].testo)}</p><p class="taccuino-data">${formatData(t(stato.taccuino[0].data))}</p>`;
+    taccuinoFrase.innerHTML = `<p class="taccuino-frase">${t(stato.taccuino[0].testo)}</p><p class="taccuino-data">${formatData(stato.taccuino[0].data)}</p>`;
   }
 
   let tIdx = 0;
@@ -1061,7 +1208,7 @@ function costruisciMobile() {
 
   stato.progetti.forEach(pr => {
     const inLavorazione = pr.pubblicato === false;
-    const p = creaPaginaMobile(t(pr.titolo)[0].toUpperCase(), t(pr.titolo));
+    const p = creaPaginaMobile(t(pr.titolo).charAt(0).toUpperCase(), t(pr.titolo));
     p.appendChild(creaHeader());
 
     const wrap = crea('div'); wrap.className = 'progetto-mobile-wrap';
@@ -1071,10 +1218,10 @@ function costruisciMobile() {
 
     const testo = crea('div'); testo.className = 'progetto-mobile-testo';
     const linkEsterno = pr.link_esterno
-      ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">${t(pr.label_link) || 'Vedi online'}</a>` : '';
+      ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">${t(pr.label_link) || tu('common.vediOnline')}</a>` : '';
     const bottoneEntrata = inLavorazione
-      ? `<p class="progetto-in-lavorazione">In lavorazione</p>`
-      : `<button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">Entra nel progetto</button>`;
+      ? `<p class="progetto-in-lavorazione">${tu('overlay.inLavorazione')}</p>`
+      : `<button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">${tu('progetti_extra.entraNelProgetto')}</button>`;
     testo.innerHTML = `
       <p class="progetto-anno">${t(pr.anno)}</p>
       <h2 class="progetto-titolo">${t(pr.titolo)}</h2>
@@ -1098,7 +1245,7 @@ function costruisciMobile() {
     const p = creaPaginaMobile('I', t(iv.titolo));
     const { mpc, pc } = creaMobilePageContent();
     const wrap = crea('div'); wrap.className = 'intervallo-mobile-wrap';
-    wrap.innerHTML = `<p class="capitolo-label">Intervalli</p><h2 class="capitolo-titolo">${t(iv.titolo)}</h2><p class="capitolo-descrizione">${t(iv.descrizione)}</p>`;
+    wrap.innerHTML = `<p class="capitolo-label">${tu('menu.intervalli')}</p><h2 class="capitolo-titolo">${t(iv.titolo)}</h2><p class="capitolo-descrizione">${t(iv.descrizione)}</p>`;
     const gr = crea('div'); gr.className = 'intervallo-mobile-griglia';
     iv.immagini.forEach((src, i) => {
       const cell = crea('div'); cell.className = 'intervallo-mobile-cella';
@@ -1133,7 +1280,7 @@ function costruisciMobile() {
       pTitolo.dataset.titolo = 'Commercial';
       const { mpc: mpcT, pc: pcT } = creaMobilePageContent();
       pcT.innerHTML = `<div>
-        <p class="capitolo-label">Capitolo 04</p>
+        <p class="capitolo-label">${tu('capitolo')} 04</p>
         <h2 class="capitolo-titolo">Commercial</h2>
       </div>`;
       pTitolo.appendChild(mpcT);
@@ -1185,12 +1332,12 @@ function costruisciMobile() {
     // Pagina titolo capitolo
     const pTitoloPub = crea('div');
     pTitoloPub.className = 'page mobile-only';
-    pTitoloPub.dataset.favicon = 'P'; pTitoloPub.dataset.titolo = 'Pubblicazioni';
+    pTitoloPub.dataset.favicon = 'P'; pTitoloPub.dataset.titolo = tu('chiSono.pubblicazioniLabel');
     const { mpc: mpcPub, pc: pcPub } = creaMobilePageContent();
     pcPub.innerHTML = `<div>
-      <p class="capitolo-label">Capitolo 04</p>
-      <h2 class="capitolo-titolo">Pubblicazioni</h2>
-      <p class="capitolo-descrizione">Libri, cataloghi e testi pubblicati.</p>
+      <p class="capitolo-label">${tu('capitolo')} 04</p>
+      <h2 class="capitolo-titolo">${tu('chiSono.pubblicazioniLabel')}</h2>
+      <p class="capitolo-descrizione">${tu('pubblicazioni.descrizione')}</p>
     </div>`;
     pTitoloPub.appendChild(mpcPub);
     containerPub.appendChild(pTitoloPub);
@@ -1198,7 +1345,7 @@ function costruisciMobile() {
     // Pagina elenco pubblicazioni
     const pListaPub = crea('div');
     pListaPub.className = 'page mobile-only';
-    pListaPub.dataset.favicon = 'P'; pListaPub.dataset.titolo = 'Pubblicazioni';
+    pListaPub.dataset.favicon = 'P'; pListaPub.dataset.titolo = tu('chiSono.pubblicazioniLabel');
     const { mpc: mpcLista, pc: pcLista } = creaMobilePageContent();
     const listaWrap = crea('div'); listaWrap.className = 'pub-mobile-lista';
     stato.pubblicazioni.forEach(pub => {
@@ -1208,7 +1355,7 @@ function costruisciMobile() {
         <div class="pub-mobile-info">
           <p class="pub-mobile-titolo">${pub.titolo}</p>
           <p class="pub-mobile-anno">${pub.anno}</p>
-          ${pub.link ? `<a class="pub-mobile-link" href="${pub.link}" target="_blank" rel="noopener" style="pointer-events:all;">Vedi →</a>` : ''}
+          ${pub.link ? `<a class="pub-mobile-link" href="${pub.link}" target="_blank" rel="noopener" style="pointer-events:all;">${tu('common.vedi')}</a>` : ''}
         </div>
       `;
       if (pub.immagine) item.querySelector('.pub-mobile-img').appendChild(creaImg(pub.immagine, pub.titolo));
@@ -1297,7 +1444,6 @@ function navigaA(idx) {
   if (stato.inTransizione || idx < 0 || idx >= stato.totPagine || idx === stato.paginaCorrente) return;
   stato.inTransizione = true;
   const pagine = document.querySelectorAll('.page, .pagina-progetto-mobile');
-  if (pagine[stato.paginaCorrente]?.querySelector('.section-spotify')) pausaSpotifyAttivi();
   pagine[stato.paginaCorrente].classList.remove('attiva');
   pagine[stato.paginaCorrente].classList.add('uscita-sinistra');
   setTimeout(() => pagine[stato.paginaCorrente]?.classList.remove('uscita-sinistra'), 450);
@@ -1327,7 +1473,7 @@ function aggiornaUI() {
   if (isUltima) {
     if (!tornaBtn) {
       tornaBtn = crea('button'); tornaBtn.id = 'torna-inizio-nav';
-      tornaBtn.textContent = '← Inizio';
+      tornaBtn.textContent = tu('nav_extra.inizio');
       tornaBtn.addEventListener('click', () => navigaA(0));
       $('mobile-nav').appendChild(tornaBtn);
     }
@@ -1606,23 +1752,17 @@ window.chiudiPagina = chiudiPagina;
 
 // ── Init ──
 async function init() {
-  // Fase 1 — subito, senza aspettare i dati:
-  // la home è già nel markup statico, quindi la mostriamo ora
-  // invece di lasciare lo schermo vuoto finché i fetch non finiscono.
-  if (isMobile()) {
-    document.querySelector('.page')?.classList.add('attiva');
-    $('freccia-sx')?.setAttribute('disabled', '');
-  }
-  avviaOrologio();
-  avviaTema();
-  avviaCookie();
-  avviaCursore();
+  // Aspetta che i18n.js abbia finito di caricare json/ui.json, così le
+  // stringhe di interfaccia (tu()) sono pronte prima di costruire indice,
+  // pagine progetto ecc. Se i18n.js non è presente per qualche motivo,
+  // non blocca comunque il resto del sito.
+  if (window.i18nReady) await window.i18nReady;
 
-  // Fase 2 — quando i dati arrivano, si costruisce il resto del libro
   await caricaDati();
 
   if (isMobile()) {
     costruisciMobile();
+    document.querySelector('.page')?.classList.add('attiva');
     aggiornaUI();
     document.addEventListener('keydown', gestisciTastiera);
     document.addEventListener('touchstart', gestisciTouchStart, { passive: true });
@@ -1630,19 +1770,36 @@ async function init() {
     document.addEventListener('click', gestisciTap);
     $('freccia-sx')?.addEventListener('click', paginaPrecedente);
     $('freccia-dx')?.addEventListener('click', paginaSuccessiva);
+    $('freccia-sx')?.setAttribute('disabled', '');
   } else {
     popolaDesktop();
     inizializzaScrollDesktop();
     avviaOrologioSticky();
   }
 
+  avviaOrologio();
+  avviaTema();
+  avviaCookie();
+  avviaCursore();
   lightbox.init();
   inizializzaFin();
-}
 
-document.querySelectorAll('.lang-option').forEach(el => {
-  if (el.dataset.lang === stato.lang) el.classList.add('active');
-  el.addEventListener('click', () => setLang(el.dataset.lang));
-});
+  // Link diretto a una pagina precisa (es. condivisa via messaggio): apri
+  // subito quella. replaceState (non pushState) così il tasto "indietro"
+  // torna alla home.
+  // Link diretto a una pagina precisa (es. condivisa via messaggio): apri
+  // subito quella. Poi nascondi il percorso: la barra degli indirizzi non
+  // deve mostrare nulla dopo il dominio, né ora né durante la navigazione.
+  const route = leggiRoute();
+  if (route?.tipo === 'progetto') {
+    const pr = stato.progetti.find(p => p.id === route.id && p.pubblicato !== false);
+    if (pr) apriProgetto(route.id);
+  } else if (route?.tipo === 'taccuino') {
+    apriTaccuino();
+  } else if (route?.tipo === 'sezione') {
+    apriPagina(route.pagina);
+  }
+  if (route) history.replaceState(null, '', `${BASE_PATH}/`);
+}
 
 document.addEventListener('DOMContentLoaded', init);
