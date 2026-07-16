@@ -106,12 +106,11 @@ francescomartolini.art/taccuino
 
 dove `<id>` è lo slug già presente in `json/progetti.json` (campo `id`). Le altre corrispondenze sono nella mappa `SEZIONI_URL` in `js/libro.js`.
 
-**Importante — dove cambia l'URL e dove no:**
+**Importante — l'URL non cambia mai visibilmente durante la navigazione:**
 
-- L'URL cambia **solo** quando una di queste pagine si apre o si chiude (`apriProgetto()`/`chiudiProgetto()`, `apriPagina()`/`chiudiPagina()`, `apriTaccuino()`/`chiudiTaccuino()` in `js/libro.js`, tutte coordinate da `leggiRoute()`).
-- Lo sfogliare le pagine del libro su mobile (`navigaA()`) **non tocca mai l'URL** — resta com'era, per non rompere la sensazione di libro.
-- Aprendo direttamente uno di questi URL (link condiviso), il sito carica e apre subito quella pagina, su mobile e desktop.
-- Il tasto "indietro" del browser chiude la pagina e torna alla home.
+- Cliccando dentro il sito (progetti, Chi Sono, Intervalli, Taccuino, sfoglio delle pagine su mobile) la barra degli indirizzi **resta sempre sul dominio base** — non mostra mai `/progetti/...` o simili mentre l'utente naviga.
+- Un link diretto tipo `francescomartolini.art/progetti/alberi` funziona comunque: all'avvio il sito rileva l'URL con cui si è arrivati, apre subito quella pagina, poi riporta silenziosamente la barra alla radice (`history.replaceState`, vedi fondo di `init()` in `js/libro.js`) — l'utente vede la pagina giusta, ma l'URL torna pulito.
+- Non essendoci più voci di history create dal sito, il tasto "indietro" del browser non chiude più le pagine aperte (si esce direttamente dal sito, verso la pagina precedente nella cronologia del browser) — invariato rispetto a prima di introdurre gli URL parlanti.
 
 **Perché c'è `404.html`:** GitHub Pages è hosting statico, non gestisce redirect lato server. `404.html` intercetta l'accesso diretto a un percorso tipo `/progetti/alberi` (che altrimenti darebbe 404) e rimanda a `index.html`, che ripristina l'URL corretto tramite `history.replaceState` prima che la pagina sia visibile. Se in futuro si cambia hosting (es. Netlify, Vercel), questo file **non serve più**: basta un redirect `/* → /index.html` nella configurazione del nuovo host.
 
@@ -132,9 +131,8 @@ python3 serve-locale.py
 poi:
 
 - `http://localhost:8000/` → la home
-- `http://localhost:8000/progetti/PLAYLIST.00` (o qualsiasi altro id) aperto direttamente → deve caricare subito quel progetto, con lo stile corretto
-- `http://localhost:8000/chi-sono`, `/fotografie-commerciali`, `/intervalli`, `/taccuino` → stessa cosa per le altre pagine con URL dedicato
-- tasto "indietro" del browser → deve chiudere la pagina e tornare alla home
+- `http://localhost:8000/progetti/PLAYLIST.00` (o qualsiasi altro id) aperto direttamente → deve caricare subito quel progetto, con lo stile corretto, e la barra degli indirizzi deve tornare a mostrare solo `http://localhost:8000/` (nessun percorso visibile)
+- stessa cosa per `/chi-sono`, `/fotografie-commerciali`, `/intervalli`, `/taccuino`
 
 Nota: in locale il sito gira alla radice (`localhost:8000/`), quindi `BASE_PATH` risulta vuoto — corrisponde allo scenario "dominio personalizzato collegato", non all'attuale sottopercorso di github.io. Il comportamento generale (apertura diretta, `indietro`, sfoglio pagine senza toccare l'URL) si verifica comunque correttamente.
 

@@ -459,6 +459,9 @@ function apriPagina(tipo) {
   const contenuto = $('overlay-contenuto');
   contenuto.innerHTML = '';
 
+  const infoSezione = SEZIONI_URL[tipo];
+  if (infoSezione) document.title = `${infoSezione.titolo} — francescomartolini.art`;
+
   switch (tipo) {
 
     case 'tutti-progetti':
@@ -619,17 +622,26 @@ function apriPagina(tipo) {
   overlay.scrollTop = 0;
 }
 
-function chiudiPagina() { $('overlay-pagina').classList.remove('aperta'); }
+function chiudiPagina() {
+  $('overlay-pagina').classList.remove('aperta');
+  document.title = TITOLO_DEFAULT;
+}
 
 // ── Progetto dettaglio ──
 const _cacheProgetti = {};
 
-// ── Routing: URL parlanti per i progetti (BASE/progetti/<id>) ──
-// L'URL cambia SOLO quando si apre/chiude un progetto, mai durante lo
-// sfogliare le pagine del libro (navigaA) o negli altri overlay: la
-// navigazione interna resta "silenziosa" com'era prima, così mantiene
-// la sensazione di libro. Serve solo per poter linkare/condividere un
-// singolo progetto.
+// ── Routing "silenzioso": link diretti funzionanti, URL sempre nascosto ──
+// L'utente non vede MAI un URL diverso dal dominio base mentre naviga:
+// aprire/chiudere un progetto o una sezione non tocca la barra degli
+// indirizzi (a differenza di una webapp normale). Serve solo per poter
+// condividere un link diretto a una pagina precisa (es. via messaggio):
+// all'avvio, se l'URL con cui si è arrivati corrisponde a una pagina
+// nota, quella pagina si apre subito — poi l'URL viene silenziosamente
+// riportato alla radice (vedi fondo di init()), così anche durante la
+// visualizzazione di quel contenuto la barra resta pulita.
+//
+// Escluse volutamente: 'tutti-progetti' (indice, ridondante con la home)
+// e 'come-funziona' (nota di supporto, non una pagina a sé).
 //
 // BASE_PATH gestisce automaticamente i due scenari di hosting:
 // - github.io (Project Page): il sito vive sotto /nome-repo/ (es.
@@ -647,25 +659,38 @@ const BASE_PATH = (() => {
 
 const TITOLO_DEFAULT = document.title;
 
-function slugProgettoDaURL() {
+// tipo passato ad apriPagina() → { slug URL, titolo pagina }
+const SEZIONI_URL = {
+  'chi-sono-pagina':       { slug: 'chi-sono',               titolo: 'Chi sono' },
+  'collaborazioni-pagina': { slug: 'fotografie-commerciali', titolo: 'Fotografie Commerciali' },
+  'tutti-studi':           { slug: 'intervalli',             titolo: 'Intervalli' },
+};
+
+// Legge l'URL corrente (al netto di BASE_PATH) e dice a quale pagina
+// corrisponde, se corrisponde a qualcosa. Unica fonte di verità usata
+// sia all'avvio sia dal tasto indietro/avanti del browser.
+function leggiRoute() {
   const base = BASE_PATH.replace(/\/$/, '');
-  const re = new RegExp(`^${base}/progetti/([^/?#]+)/?$`);
-  const m = location.pathname.match(re);
-  return m ? decodeURIComponent(m[1]) : null;
+  let path = location.pathname;
+  if (base && path.startsWith(base)) path = path.slice(base.length);
+  path = path.replace(/\/+$/, '') || '/';
+
+  if (path === '/taccuino') return { tipo: 'taccuino' };
+
+  const mProgetto = path.match(/^\/progetti\/([^/?#]+)$/);
+  if (mProgetto) return { tipo: 'progetto', id: decodeURIComponent(mProgetto[1]) };
+
+  for (const [pagina, info] of Object.entries(SEZIONI_URL)) {
+    if (path === `/${info.slug}`) return { tipo: 'sezione', pagina };
+  }
+
+  return null; // home
 }
 
-function apriProgetto(id, { aggiornaURL = true } = {}) {
+function apriProgetto(id) {
   const pr = stato.progetti.find(p => p.id === id);
   if (!pr || pr.pubblicato === false) return;
 
-  if (aggiornaURL) {
-    const url = `${BASE_PATH}/progetti/${id}`;
-    if (location.pathname !== url) {
-      history.pushState({ progetto: id }, '', url);
-    } else {
-      history.replaceState({ progetto: id }, '', url);
-    }
-  }
   document.title = `${t(pr.titolo)} — francescomartolini.art`;
   const el = $('pagina-progetto');
   const interno = el.querySelector('.progetto-interno');
@@ -1015,7 +1040,7 @@ function generaSpotifyHTML(v) {
   </div>`;
 }
 
-function chiudiProgetto({ aggiornaURL = true } = {}) {
+function chiudiProgetto() {
   const el = $('pagina-progetto');
   el.classList.remove('aperta');
   el.style.removeProperty('--pr-bg');
@@ -1025,22 +1050,8 @@ function chiudiProgetto({ aggiornaURL = true } = {}) {
     el.removeEventListener('scroll', el._scrollHandler);
     el._scrollHandler = null;
   }
-  if (aggiornaURL && slugProgettoDaURL()) {
-    history.pushState({}, '', `${BASE_PATH}/`);
-  }
   document.title = TITOLO_DEFAULT;
 }
-
-// ── Back/forward del browser: apre o chiude il progetto senza toccare
-// di nuovo la history (è già lì, ci stiamo solo muovendo dentro) ──
-window.addEventListener('popstate', e => {
-  const id = e.state?.progetto || slugProgettoDaURL();
-  if (id) {
-    apriProgetto(id, { aggiornaURL: false });
-  } else {
-    chiudiProgetto({ aggiornaURL: false });
-  }
-});
 
 // ── Taccuino archivio ──
 let _cacheTaccuino = null;
@@ -1048,6 +1059,8 @@ let _cacheTaccuino = null;
 function apriTaccuino() {
   const el = $('pagina-taccuino-archivio');
   const interno = el.querySelector('.taccuino-archivio-interno');
+
+  document.title = `${tu('menu.taccuino')} — francescomartolini.art`;
 
   if (!_cacheTaccuino) {
     const voci = stato.taccuino.map(v => {
@@ -1083,7 +1096,10 @@ function apriTaccuino() {
   el.classList.add('aperta'); el.scrollTop = 0;
 }
 
-function chiudiTaccuino() { $('pagina-taccuino-archivio').classList.remove('aperta'); }
+function chiudiTaccuino() {
+  $('pagina-taccuino-archivio').classList.remove('aperta');
+  document.title = TITOLO_DEFAULT;
+}
 
 // ════════════════════════════════
 // MOBILE — Pagina indice
@@ -1768,18 +1784,22 @@ async function init() {
   lightbox.init();
   inizializzaFin();
 
-  // Link diretto a un progetto (es. condiviso via messaggio): apri subito.
-  // replaceState (non pushState) così il tasto "indietro" torna alla home.
-  const slugIniziale = slugProgettoDaURL();
-  if (slugIniziale) {
-    const pr = stato.progetti.find(p => p.id === slugIniziale && p.pubblicato !== false);
-    if (pr) {
-      history.replaceState({ progetto: slugIniziale }, '', `${BASE_PATH}/progetti/${slugIniziale}`);
-      apriProgetto(slugIniziale, { aggiornaURL: false });
-    } else {
-      history.replaceState({}, '', `${BASE_PATH}/`);
-    }
+  // Link diretto a una pagina precisa (es. condivisa via messaggio): apri
+  // subito quella. replaceState (non pushState) così il tasto "indietro"
+  // torna alla home.
+  // Link diretto a una pagina precisa (es. condivisa via messaggio): apri
+  // subito quella. Poi nascondi il percorso: la barra degli indirizzi non
+  // deve mostrare nulla dopo il dominio, né ora né durante la navigazione.
+  const route = leggiRoute();
+  if (route?.tipo === 'progetto') {
+    const pr = stato.progetti.find(p => p.id === route.id && p.pubblicato !== false);
+    if (pr) apriProgetto(route.id);
+  } else if (route?.tipo === 'taccuino') {
+    apriTaccuino();
+  } else if (route?.tipo === 'sezione') {
+    apriPagina(route.pagina);
   }
+  if (route) history.replaceState(null, '', `${BASE_PATH}/`);
 }
 
 document.addEventListener('DOMContentLoaded', init);
