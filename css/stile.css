@@ -634,7 +634,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .spotify-embed-holder iframe { border-radius: 0 !important; } /* niente angoli smussati, coerente col b/n editoriale */
 .spotify-carosello {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  /*aspect-ratio: 1 / 1;*/
   margin-bottom: 16px;
   background: var(--grigio-chiaro);
   overflow: hidden;
