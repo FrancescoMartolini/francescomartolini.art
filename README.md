@@ -24,12 +24,13 @@ francescomartolini.art/
 │
 ├── index.html                    ← pagina principale
 ├── 404.html                      ← rete di sicurezza per URL non noti (vedi sezione URL)
-├── serve-locale.py               ← server per testare in locale (vedi sezione URL)
-├── genera-route-statiche.py      ← genera le pagine reali dei progetti/sezioni (vedi sezione URL)
 ├── sitemap.xml                   ← generata automaticamente (vedi sezione Sitemap)
-├── genera-sitemap.py             ← script che la genera da json/progetti.json
 ├── robots.txt                    ← punta alla sitemap
-├── .gitignore                    ← esclude le pagine generate da genera-route-statiche.py
+├── .gitignore                    ← esclude le pagine generate da scripts/genera-route-statiche.py
+├── scripts/
+│   ├── serve-locale.py           ← server per testare in locale (vedi sezione URL)
+│   ├── genera-route-statiche.py  ← genera le pagine reali dei progetti/sezioni (vedi sezione URL)
+│   └── genera-sitemap.py         ← genera sitemap.xml da json/progetti.json
 │
 ├── css/
 │   └── stile.css                 ← stile globale (desktop + mobile)
@@ -98,7 +99,7 @@ francescomartolini.art/
 
 **Come funziona (due livelli):**
 
-1. **Pagine statiche reali** (il meccanismo principale): a ogni pubblicazione, `genera-route-statiche.py` crea una cartella fisica per ogni progetto pubblicato e per le 4 sezioni con URL dedicato — es. `progetti/PLAYLIST.00/index.html`, `chi-sono/index.html` — ognuna una copia di `index.html`. Il server risponde quindi **200 OK**, un file reale: nessun trucco, nessuna dipendenza da JavaScript o dal comportamento del browser per l'apertura.
+1. **Pagine statiche reali** (il meccanismo principale): a ogni pubblicazione, `scripts/genera-route-statiche.py` crea una cartella fisica per ogni progetto pubblicato e per le 4 sezioni con URL dedicato — es. `progetti/PLAYLIST.00/index.html`, `chi-sono/index.html` — ognuna una copia di `index.html`. Il server risponde quindi **200 OK**, un file reale: nessun trucco, nessuna dipendenza da JavaScript o dal comportamento del browser per l'apertura.
 2. **`404.html`** resta come rete di sicurezza per URL non noti (link vecchi, errori di battitura): rimanda alla home preservando l'eventuale sottopercorso.
 
 **Perché non bastava il solo `404.html`:** la prima versione si basava solo sul redirect 404→JS. Funziona nella maggior parte dei casi, ma alcuni browser Chromium (Edge, Chrome) **sostituiscono le risposte 404 "leggere" con una loro pagina di errore generica**, ignorando completamente lo script di redirect — indipendentemente da cosa ci sia scritto dentro. Le pagine statiche reali evitano il problema alla radice: non c'è mai una risposta 404 da intercettare.
@@ -134,11 +135,11 @@ dove `<id>` è lo slug già presente in `json/progetti.json` (campo `id`). Le al
 Aprire `index.html` con doppio click (`file://`) **non funziona**: i `fetch()` dei file JSON vengono bloccati dal browser su quel protocollo. Serve un server HTTP locale — e per provare i link diretti servono anche le pagine statiche generate:
 
 ```bash
-python3 genera-route-statiche.py
-python3 serve-locale.py
+python3 scripts/genera-route-statiche.py
+python3 scripts/serve-locale.py
 ```
 
-(`serve-locale.py` include comunque il fallback su `404.html` per eventuali URL non generati — utile per provare anche quel meccanismo di riserva)
+(`scripts/serve-locale.py` include comunque il fallback su `404.html` per eventuali URL non generati — utile per provare anche quel meccanismo di riserva)
 
 poi:
 
@@ -152,12 +153,12 @@ Nota: in locale il sito gira alla radice (`localhost:8000/`), quindi `BASE_PATH`
 
 `sitemap.xml` elenca solo le pagine con un URL reale: la home, Chi Sono, Fotografie Commerciali, Intervalli, Taccuino, e ogni progetto pubblicato (stesso criterio di `apriProgetto()`: escluso solo se `pubblicato: false`). L'indice "tutti i progetti" e la nota "come funziona" restano fuori — non hanno un URL proprio (vedi sezione precedente).
 
-Dominio usato: `https://francescomartolini.art` (il dominio finale, anche se non ancora collegato via DNS/CNAME). Se cambia, va aggiornata la costante `DOMINIO` in `genera-sitemap.py`.
+Dominio usato: `https://francescomartolini.art` (il dominio finale, anche se non ancora collegato via DNS/CNAME). Se cambia, va aggiornata la costante `DOMINIO` in `scripts/genera-sitemap.py`.
 
 `sitemap.xml` **si rigenera da solo a ogni deploy** (vedi step "Genera sitemap.xml" in `.github/workflows/static.yml`), leggendo `json/progetti.json`: aggiungere o pubblicare un progetto non richiede nessun passaggio manuale in più. Per rigenerarla anche in locale (utile solo per controllarla, non serve prima di ogni push):
 
 ```bash
-python3 genera-sitemap.py
+python3 scripts/genera-sitemap.py
 ```
 
 `robots.txt` (in root) punta alla sitemap con la riga `Sitemap: https://francescomartolini.art/sitemap.xml`, così i motori di ricerca la trovano automaticamente.

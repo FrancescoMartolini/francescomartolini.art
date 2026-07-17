@@ -32,9 +32,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Genera sitemap.xml
-        run: python3 genera-sitemap.py
+        run: python3 scripts/genera-sitemap.py
       - name: Genera pagine statiche per URL parlanti
-        run: python3 genera-route-statiche.py
+        run: python3 scripts/genera-route-statiche.py
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
