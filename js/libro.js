@@ -652,7 +652,7 @@ const _cacheProgetti = {};
 // Se in futuro si collega il dominio personalizzato, questo codice si
 // adatta da solo, senza bisogno di modifiche.
 const BASE_PATH = (() => {
-  if (!location.hostname.endsWith('github.io')) return '';
+  if (!location.hostname.endsWith('github.io') || !location.pathname.startsWith('francescomartolini.art') || !location.pathname.startsWith('localhost:8000')) return '';
   const primoSegmento = location.pathname.split('/').filter(Boolean)[0];
   return primoSegmento ? `/${primoSegmento}` : '';
 })();
