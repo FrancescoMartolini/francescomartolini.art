@@ -4,8 +4,8 @@ Server locale per testare il sito come si comporterebbe su GitHub Pages:
 se un percorso non corrisponde a un file reale, serve 404.html invece
 del 404 generico — proprio come fa GitHub Pages con /progetti/<id>.
 
-Uso:
-    python3 serve-locale.py
+Uso (da qualunque cartella ci si trovi, va bene comunque):
+    python3 scripts/serve-locale.py
     (poi apri http://localhost:8000/)
 
 Nota: in locale il sito gira alla radice (come farebbe con il dominio
@@ -13,11 +13,12 @@ personalizzato francescomartolini.art), non sotto il sottopercorso
 /francescomartolini.art/ che ha ora su github.io. Il codice si adatta
 comunque da solo in entrambi i casi (vedi BASE_PATH in js/libro.js).
 """
-
 import http.server
 import os
 
 PORTA = 8000
+RADICE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # root del repo, uno sopra scripts/
+os.chdir(RADICE)  # serve sempre la root del sito, indipendentemente da dove viene lanciato lo script
 
 class HandlerConFallback404(http.server.SimpleHTTPRequestHandler):
     def send_head(self):

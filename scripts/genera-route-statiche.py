@@ -23,8 +23,8 @@ identico a quello che già fa oggi (leggiRoute() in js/libro.js). Non
 serve nessuna modifica a index.html: funziona semplicemente perché è
 raggiungibile a un URL più profondo.
 
-Uso:
-    python3 genera-route-statiche.py
+Uso (da qualunque cartella ci si trovi, va bene comunque):
+    python3 scripts/genera-route-statiche.py
 Va eseguito ogni volta che si aggiunge/rimuove un progetto — oppure,
 meglio, lasciare che lo faccia in automatico il workflow di deploy
 (vedi .github/workflows/static.yml). Le cartelle generate NON vanno
@@ -34,7 +34,7 @@ import json
 import os
 import shutil
 
-CARTELLA = os.path.dirname(os.path.abspath(__file__))
+CARTELLA = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # root del repo, uno sopra scripts/
 INDEX = os.path.join(CARTELLA, "index.html")
 
 # Stesse sezioni di SEZIONI_URL in js/libro.js e SEZIONI in genera-sitemap.py

@@ -14,8 +14,8 @@ compaiono come voci separate nella sitemap.
 Dominio: francescomartolini.art (dominio finale). Se in futuro cambia,
 basta aggiornare DOMINIO qui sotto.
 
-Uso:
-    python3 genera-sitemap.py
+Uso (da qualunque cartella ci si trovi, va bene comunque):
+    python3 scripts/genera-sitemap.py
 Rigenera sitemap.xml nella root del repo. Va eseguito ogni volta che si
 aggiunge/rimuove un progetto — oppure, meglio, lasciare che lo faccia
 in automatico il workflow di deploy (vedi .github/workflows/static.yml).
@@ -25,7 +25,8 @@ import os
 import xml.etree.ElementTree as ET
 
 DOMINIO = "https://francescomartolini.art"
-CARTELLA = os.path.dirname(os.path.abspath(__file__))
+# Root del repo: uno sopra questo script (che ora vive in scripts/)
+CARTELLA = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Sezioni con URL dedicato oltre ai progetti — stessi slug usati in
 # SEZIONI_URL / leggiRoute() in js/libro.js. Escluse volutamente
