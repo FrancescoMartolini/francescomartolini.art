@@ -23,11 +23,13 @@ Ogni progetto è un capitolo di una ricerca più ampia. Il visitatore non naviga
 francescomartolini.art/
 │
 ├── index.html                    ← pagina principale
-├── 404.html                      ← redirect per URL parlanti su GitHub Pages (vedi sezione URL)
+├── 404.html                      ← rete di sicurezza per URL non noti (vedi sezione URL)
 ├── serve-locale.py               ← server per testare in locale (vedi sezione URL)
+├── genera-route-statiche.py      ← genera le pagine reali dei progetti/sezioni (vedi sezione URL)
 ├── sitemap.xml                   ← generata automaticamente (vedi sezione Sitemap)
 ├── genera-sitemap.py             ← script che la genera da json/progetti.json
 ├── robots.txt                    ← punta alla sitemap
+├── .gitignore                    ← esclude le pagine generate da genera-route-statiche.py
 │
 ├── css/
 │   └── stile.css                 ← stile globale (desktop + mobile)
@@ -94,6 +96,15 @@ francescomartolini.art/
 
 ### URL PARLANTI E CONDIVISIONE PROGETTI
 
+**Come funziona (due livelli):**
+
+1. **Pagine statiche reali** (il meccanismo principale): a ogni pubblicazione, `genera-route-statiche.py` crea una cartella fisica per ogni progetto pubblicato e per le 4 sezioni con URL dedicato — es. `progetti/PLAYLIST.00/index.html`, `chi-sono/index.html` — ognuna una copia di `index.html`. Il server risponde quindi **200 OK**, un file reale: nessun trucco, nessuna dipendenza da JavaScript o dal comportamento del browser per l'apertura.
+2. **`404.html`** resta come rete di sicurezza per URL non noti (link vecchi, errori di battitura): rimanda alla home preservando l'eventuale sottopercorso.
+
+**Perché non bastava il solo `404.html`:** la prima versione si basava solo sul redirect 404→JS. Funziona nella maggior parte dei casi, ma alcuni browser Chromium (Edge, Chrome) **sostituiscono le risposte 404 "leggere" con una loro pagina di errore generica**, ignorando completamente lo script di redirect — indipendentemente da cosa ci sia scritto dentro. Le pagine statiche reali evitano il problema alla radice: non c'è mai una risposta 404 da intercettare.
+
+L'unica differenza visibile: aprendo un link senza slash finale (es. `/progetti/alberi`) il server fa un redirect automatico verso `/progetti/alberi/` (con slash) prima di rispondere 200 — invisibile e istantaneo, comportamento standard di qualsiasi hosting statico.
+
 Oltre ai progetti, hanno un URL dedicato e condivisibile anche **Chi Sono**, **Fotografie Commerciali**, **Intervalli** e **Taccuino** — le pagine con un contenuto autonomo. Restano senza URL proprio l'indice "tutti i progetti" (ridondante con la home) e la nota "come funziona" (supporto, non una pagina a sé).
 
 ```
@@ -120,13 +131,14 @@ dove `<id>` è lo slug già presente in `json/progetti.json` (campo `id`). Le al
 
 #### Testare gli URL dei progetti in locale
 
-Aprire `index.html` con doppio click (`file://`) **non funziona**: i `fetch()` dei file JSON vengono bloccati dal browser su quel protocollo. Serve un server HTTP locale.
-
-Per testare anche il comportamento del link diretto (quello che su GitHub Pages passa da `404.html`), in root del repo c'è `serve-locale.py`: un piccolo server che replica lo stesso comportamento, servendo `404.html` per qualsiasi percorso che non corrisponde a un file reale — esattamente come farebbe GitHub Pages con `/progetti/<id>`.
+Aprire `index.html` con doppio click (`file://`) **non funziona**: i `fetch()` dei file JSON vengono bloccati dal browser su quel protocollo. Serve un server HTTP locale — e per provare i link diretti servono anche le pagine statiche generate:
 
 ```bash
+python3 genera-route-statiche.py
 python3 serve-locale.py
 ```
+
+(`serve-locale.py` include comunque il fallback su `404.html` per eventuali URL non generati — utile per provare anche quel meccanismo di riserva)
 
 poi:
 

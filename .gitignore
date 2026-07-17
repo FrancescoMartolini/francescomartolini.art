@@ -1,0 +1,10 @@
+# Generate automaticamente a ogni deploy da genera-route-statiche.py.
+# Sono solo copie di index.html per far rispondere 200 invece di 404 —
+# non vanno committate, si ricreano da sole (vedi README, sezione URL PARLANTI).
+/progetti/
+/chi-sono/
+/fotografie-commerciali/
+/intervalli/
+/taccuino/
+
+.DS_Store

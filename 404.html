@@ -2,17 +2,21 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>francescomartolini.art</title>
+<style>
+  body { background:#0a0a0a; color:#eee; font-family:Georgia, serif; display:flex;
+         align-items:center; justify-content:center; min-height:100vh; margin:0; text-align:center; }
+  a { color:#eee; }
+</style>
 <script>
-  // Trucco SPA per GitHub Pages. Se qualcuno apre direttamente
-  // /francescomartolini.art/progetti/alberi (Project Page: il repo si
-  // chiama francescomartolini.art, quindi il sito vive sotto quel
-  // sottopercorso, non alla radice del dominio), GitHub Pages risponde
-  // con questo 404. Qui salviamo il percorso originale COMPLETO
-  // (sottopercorso incluso) e rimandiamo alla home dello stesso
-  // sottopercorso, che lo "ripulirà" con la History API prima che la
-  // pagina venga mostrata. Se in futuro si collega un dominio
-  // personalizzato (che vive alla radice), il calcolo si adatta da solo.
+  // Trucco SPA per GitHub Pages. Se qualcuno apre direttamente un URL come
+  // /progetti/alberi (o, su Project Page, /francescomartolini.art/progetti/alberi),
+  // GitHub Pages risponde con questo 404. Qui salviamo il percorso originale
+  // COMPLETO e rimandiamo alla home (dello stesso eventuale sottopercorso),
+  // che lo "ripulirà" con la History API prima che la pagina venga mostrata.
+  // Se in futuro si collega un dominio personalizzato (radice del dominio),
+  // il calcolo si adatta da solo.
   (function () {
     var pathCompleto = location.pathname + location.search + location.hash;
     var base = location.hostname.endsWith('github.io')
@@ -22,5 +26,15 @@
   })();
 </script>
 </head>
-<body></body>
+<body>
+  <!--
+    Contenuto visibile di riserva (per chi ha JS disattivato) E padding
+    necessario: alcuni browser Chromium (Edge, Chrome) sostituiscono le
+    risposte 404 con corpo troppo "leggero" con una loro pagina di errore
+    generica, ignorando lo script sopra. Un <body> vuoto attiva questo
+    comportamento. Il testo qui sotto, oltre a essere un fallback utile,
+    garantisce che la risposta venga considerata sostanziosa a sufficienza.
+  -->
+  <p>Reindirizzamento in corso… se non succede nulla, <a href="/">torna alla home</a>.</p>
+</body>
 </html>
