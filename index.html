@@ -162,11 +162,11 @@
     <div id="mobile-progetti-container"></div>
 
     <!-- TACCUINO -->
-    <section class="page" id="taccuino-section" data-favicon="T" data-titolo="Taccuino">
-      <div class="mobile-page-content">
-        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
-        <div class="pagina-corpo"><div class="taccuino-wrap" id="taccuino-mobile-frase"><p class="taccuino-frase">—</p><p class="taccuino-data">—</p></div></div>
-      </div>
+    <!-- Niente pagina di copertina sul mobile: il Taccuino è distribuito
+         tra le altre pagine del libro (vedi inserisciTaccuinoSeDisponibile
+         in js/libro.js), non un capitolo a sé. Questa sezione resta solo
+         per l'anteprima desktop. -->
+    <section id="taccuino-section" data-favicon="T" data-titolo="Taccuino">
       <div class="desktop-section desktop-taccuino">
         <div class="section-header-col">
           <p class="section-label" data-i18n="menu.taccuino">Taccuino</p>
@@ -176,6 +176,7 @@
         <div class="taccuino-colonne" id="taccuino-colonne-desktop"></div>
       </div>
     </section>
+
 
     <!-- STUDI / INTERVALLI -->
     <section class="page" id="intervalli" data-favicon="I" data-titolo="Intervalli">

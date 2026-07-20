@@ -321,6 +321,17 @@ function inserisciTaccuinoSeDisponibile(container, tIdx) {
   return tIdx;
 }
 
+// Variante per sezioni statiche già presenti nell'HTML (es. Chi Sono),
+// non generate in un loop dentro un container dinamico: inserisce la
+// pagina taccuino subito DOPO l'elemento indicato, come sibling.
+function inserisciTaccuinoDopoSeDisponibile(elemento, tIdx) {
+  if (elemento && stato.taccuino[tIdx]) {
+    elemento.after(creaPaginaTaccuinoMobile(stato.taccuino[tIdx]));
+    return tIdx + 1;
+  }
+  return tIdx;
+}
+
 // ════════════════════════════════
 // CURSORE ADATTIVO
 // ════════════════════════════════
@@ -1225,12 +1236,10 @@ function costruisciMobile() {
   // Pagina indice (mobile) — inserita dopo intro (ora già nel DOM)
   costruisciIndice();
 
-  // Taccuino prima frase
-  const taccuinoFrase = $('taccuino-mobile-frase');
-  if (taccuinoFrase && stato.taccuino[0]) {
-    taccuinoFrase.innerHTML = `<p class="taccuino-frase">${t(stato.taccuino[0].testo)}</p><p class="taccuino-data">${formatData(stato.taccuino[0].data)}</p>`;
-  }
-
+  // tIdx parte da 0: ogni voce del taccuino, a partire dalla più recente,
+  // viene distribuita tra le pagine del libro (progetti, intervalli, chi
+  // sono, commercial, pubblicazioni) — nessuna copertina statica la
+  // "consuma" in anticipo.
   let tIdx = 0;
   const containerProgetti = $('mobile-progetti-container');
 
@@ -1284,6 +1293,11 @@ function costruisciMobile() {
     containerIntervalli.appendChild(p);
     tIdx = inserisciTaccuinoSeDisponibile(containerIntervalli, tIdx);
   });
+
+  // Taccuino dopo Chi Sono — sezione statica già presente in HTML (#chi-sono),
+  // non generata da un loop qui dentro: la pagina viene inserita come sibling
+  // subito dopo di essa, prima della sezione Commercial.
+  tIdx = inserisciTaccuinoDopoSeDisponibile($('chi-sono'), tIdx);
 
   // Collaborazioni commerciali
   const containerCollab = $('mobile-collaborazioni-container');
@@ -1352,6 +1366,7 @@ function costruisciMobile() {
 
     p.appendChild(corpo);
     containerCollab.appendChild(p);
+    tIdx = inserisciTaccuinoSeDisponibile(containerCollab, tIdx);
   }
 
   // Pubblicazioni mobile
@@ -1392,6 +1407,7 @@ function costruisciMobile() {
     pcLista.appendChild(listaWrap);
     pListaPub.appendChild(mpcLista);
     containerPub.appendChild(pListaPub);
+    tIdx = inserisciTaccuinoSeDisponibile(containerPub, tIdx);
   }
 
   raccogliPagine();
