@@ -591,6 +591,47 @@ function apriPagina(tipo) {
             `;
             item.querySelector('.collab-img').appendChild(creaImg(v.foto, v.titolo));
             grid.appendChild(item);
+
+            // Foto della collaborazione: la sezione si apre solo se la galleria è popolata
+            const fotoCollab = Array.isArray(v.galleria) ? v.galleria : [];
+
+            if (fotoCollab.length > 0) {
+              const nomeBtn = item.querySelector('.collab-cliente');
+              nomeBtn.setAttribute('tabindex', '0');
+              nomeBtn.setAttribute('role', 'button');
+              nomeBtn.setAttribute('aria-expanded', 'false');
+              const pannello = crea('div'); pannello.className = 'collab-espansione';
+              const inner = crea('div'); inner.className = 'collab-espansione-inner';
+              const striscia = crea('div'); striscia.className = 'collab-espansione-striscia';
+              fotoCollab.forEach(src => {
+                const cell = crea('div'); cell.className = 'collab-espansione-cella';
+                cell.appendChild(creaImg(src, v.titolo));
+                striscia.appendChild(cell);
+              });
+              inner.appendChild(striscia);
+              pannello.appendChild(inner);
+              // Esce dalla card e occupa tutta la larghezza della griglia;
+              // grid-auto-flow:dense su .collab-griglia ricompatta le card successive.
+              item.insertAdjacentElement('afterend', pannello);
+
+              const toggle = () => {
+                const apri = !pannello.classList.contains('aperta');
+                // Chiude eventuali altri pannelli aperti nella griglia (un solo pannello alla volta)
+                grid.querySelectorAll('.collab-espansione.aperta').forEach(p => {
+                  if (p !== pannello) p.classList.remove('aperta');
+                });
+                grid.querySelectorAll('.collab-cliente[aria-expanded="true"]').forEach(b => {
+                  if (b !== nomeBtn) b.setAttribute('aria-expanded', 'false');
+                });
+                pannello.classList.toggle('aperta', apri);
+                nomeBtn.setAttribute('aria-expanded', String(apri));
+              };
+
+              nomeBtn.addEventListener('click', toggle);
+              nomeBtn.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+              });
+            }
           }
           if (i < voci.length) requestAnimationFrame(step);
         }
@@ -1320,6 +1361,78 @@ function costruisciMobile() {
       const anno = crea('p'); anno.className = 'collab-mobile-anno'; anno.textContent = cl.anno;
       item.appendChild(img); item.appendChild(titolo); item.appendChild(anno);
       corpo.appendChild(item);
+
+      // Tap sul nome: apre sotto una striscia con le foto della collaborazione
+      // (solo se la galleria è effettivamente popolata)
+      const fotoCollab = haGalleria ? cl.galleria : [];
+      if (fotoCollab.length > 0) {
+        titolo.setAttribute('tabindex', '0');
+        titolo.setAttribute('role', 'button');
+        titolo.setAttribute('aria-expanded', 'false');
+
+        const pannello = crea('div'); pannello.className = 'collab-mobile-espansione';
+        const inner = crea('div'); inner.className = 'collab-mobile-espansione-inner';
+        const wrapStriscia = crea('div'); wrapStriscia.className = 'collab-mobile-espansione-wrap';
+        const striscia = crea('div'); striscia.className = 'collab-mobile-espansione-striscia';
+        fotoCollab.forEach(src => {
+          const cell = crea('div'); cell.className = 'collab-mobile-espansione-cella';
+          cell.appendChild(creaImg(src, cl.titolo));
+          striscia.appendChild(cell);
+        });
+        wrapStriscia.appendChild(striscia);
+
+        // Freccette per scorrere la striscia (solo se c'è più di una foto)
+        if (fotoCollab.length > 1) {
+          const SVG_FRECCIA = dir => `<svg width="9" height="15" viewBox="0 0 9 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="${dir === 'prev' ? 'transform:scaleX(-1)' : ''}"><path d="M1 1L7.5 7.5L1 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+          const btnPrev = crea('button'); btnPrev.type = 'button'; btnPrev.className = 'collab-mobile-freccia collab-mobile-freccia--prev';
+          btnPrev.innerHTML = SVG_FRECCIA('prev'); btnPrev.setAttribute('aria-label', 'Foto precedente');
+          const btnNext = crea('button'); btnNext.type = 'button'; btnNext.className = 'collab-mobile-freccia collab-mobile-freccia--next';
+          btnNext.innerHTML = SVG_FRECCIA('next'); btnNext.setAttribute('aria-label', 'Foto successiva');
+
+          const scorri = passo => {
+            const cella = striscia.querySelector('.collab-mobile-espansione-cella');
+            const salto = cella ? cella.getBoundingClientRect().width + 10 : striscia.clientWidth * 0.8;
+            striscia.scrollBy({ left: passo * salto, behavior: 'smooth' });
+          };
+          btnPrev.addEventListener('click', e => { e.stopPropagation(); scorri(-1); });
+          btnNext.addEventListener('click', e => { e.stopPropagation(); scorri(1); });
+
+          const aggiornaFrecce = () => {
+            const max = striscia.scrollWidth - striscia.clientWidth - 2;
+            btnPrev.classList.toggle('collab-mobile-freccia--nascosta', striscia.scrollLeft <= 2);
+            btnNext.classList.toggle('collab-mobile-freccia--nascosta', striscia.scrollLeft >= max);
+          };
+          striscia.addEventListener('scroll', aggiornaFrecce, { passive: true });
+          // Stato iniziale (dopo che il pannello è visibile e la striscia ha una larghezza reale)
+          requestAnimationFrame(aggiornaFrecce);
+
+          wrapStriscia.appendChild(btnPrev);
+          wrapStriscia.appendChild(btnNext);
+        }
+
+        inner.appendChild(wrapStriscia);
+        pannello.appendChild(inner);
+        item.appendChild(pannello);
+
+        const toggle = e => {
+          e.stopPropagation();
+          const apri = !pannello.classList.contains('aperta');
+          // un solo pannello aperto alla volta in tutta la sezione
+          corpo.querySelectorAll('.collab-mobile-espansione.aperta').forEach(p => {
+            if (p !== pannello) p.classList.remove('aperta');
+          });
+          corpo.querySelectorAll('.collab-mobile-titolo[aria-expanded="true"]').forEach(t => {
+            if (t !== titolo) t.setAttribute('aria-expanded', 'false');
+          });
+          pannello.classList.toggle('aperta', apri);
+          titolo.setAttribute('aria-expanded', String(apri));
+        };
+
+        titolo.addEventListener('click', toggle);
+        titolo.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(e); }
+        });
+      }
     });
 
     p.appendChild(corpo);
