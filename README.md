@@ -498,7 +498,8 @@ Il taccuino si aggiorna automaticamente da Google Sheets.
 
 **Setup:**
 
-1. Crea un foglio con intestazioni: `testo` / `data` / `foto`
+1. Crea un foglio con intestazioni: `testo` / `testo en` / `data` / `foto` / `video` / `camera`
+   (le colonne si riconoscono per nome, non per posizione — vedi `TEMPLATE/taccuino_template.xlsx`)
 2. File → Condividi → Pubblica sul web → CSV
 3. In `js/libro.js` sostituisci:
    ```javascript
@@ -506,6 +507,12 @@ Il taccuino si aggiorna automaticamente da Google Sheets.
    ```
 
 **Fallback:** se Sheets non è raggiungibile, carica `json/taccuino.json`.
+
+**Colonna `video`:** incolla un URL video Cloudinary (`.../video/upload/...`). Se una riga ha
+sia `video` che `foto`, la foto diventa il poster (fotogramma di anteprima) del video; se manca,
+il browser mostra il primo fotogramma. Se `video` è vuoto la riga si comporta come prima (solo
+foto o solo testo). Nessun autoplay: il video parte solo se il visitatore lo avvia, per restare
+coerente col ritmo silenzioso del libro.
 
 ---
 
@@ -528,6 +535,23 @@ Click su qualsiasi immagine di contenuto → lightbox a schermo intero.
 w_600,q_auto,f_auto   → copertine, anteprime, taccuino, collaborazioni
 w_1400,q_auto,f_auto  → gallerie progetto, intervalli, immagini grandi
 ```
+
+---
+
+### VIDEO (Cloudinary)
+
+Cloudinary gestisce i video con la stessa logica delle immagini: si carica il file, si prende
+l'URL pubblico e lo si incolla nella colonna `video` del foglio Taccuino (vedi sopra). Da tenere
+presente:
+
+- L'URL video ha il prefisso `/video/upload/...` (non `/image/upload/...` come le foto).
+- `f_auto,q_auto` funziona anche sui video: sceglie il formato migliore (mp4/webm) per il browser
+  del visitatore.
+- Per un fotogramma di anteprima automatico, basta cambiare l'estensione dell'URL video in `.jpg`
+  — utile solo se si vuole un poster diverso da quello caricato manualmente nella colonna `foto`.
+- Il piano gratuito Cloudinary ha limiti più stretti sui video (peso file, minuti di trasformazione
+  al mese) rispetto alle immagini: se si caricano molti video in alta qualità conviene controllare
+  i limiti del proprio piano prima.
 
 ---
 
