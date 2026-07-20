@@ -1,0 +1,37 @@
+# Tiene json/taccuino.json allineato ai fogli Google Sheets (IT/EN)
+# pubblicati, così il sito può sempre leggere il Taccuino da un file
+# locale veloce invece che dal foglio "live" ad ogni visita (vedi
+# scripts/sincronizza-taccuino.py e SHEETS_TIMEOUT_MS in js/libro.js).
+name: Sincronizza Taccuino da Google Sheets
+
+on:
+  schedule:
+    # Ogni giorno alle 6:00 UTC. Se scrivi una voce e vuoi vederla subito
+    # sul sito senza aspettare, usa "Run workflow" qui sotto.
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sincronizza:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sincronizza taccuino.json
+        run: python3 scripts/sincronizza-taccuino.py
+
+      - name: Commit se ci sono modifiche
+        run: |
+          if git diff --quiet -- json/taccuino.json; then
+            echo "Nessuna modifica al Taccuino."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add json/taccuino.json
+          git commit -m "Sincronizza taccuino.json da Google Sheets [automatico]"
+          git push
