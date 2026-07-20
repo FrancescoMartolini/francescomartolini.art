@@ -1,5 +1,5 @@
 # Francesco Martolini .art
-## Guida completa al sito — v6.0
+## Guida completa al sito — v7.0
 
 ---
 
@@ -494,19 +494,39 @@ Array di frasi brevi per la pagina finale "fin.".
 
 ### TACCUINO — GOOGLE SHEETS (fonte principale)
 
-Il taccuino si aggiorna automaticamente da Google Sheets.
+Il taccuino si scrive su Google Sheets, ma **il sito non legge più il foglio in tempo reale
+ad ogni visita** — solo `json/taccuino.json`, sincronizzato automaticamente. Questo perché il
+CSV pubblicato di Google Sheets può essere molto lento "a freddo" (anche 30-60s+ se non viene
+richiesto da un po'), e prima bloccava il rendering dell'intero sito fino alla risposta.
 
-**Setup:**
+**Come funziona oggi:**
+
+1. Scrivi una nuova voce nel foglio Google, come sempre.
+2. `.github/workflows/sincronizza-taccuino.yml` gira ogni notte (06:00 UTC) — oppure a mano da
+   **Actions → Sincronizza Taccuino da Google Sheets → Run workflow** se vuoi vederla subito —
+   e lancia `scripts/sincronizza-taccuino.py`, che scarica i due fogli (IT/EN), li combina e
+   riscrive `json/taccuino.json` **solo se qualcosa è cambiato**. Se ci sono modifiche, fa
+   commit + push, il che a sua volta fa scattare il deploy normale (`static.yml`).
+3. `js/libro.js` legge `json/taccuino.json` all'avvio. In più, prova comunque a chiamare anche
+   il foglio live (`caricaDati()`), ma con un timeout di `SHEETS_TIMEOUT_MS` (3000ms di default):
+   se Google non risponde in tempo, usa subito `json/taccuino.json` senza bloccare la pagina.
+   Questo è solo un bonus per vedere una voce freschissima nello stesso giorno in cui viene
+   scritta, prima che scatti la sync notturna — non è il meccanismo principale.
+
+**Setup iniziale del foglio (se se ne crea uno nuovo):**
 
 1. Crea un foglio con intestazioni: `testo` / `testo en` / `data` / `foto` / `video` / `camera`
    (le colonne si riconoscono per nome, non per posizione — vedi `TEMPLATE/taccuino_template.xlsx`)
 2. File → Condividi → Pubblica sul web → CSV
-3. In `js/libro.js` sostituisci:
+3. In `js/libro.js` **e** in `scripts/sincronizza-taccuino.py` sostituisci:
    ```javascript
    const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/XXXXXXXX/pub?output=csv';
    ```
+   (gli URL vanno tenuti identici nei due file — uno li usa per il tentativo live nel browser,
+   l'altro per la sync notturna)
 
-**Fallback:** se Sheets non è raggiungibile, carica `json/taccuino.json`.
+**Fallback finale:** se anche `json/taccuino.json` mancasse o fosse illeggibile, il taccuino
+resta semplicemente vuoto — non blocca mai il resto del sito.
 
 **Colonna `video`:** incolla un URL video Cloudinary (`.../video/upload/...`). Se una riga ha
 sia `video` che `foto`, la foto diventa il poster (fotogramma di anteprima) del video; se manca,
@@ -605,6 +625,9 @@ Punto nero con anello. Cambia colore automaticamente:
 - Lazy loading su tutte le immagini tranne l'hero
 - Cache HTML per overlay progetto e taccuino (apertura istantanea dalla seconda volta)
 - Inserimento a blocchi con `requestAnimationFrame` per studi e collaborazioni
+- Timeout di 3s (`SHEETS_TIMEOUT_MS` in `js/libro.js`) sul tentativo di fetch live a Google
+  Sheets, con fallback immediato a `json/taccuino.json` — il rendering non resta mai bloccato
+  in attesa di Google (vedi sezione TACCUINO — GOOGLE SHEETS sopra per il meccanismo completo)
 
 ---
 
