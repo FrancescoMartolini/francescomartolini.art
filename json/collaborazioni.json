@@ -5,7 +5,9 @@
         "descrizione": "",
         "anno": "2025",
         "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1780510369/Lucy_pi3d0c.jpg",
-        "galleria": []
+        "galleria": [
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784576308/1_icggc3.jpg","https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784576379/ig-5_awwcxt.jpg"
+        ]
     },
     {
         "id": "Cliente2",
@@ -37,7 +39,10 @@
         "descrizione": "",
         "anno": "2025",
         "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778782127/EliaMarmugiBarber-46_nbcapd.jpg",
-        "galleria": []
+        "galleria": [
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778782127/EliaMarmugiBarber-72_zhd4eg.jpg",
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778782127/EliaMarmugiBarber-154_y2dm7k.jpg"
+        ]
     },
     {
         "id": "Cliente6",

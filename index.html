@@ -48,6 +48,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500&family=Caveat+Brush&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
   <link rel="stylesheet" href="css/stile.css">
   <link rel="stylesheet" href="css/stile-i18n-addon.css">
 </head>
@@ -162,11 +163,11 @@
     <div id="mobile-progetti-container"></div>
 
     <!-- TACCUINO -->
-    <section class="page" id="taccuino-section" data-favicon="T" data-titolo="Taccuino">
-      <div class="mobile-page-content">
-        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
-        <div class="pagina-corpo"><div class="taccuino-wrap" id="taccuino-mobile-frase"><p class="taccuino-frase">—</p><p class="taccuino-data">—</p></div></div>
-      </div>
+    <!-- Niente pagina di copertina sul mobile: il Taccuino è distribuito
+         tra le altre pagine del libro (vedi inserisciTaccuinoSeDisponibile
+         in js/libro.js), non un capitolo a sé. Questa sezione resta solo
+         per l'anteprima desktop. -->
+    <section id="taccuino-section" data-favicon="T" data-titolo="Taccuino">
       <div class="desktop-section desktop-taccuino">
         <div class="section-header-col">
           <p class="section-label" data-i18n="menu.taccuino">Taccuino</p>
@@ -176,6 +177,7 @@
         <div class="taccuino-colonne" id="taccuino-colonne-desktop"></div>
       </div>
     </section>
+
 
     <!-- STUDI / INTERVALLI -->
     <section class="page" id="intervalli" data-favicon="I" data-titolo="Intervalli">
@@ -222,7 +224,7 @@
               
               <div class="contenitore">
                 <div class="box">
-                  <img style="height: 200px; " src="./images/chi-sono-img.jpg">
+                  <img style="height: 200px; " src="https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784619100/chi-sono-img_uoqczs.jpg">
                 </div>
                 <div class="box">
                   <a class="contatto-btn" href="mailto:info@francescomartolini.art"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>info@francescomartolini.art</a>
@@ -241,7 +243,7 @@
           <p class="chi-sono-bio" data-i18n-html="chiSono.bio">Mi interessa il tempo.<br>Nelle sue forme,<br>nei suoi strati,<br>nelle sue assenze.</p>
           <a href="#" class="section-link" onclick="apriPagina('chi-sono-pagina')" data-i18n="chiSono.scopriDiPiu">Scopri di più →</a>
         </div>
-        <div class="chi-sono-desktop-img" id="chi-sono-img"><div><img src="./images/chi-sono-img.jpg"></div></div>
+        <div class="chi-sono-desktop-img" id="chi-sono-img"><div><img src="https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784619100/chi-sono-img_uoqczs.jpg"></div></div>
         <div class="chi-sono-desktop-dx">
           <p class="section-label" data-i18n="chiSono.commercialLabel">Commercial</p>
           <p class="chi-sono-collab" data-i18n="chiSono.commercialDesc">Lavoro su progetti commerciali ed editoriali in ambiti diversi.</p>
@@ -267,6 +269,10 @@
           <p class="fin-titolo" data-i18n="fin.titolo">fin.</p>
           <button class="fin-link" onclick="navigaA(0)" data-i18n="fin.tornaAllInizio">← Torna all'inizio</button>
           <p class="fin-epilogo" id="fin-epilogo"></p>
+          <div class="notify-optin" style="display:none">
+            <p class="notify-invito"></p>
+            <button class="notify-btn" type="button"></button>
+          </div>
           <div class="fin-footer">
             <p class="fin-copyright">© <span id="fin-anno"></span> Francesco Martolini</p>
           </div>
@@ -279,6 +285,10 @@
   <!-- ══ FOOTER desktop ══ -->
   <footer id="site-footer-desktop">
     <div id="epilogo-desktop" class="epilogo-desktop"></div>
+    <div class="notify-optin" style="display:none">
+      <p class="notify-invito"></p>
+      <button class="notify-btn" type="button"></button>
+    </div>
     <div class="footer-riga">
       <span class="footer-logo">Francesco Martolini</span>
       <div class="footer-centro">
@@ -346,6 +356,7 @@
 
   <script src="js/i18n.js"></script>
   <script src="js/libro.js"></script>
+  <script src="js/push.js"></script>
   <!-- ══ LOGICA OVERLAY LIBRO ══ -->
   <script>
     (function () {

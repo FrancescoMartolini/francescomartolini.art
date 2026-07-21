@@ -515,12 +515,38 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 
 /* Collaborazioni */
 .collab-intro { font-size: 14px; font-weight: 300; line-height: 2; color: var(--grigio-testo); max-width: 560px; margin-bottom: 48px; }
-.collab-griglia { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 64px; }
+.collab-griglia { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-flow: row dense; gap: 24px; margin-bottom: 64px; }
 .collab-item { display: flex; flex-direction: column; gap: 12px; }
 .collab-img { aspect-ratio: 4/3; background: var(--grigio-chiaro); overflow: hidden; }
 .collab-img img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 .collab-cliente { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; }
 .collab-anno { font-size: 11px; font-weight: 300; color: var(--grigio-medio); }
+
+.collab-cliente[aria-expanded] { cursor: pointer; transition: color .2s ease; }
+.collab-cliente[aria-expanded]:hover, .collab-cliente[aria-expanded]:focus-visible { color: var(--grigio-medio); outline: none; }
+.collab-cliente[aria-expanded="true"]::after { content: "\2013"; margin-left: 6px; }
+.collab-cliente[aria-expanded="false"]::after { content: "+"; margin-left: 6px; font-weight: 300; }
+
+.collab-espansione {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .4s ease;
+}
+.collab-espansione.aperta { grid-template-rows: 1fr; }
+.collab-espansione-inner { overflow: hidden; min-height: 0; }
+.collab-espansione-striscia {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  padding: 24px 0 32px;
+}
+.collab-espansione-cella {
+  aspect-ratio: 4/3;
+  background: var(--grigio-chiaro);
+  overflow: hidden;
+}
+.collab-espansione-cella img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 
 /* ════════════════════════════════════════════════
    OVERLAY PROGETTO DETTAGLIO
@@ -921,8 +947,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .taccuino-voce:last-child { border-bottom: 1px solid var(--grigio-chiaro); }
 .taccuino-voce-frase { font-family: var(--font-taccuino); font-size: clamp(20px, 2.8vw, 30px); line-height: 1.4; margin-bottom: 10px; }
 .taccuino-voce-foto { width: 100%; aspect-ratio: 3/2; overflow: hidden; margin-bottom: 16px; background: var(--grigio-chiaro); }
-.taccuino-voce-foto img,
-.taccuino-voce-foto video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.taccuino-voce-foto img { width: 100%; height: 100%; object-fit: cover;; }
 .taccuino-voce-data { font-size: 11px; font-weight: 300; letter-spacing: 0.2em; color: var(--grigio-medio); margin-top: 10px; }
 
 /* ── CONTATTO BTN (shared) ── */
@@ -1359,6 +1384,53 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   letter-spacing: 0.15em; color: var(--grigio-medio);
 }
 
+.collab-mobile-titolo[aria-expanded] { cursor: pointer; }
+.collab-mobile-titolo[aria-expanded="true"]::after { content: "\2013"; margin-left: 6px; color: var(--grigio-medio); }
+.collab-mobile-titolo[aria-expanded="false"]::after { content: "+"; margin-left: 6px; font-weight: 300; color: var(--grigio-medio); }
+
+.collab-mobile-espansione {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .35s ease;
+}
+.collab-mobile-espansione.aperta { grid-template-rows: 1fr; }
+.collab-mobile-espansione-inner { overflow: hidden; min-height: 0; padding-top: 12px; }
+.collab-mobile-espansione-wrap { position: relative; }
+.collab-mobile-espansione-striscia {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.collab-mobile-espansione-striscia::-webkit-scrollbar { display: none; }
+.collab-mobile-espansione-cella {
+  flex: 0 0 auto;
+  width: 60%;
+  aspect-ratio: 3/2;
+  background: var(--grigio-chiaro);
+  overflow: hidden;
+}
+.collab-mobile-espansione-cella img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+
+.collab-mobile-freccia {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  border: none; border-radius: 50%;
+  background: color-mix(in srgb, var(--bianco) 85%, transparent);
+  -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+  color: var(--nero);
+  padding: 0; cursor: pointer;
+  transition: opacity .2s ease;
+  z-index: 2;
+}
+.collab-mobile-freccia--prev { left: 4px; }
+.collab-mobile-freccia--next { right: 4px; }
+.collab-mobile-freccia--nascosta { opacity: 0; pointer-events: none; }
+
 /* ════════════════════════════════
    LIGHTBOX
    ════════════════════════════════ */
@@ -1763,4 +1835,41 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 /* Nasconde il bottone su mobile (l'overlay non ha senso lì) */
 @media (max-width: 768px) {
   #btn-libro { display: none; }
+}
+
+/* ════════════════════════════════
+   NOTIFICHE PUSH — opt-in silenzioso
+   (fondo del libro mobile + footer desktop)
+   ════════════════════════════════ */
+.notify-optin {
+  text-align: center;
+  padding: 20px 0 0;
+  margin-top: 12px;
+  border-top: 1px solid var(--grigio-chiaro);
+}
+.notify-invito {
+  font-family: var(--font-testo);
+  font-size: 12px;
+  color: var(--grigio-testo);
+  letter-spacing: 0.01em;
+  margin-bottom: 8px;
+}
+.notify-btn {
+  font-family: var(--font-testo);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--nero);
+  border-bottom: 1px solid var(--grigio-medio);
+  padding-bottom: 2px;
+  transition: color var(--transizione), border-color var(--transizione), opacity var(--transizione);
+}
+.notify-btn:hover { color: var(--grigio-testo); border-color: var(--grigio-testo); }
+.notify-btn:disabled { opacity: 0.5; cursor: default; }
+
+#site-footer-desktop .notify-optin {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+  margin-bottom: 8px;
 }

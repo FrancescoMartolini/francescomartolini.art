@@ -1,0 +1,16 @@
+# wrangler.toml
+# Serve solo per testare le Functions in locale con:
+#   npx wrangler pages dev . --kv PUSH_SUBS
+#
+# In produzione i binding (KV, variabili, secret) si configurano dalla
+# dashboard di Cloudflare Pages → progetto → Settings → Functions /
+# Environment variables. Questo file NON viene letto automaticamente
+# da un deploy via Git di Cloudflare Pages: è solo un aiuto per lo
+# sviluppo locale, vedi README, sezione "Notifiche push".
+
+name = "francescomartolini-art"
+compatibility_date = "2026-07-01"
+
+[[kv_namespaces]]
+binding = "PUSH_SUBS"
+id = "sostituisci-con-id-namespace-kv"

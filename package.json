@@ -1,0 +1,8 @@
+{
+  "name": "francescomartolini-art",
+  "private": true,
+  "description": "Sito statico — questo package.json serve solo a far installare a Cloudflare Pages la dipendenza usata dalle Functions in /functions (subscribe.js, notify.js). Non c'è alcuno step di build per il sito stesso.",
+  "dependencies": {
+    "webpush-webcrypto": "^1.0.5"
+  }
+}

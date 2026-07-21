@@ -10,6 +10,11 @@
 
 const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?gid=1174325309&single=true&output=csv';
 const SHEETS_URL_EN = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?gid=1079818483&single=true&output=csv';
+// Tempo massimo di attesa per il CSV di Google Sheets prima di usare il
+// fallback locale (json/taccuino.json). Google può essere molto lento a
+// "freddo": meglio un sito veloce con dati leggermente meno freschi che
+// un sito bloccato per un minuto.
+const SHEETS_TIMEOUT_MS = 3000;
 
 const stato = {
   lang: localStorage.getItem('lang') || 'it',
@@ -183,8 +188,18 @@ async function caricaDati() {
   Object.assign(stato, { progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi});
 
   try {
-    //const r = await fetch(SHEETS_URL);
-    const r = await fetch(localStorage.getItem('lang') === 'en' ? SHEETS_URL_EN : SHEETS_URL);
+    // Il CSV pubblicato di Google Sheets può essere molto lento a "freddo"
+    // (anche 30-60s+ se non viene richiesto da un po'). Non blocchiamo mai
+    // il rendering del sito più di SHEETS_TIMEOUT_MS: se Google non risponde
+    // in tempo, si passa subito al fallback locale (json/taccuino.json,
+    // aggiornato periodicamente) e il rendering parte comunque veloce.
+    const controllo = new AbortController();
+    const timeoutId = setTimeout(() => controllo.abort(), SHEETS_TIMEOUT_MS);
+    const r = await fetch(
+      localStorage.getItem('lang') === 'en' ? SHEETS_URL_EN : SHEETS_URL,
+      { signal: controllo.signal }
+    );
+    clearTimeout(timeoutId);
     if (!r.ok) throw new Error();
     stato.taccuino = parseCsv(await r.text()).sort((a, b) => new Date(b.data) - new Date(a.data));
     _cacheTaccuino = null;
@@ -316,6 +331,17 @@ function creaPaginaTaccuinoMobile(v) {
 function inserisciTaccuinoSeDisponibile(container, tIdx) {
   if (stato.taccuino[tIdx]) {
     container.appendChild(creaPaginaTaccuinoMobile(stato.taccuino[tIdx]));
+    return tIdx + 1;
+  }
+  return tIdx;
+}
+
+// Variante per sezioni statiche già presenti nell'HTML (es. Chi Sono),
+// non generate in un loop dentro un container dinamico: inserisce la
+// pagina taccuino subito DOPO l'elemento indicato, come sibling.
+function inserisciTaccuinoDopoSeDisponibile(elemento, tIdx) {
+  if (elemento && stato.taccuino[tIdx]) {
+    elemento.after(creaPaginaTaccuinoMobile(stato.taccuino[tIdx]));
     return tIdx + 1;
   }
   return tIdx;
@@ -1225,12 +1251,10 @@ function costruisciMobile() {
   // Pagina indice (mobile) — inserita dopo intro (ora già nel DOM)
   costruisciIndice();
 
-  // Taccuino prima frase
-  const taccuinoFrase = $('taccuino-mobile-frase');
-  if (taccuinoFrase && stato.taccuino[0]) {
-    taccuinoFrase.innerHTML = `<p class="taccuino-frase">${t(stato.taccuino[0].testo)}</p><p class="taccuino-data">${formatData(stato.taccuino[0].data)}</p>`;
-  }
-
+  // tIdx parte da 0: ogni voce del taccuino, a partire dalla più recente,
+  // viene distribuita tra le pagine del libro (progetti, intervalli, chi
+  // sono, commercial, pubblicazioni) — nessuna copertina statica la
+  // "consuma" in anticipo.
   let tIdx = 0;
   const containerProgetti = $('mobile-progetti-container');
 
@@ -1284,6 +1308,11 @@ function costruisciMobile() {
     containerIntervalli.appendChild(p);
     tIdx = inserisciTaccuinoSeDisponibile(containerIntervalli, tIdx);
   });
+
+  // Taccuino dopo Chi Sono — sezione statica già presente in HTML (#chi-sono),
+  // non generata da un loop qui dentro: la pagina viene inserita come sibling
+  // subito dopo di essa, prima della sezione Commercial.
+  tIdx = inserisciTaccuinoDopoSeDisponibile($('chi-sono'), tIdx);
 
   // Collaborazioni commerciali
   const containerCollab = $('mobile-collaborazioni-container');
@@ -1352,6 +1381,7 @@ function costruisciMobile() {
 
     p.appendChild(corpo);
     containerCollab.appendChild(p);
+    tIdx = inserisciTaccuinoSeDisponibile(containerCollab, tIdx);
   }
 
   // Pubblicazioni mobile
@@ -1392,6 +1422,7 @@ function costruisciMobile() {
     pcLista.appendChild(listaWrap);
     pListaPub.appendChild(mpcLista);
     containerPub.appendChild(pListaPub);
+    tIdx = inserisciTaccuinoSeDisponibile(containerPub, tIdx);
   }
 
   raccogliPagine();

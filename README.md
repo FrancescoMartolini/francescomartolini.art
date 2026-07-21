@@ -1,5 +1,5 @@
 # Francesco Martolini .art
-## Guida completa al sito — v6.0
+## Guida completa al sito — v7.1
 
 ---
 
@@ -494,19 +494,39 @@ Array di frasi brevi per la pagina finale "fin.".
 
 ### TACCUINO — GOOGLE SHEETS (fonte principale)
 
-Il taccuino si aggiorna automaticamente da Google Sheets.
+Il taccuino si scrive su Google Sheets, ma **il sito non legge più il foglio in tempo reale
+ad ogni visita** — solo `json/taccuino.json`, sincronizzato automaticamente. Questo perché il
+CSV pubblicato di Google Sheets può essere molto lento "a freddo" (anche 30-60s+ se non viene
+richiesto da un po'), e prima bloccava il rendering dell'intero sito fino alla risposta.
 
-**Setup:**
+**Come funziona oggi:**
+
+1. Scrivi una nuova voce nel foglio Google, come sempre.
+2. `.github/workflows/sincronizza-taccuino.yml` gira ogni notte (06:00 UTC) — oppure a mano da
+   **Actions → Sincronizza Taccuino da Google Sheets → Run workflow** se vuoi vederla subito —
+   e lancia `scripts/sincronizza-taccuino.py`, che scarica i due fogli (IT/EN), li combina e
+   riscrive `json/taccuino.json` **solo se qualcosa è cambiato**. Se ci sono modifiche, fa
+   commit + push, il che a sua volta fa scattare il deploy normale (`static.yml`).
+3. `js/libro.js` legge `json/taccuino.json` all'avvio. In più, prova comunque a chiamare anche
+   il foglio live (`caricaDati()`), ma con un timeout di `SHEETS_TIMEOUT_MS` (3000ms di default):
+   se Google non risponde in tempo, usa subito `json/taccuino.json` senza bloccare la pagina.
+   Questo è solo un bonus per vedere una voce freschissima nello stesso giorno in cui viene
+   scritta, prima che scatti la sync notturna — non è il meccanismo principale.
+
+**Setup iniziale del foglio (se se ne crea uno nuovo):**
 
 1. Crea un foglio con intestazioni: `testo` / `testo en` / `data` / `foto` / `video` / `camera`
    (le colonne si riconoscono per nome, non per posizione — vedi `TEMPLATE/taccuino_template.xlsx`)
 2. File → Condividi → Pubblica sul web → CSV
-3. In `js/libro.js` sostituisci:
+3. In `js/libro.js` **e** in `scripts/sincronizza-taccuino.py` sostituisci:
    ```javascript
    const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/XXXXXXXX/pub?output=csv';
    ```
+   (gli URL vanno tenuti identici nei due file — uno li usa per il tentativo live nel browser,
+   l'altro per la sync notturna)
 
-**Fallback:** se Sheets non è raggiungibile, carica `json/taccuino.json`.
+**Fallback finale:** se anche `json/taccuino.json` mancasse o fosse illeggibile, il taccuino
+resta semplicemente vuoto — non blocca mai il resto del sito.
 
 **Colonna `video`:** incolla un URL video Cloudinary (`.../video/upload/...`). Se una riga ha
 sia `video` che `foto`, la foto diventa il poster (fotogramma di anteprima) del video; se manca,
@@ -605,6 +625,9 @@ Punto nero con anello. Cambia colore automaticamente:
 - Lazy loading su tutte le immagini tranne l'hero
 - Cache HTML per overlay progetto e taccuino (apertura istantanea dalla seconda volta)
 - Inserimento a blocchi con `requestAnimationFrame` per studi e collaborazioni
+- Timeout di 3s (`SHEETS_TIMEOUT_MS` in `js/libro.js`) sul tentativo di fetch live a Google
+  Sheets, con fallback immediato a `json/taccuino.json` — il rendering non resta mai bloccato
+  in attesa di Google (vedi sezione TACCUINO — GOOGLE SHEETS sopra per il meccanismo completo)
 
 ---
 
@@ -648,6 +671,83 @@ Il sito è pubblicato su GitHub Pages. Ogni commit e push aggiorna automaticamen
 `404.html` nella root è necessario per far funzionare gli URL diretti dei progetti (`/progetti/<id>`) su GitHub Pages — vedi sezione "URL PARLANTI E CONDIVISIONE PROGETTI". Se si migra a un host con redirect server-side (Netlify, Vercel...), `404.html` diventa superfluo.
 
 Per un dominio personalizzato: connetti il repository a [Netlify](https://netlify.com) (gratuito).
+
+---
+
+### NOTIFICHE PUSH
+
+Il sito è una PWA in grado di inviare una push notification quando esce
+un nuovo progetto o una nuova voce del Taccuino — anche a sito chiuso.
+Tutta l'infrastruttura vive dentro il progetto Cloudflare Pages
+collegato a questa repo (Functions + KV), niente servizi terzi.
+
+**Come funziona, in breve:**
+
+1. Chi visita il sito può attivare gli avvisi da un piccolo invito in
+   fondo al libro mobile (pagina "fin.") o nel footer desktop — testo
+   in `notifiche.*` in `json/ui.json`, logica in `js/push.js`.
+2. Il consenso genera una *subscription* del browser, salvata da
+   `functions/subscribe.js` in Cloudflare KV (namespace `PUSH_SUBS`).
+3. Quando `json/progetti.json` o `json/taccuino.json` cambiano su
+   `main`, il workflow `.github/workflows/notifica-nuovi-contenuti.yml`
+   confronta la versione nuova con quella precedente, individua le voci
+   aggiunte (`scripts/notifica-nuovi-contenuti.py`) e chiama
+   `POST /notify` per ciascuna.
+4. `functions/notify.js` legge tutte le subscription da KV e invia il
+   push a ognuna, usando `webpush-webcrypto` (nessuna dipendenza Node,
+   gira nativamente nelle Cloudflare Pages Functions).
+
+**Setup, una tantum:**
+
+1. **Genera le chiavi VAPID** (in locale, richiede Node ≥ 18):
+   ```
+   npm install
+   node scripts/genera-chiavi-vapid.mjs
+   ```
+   Salva subito `VAPID_PUBLIC_KEY` e `VAPID_PRIVATE_KEY`: la privata
+   non va mai committata né condivisa.
+
+2. **Genera anche un secret per `/notify`:**
+   ```
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+
+3. **Incolla la chiave pubblica** in `js/push.js`, costante
+   `VAPID_PUBLIC_KEY` (in cima al file). È l'unica delle tre chiavi che
+   può stare nel codice pubblico.
+
+4. **Su Cloudflare Pages** → progetto → *Settings → Environment
+   variables*, aggiungi (in produzione, e se serve anche in preview):
+   - `VAPID_PUBLIC_KEY`
+   - `VAPID_PRIVATE_KEY` (spunta "Encrypt")
+   - `VAPID_CONTACT_EMAIL` → es. `mailto:info@francescomartolini.art`
+   - `NOTIFY_SECRET` (spunta "Encrypt")
+
+5. **Crea il namespace KV** → Cloudflare dashboard → *Workers & Pages →
+   KV → Create namespace* (es. `PUSH_SUBS`), poi in *Settings →
+   Functions → KV namespace bindings* del progetto Pages collega la
+   variabile `PUSH_SUBS` a quel namespace.
+
+6. **Su GitHub** → repo → *Settings → Secrets and variables → Actions*,
+   aggiungi un secret `NOTIFY_SECRET` con lo stesso valore del punto 2.
+
+7. Fai un commit qualsiasi su `main` per far ripartire il build di
+   Cloudflare Pages (serve perché legga il nuovo `package.json` e
+   installi `webpush-webcrypto` per le Functions).
+
+**Da lì in poi non serve più toccare nulla**: ogni volta che
+`json/progetti.json` o `json/taccuino.json` cambiano su `main` (a mano
+o dal workflow di sincronizza-taccuino), gli iscritti ricevono
+l'avviso in automatico.
+
+**Note editoriali:**
+- Le notifiche sono silenziose (`silent: true`) e senza badge numerico,
+  coerenti con il registro del sito.
+- Per non trasformare il Taccuino in un flusso continuo, valuta di
+  rimuovere `json/taccuino.json` dai `paths` del workflow (o l'intero
+  blocco "Invia notifiche per le nuove voci del Taccuino") se preferisci
+  notificare solo i Progetti.
+- Per testare le Functions in locale: `npx wrangler pages dev . --kv PUSH_SUBS` (vedi `wrangler.toml`).
 
 ---
 

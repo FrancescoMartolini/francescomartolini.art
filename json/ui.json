@@ -126,5 +126,12 @@
   },
   "meta": {
     "description": { "it": "francescomartolini.art — Il tempo lascia tracce. Io le cerco.", "en": "francescomartolini.art — Time leaves traces. I look for them." }
+  },
+  "notifiche": {
+    "invito": { "it": "Vuoi essere avvisato quando esce un nuovo capitolo?", "en": "Want to be notified when a new chapter is published?" },
+    "attiva": { "it": "Attiva gli avvisi", "en": "Enable notifications" },
+    "attivo": { "it": "Avvisi attivi.", "en": "Notifications on." },
+    "negato": { "it": "Hai bloccato le notifiche per questo sito.", "en": "You've blocked notifications for this site." },
+    "errore": { "it": "Non è stato possibile attivare gli avvisi.", "en": "Couldn't enable notifications." }
   }
 }

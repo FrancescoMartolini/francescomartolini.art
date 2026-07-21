@@ -1,58 +1,156 @@
 [
   {
-    "id": 1,
-    "testo": { "it": "Ogni fotografia è un frammento di silenzio.", "en": "Every photograph is a fragment of silence." },
-    "data": "2026-05-15",
-    "foto": "",
-    "camera": "Canon EOS R5"
+    "id": 14,
+    "testo": {
+      "it": "MERCANTIA  <br> Ragazza con telo rosso  <br> uno degli spettacoli che mi ha colpito di più super espressiva e con uno sguardo che tagliava la macchina fotografica",
+      "en": "MERCANTIA <br> Girl with red cloth <br> one of the shows that struck me the most, super expressive and with a look that cut the camera"
+    },
+    "data": "2026-07-17",
+    "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784537396/RagazzaInRosso_vpqxa0.jpg",
+    "video": "https://res.cloudinary.com/dgo7tnyv6/video/upload/w_1400,q_auto,f_auto/v1784565101/ragazzaTeloRosso_m4vyfk.mp4",
+    "camera": "Scarrata con Canon EOS R"
   },
   {
-    "id": 2,
-    "testo": { "it": "Il tempo non passa nelle immagini. Si deposita.", "en": "Time does not pass in images. It settles." },
-    "data": "2026-04-30",
+    "id": 13,
+    "testo": {
+      "it": "PLAYLIST <br> Sta prendendo forma, <br> sarà il primo di una serie <br> un brano una foto",
+      "en": "PLAYLIST <br> It's taking shape, <br> it will be the first of a series <br> one song one photo"
+    },
+    "data": "2026-07-14",
     "foto": null,
+    "video": null,
     "camera": null
   },
   {
-    "id": 3,
-    "testo": { "it": "Osservo. Aspetto. Raccolgo.", "en": "I observe. I wait. I gather." },
-    "data": "2026-04-28",
-    "foto": null,
-    "camera": null
+    "id": 12,
+    "testo": {
+      "it": "ELMS Imola, emozione pura! Tra passione per le auto e foto, una giornata indimenticabile soprattuto per il rumore quando passavano a trecento all'ora",
+      "en": "ELMS Imola, pure emotion! Between a passion for cars and photography, an unforgettable day, especially for the noise when they went by at 300 miles an hour."
+    },
+    "data": "2026-07-05",
+    "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1783331589/ELMS2026_hiacrm.jpg",
+    "video": null,
+    "camera": "Scarrata con Canon EOS R"
   },
   {
-    "id": 4,
-    "testo": { "it": "Le storie non si inventano. Si riconoscono.", "en": "Stories are not invented. They are recognized." },
-    "data": "2026-04-24",
-    "foto": null,
-    "camera": null
+    "id": 11,
+    "testo": {
+      "it": "Weekend in Puglia tra matrimoni e avventure con la macchina... <br> scanner alla mano e ho portato a casa un cuore trovato su un muro vicino al mio alloggio, la pelle della città si sta espandendooooo!",
+      "en": "Weekend in Puglia between weddings and adventures with the car... <br> scanner in hand and I brought home a heart found on a wall near my accommodation, the skin of the city is expanding!"
+    },
+    "data": "2026-06-28",
+    "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1783013953/LaPelleDellaCitta-Puglia_gwjvcs.jpg",
+    "video": null,
+    "camera": "Realizzata con Scanner Poratile"
   },
   {
-    "id": 5,
-    "testo": { "it": "A volte basta uno sguardo per capire dove sei.", "en": "Sometimes a single glance is enough to know where you are." },
-    "data": "2026-04-18",
-    "foto": null,
-    "camera": null
+    "id": 10,
+    "testo": {
+      "it": "Puglia, <br> Un tramonto, <br> Un rosso intenso, <br> risalendo sulla passeggiata dalla scogliera, scorgo in lontanaza il Gargano, completamente in ombra mi vengono in mente tante foto... <br> Tipo questa",
+      "en": "Puglia, <br> A sunset, <br> An intense red, <br> going up the walk from the cliff, I see the Gargano in the distance, completely in shadow, many photos come to mind... <br> Like this one"
+    },
+    "data": "2026-06-27",
+    "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1782844438/Puglia2022-21_kiyorl.jpg",
+    "video": null,
+    "camera": "Scattata con Canon G1X"
   },
   {
-    "id": 6,
-    "testo": { "it": "La luce giusta arriva sempre quando smetti di cercarla.", "en": "The right light always arrives when you stop looking for it." },
-    "data": "2026-04-12",
+    "id": 9,
+    "testo": {
+      "it": "Forte Dei Marmi, Mercato dell'antiquariato in piazza Dante, uno specchio in vedita cattura la mia attenzione non rifletteva niente ma chi sa cosa può esser passato davanti a lui...",
+      "en": "Forte Dei Marmi, Antiques Market in Piazza Dante, a mirror on sale caught my attention. It didn't reflect anything, but who knows what might have passed in front of it..."
+    },
+    "data": "2026-06-14",
     "foto": null,
-    "camera": null
-  },
-  {
-    "id": 7,
-    "testo": { "it": "Ogni fotografia è un frammento di silenzio.", "en": "Every photograph is a fragment of silence." },
-    "data": "2026-04-05",
-    "foto": null,
+    "video": null,
     "camera": null
   },
   {
     "id": 8,
-    "testo": { "it": "Non fotografo luoghi. Fotografo il tempo che li attraversa.", "en": "I do not photograph places. I photograph the time that passes through them." },
+    "testo": {
+      "it": "Un giorno d'estate, ero in piazza Santa Maria Novella, da lontano vedo questo signiore... corsi, chiesi se poteva posare per me ma non conosceva l'italiano quindi provai con due parole d'inglese. Mi capi! riucii a scattare questa foto, proprio come l'avevo visto da fondo della piazza...",
+      "en": "One summer day, I was in Piazza Santa Maria Novella. From afar, I saw this gentleman... I ran over and asked if he could pose for me, but he didn't speak Italian, so I tried with a few words of English. He understood me! I managed to take this photo, just as I'd seen him from the far end of the square..."
+    },
+    "data": "2026-06-12",
+    "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1779218647/1_lm16em.jpg",
+    "video": null,
+    "camera": "Scattata con Canon 1D Mark III"
+  },
+  {
+    "id": 6,
+    "testo": {
+      "it": "Ogni fotografia è un frammento di silenzio.",
+      "en": "Every photograph is a fragment of silence."
+    },
+    "data": "2026-06-04",
+    "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1779218647/2_knfg3v.jpg",
+    "video": null,
+    "camera": "Scattata con Canon 1D Mark III"
+  },
+  {
+    "id": 2,
+    "testo": {
+      "it": "Osservo. Aspetto. Raccolgo.",
+      "en": "I observe. I wait. I collect."
+    },
+    "data": "2026-04-28",
+    "foto": null,
+    "video": null,
+    "camera": null
+  },
+  {
+    "id": 1,
+    "testo": {
+      "it": "Il tempo non passa nelle immagini. Si deposita.",
+      "en": "Time doesn't pass in images. It settles."
+    },
+    "data": "2026-04-27",
+    "foto": null,
+    "video": null,
+    "camera": null
+  },
+  {
+    "id": 3,
+    "testo": {
+      "it": "Le storie non si inventano. Si riconoscono.",
+      "en": "Stories aren't invented. They're recognized."
+    },
+    "data": "2026-04-24",
+    "foto": null,
+    "video": null,
+    "camera": null
+  },
+  {
+    "id": 4,
+    "testo": {
+      "it": "A volte basta uno sguardo per capire dove sei.",
+      "en": "Sometimes just one look is enough to understand where you are."
+    },
+    "data": "2026-04-18",
+    "foto": null,
+    "video": null,
+    "camera": null
+  },
+  {
+    "id": 5,
+    "testo": {
+      "it": "La luce giusta arriva sempre quando smetti di cercarla.",
+      "en": "The right light always comes when you stop looking for it."
+    },
+    "data": "2026-04-12",
+    "foto": null,
+    "video": null,
+    "camera": null
+  },
+  {
+    "id": 7,
+    "testo": {
+      "it": "Non fotografo luoghi. Fotografo il tempo che li attraversa.",
+      "en": "I don't photograph places. I photograph the time that passes through them."
+    },
     "data": "2026-03-28",
     "foto": null,
+    "video": null,
     "camera": null
   }
 ]

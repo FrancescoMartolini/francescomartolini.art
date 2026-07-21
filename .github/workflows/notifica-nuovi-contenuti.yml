@@ -1,0 +1,57 @@
+name: Notifica nuovi contenuti
+
+# Si attiva quando json/progetti.json o json/taccuino.json cambiano su
+# main (sia per un commit manuale, sia per il commit automatico del
+# workflow "Sincronizza Taccuino da Google Sheets"). Confronta la
+# versione precedente e quella nuova, e invia una push notification
+# per ogni voce aggiunta chiamando POST /notify sul sito (Cloudflare
+# Pages Function, vedi functions/notify.js).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'json/progetti.json'
+      - 'json/taccuino.json'
+
+jobs:
+  notifica:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Recupera le versioni precedenti dei JSON
+        run: |
+          git show "${{ github.event.before }}:json/progetti.json" > /tmp/vecchio-progetti.json 2>/dev/null || echo "" > /tmp/vecchio-progetti.json
+          git show "${{ github.event.before }}:json/taccuino.json" > /tmp/vecchio-taccuino.json 2>/dev/null || echo "" > /tmp/vecchio-taccuino.json
+
+      - name: Invia notifiche per i nuovi progetti
+        env:
+          NOTIFY_SECRET: ${{ secrets.NOTIFY_SECRET }}
+        run: |
+          python3 scripts/notifica-nuovi-contenuti.py progetti json/progetti.json /tmp/vecchio-progetti.json > /tmp/notifiche-progetti.txt
+          while IFS= read -r payload; do
+            [ -z "$payload" ] && continue
+            echo "Invio notifica progetto: $payload"
+            curl -sf -X POST "https://francescomartolini.art/notify" \
+              -H "Content-Type: application/json" \
+              -H "x-notify-secret: $NOTIFY_SECRET" \
+              -d "$payload"
+          done < /tmp/notifiche-progetti.txt
+
+      - name: Invia notifiche per le nuove voci del Taccuino
+        env:
+          NOTIFY_SECRET: ${{ secrets.NOTIFY_SECRET }}
+        run: |
+          python3 scripts/notifica-nuovi-contenuti.py taccuino json/taccuino.json /tmp/vecchio-taccuino.json > /tmp/notifiche-taccuino.txt
+          while IFS= read -r payload; do
+            [ -z "$payload" ] && continue
+            echo "Invio notifica taccuino: $payload"
+            curl -sf -X POST "https://francescomartolini.art/notify" \
+              -H "Content-Type: application/json" \
+              -H "x-notify-secret: $NOTIFY_SECRET" \
+              -d "$payload"
+          done < /tmp/notifiche-taccuino.txt
