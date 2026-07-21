@@ -1,6 +1,6 @@
 # Francesco Martolini .art
 
-## Guida completa al sito — v7.0
+## Guida completa al sito — v7.1
 
 ---
 
