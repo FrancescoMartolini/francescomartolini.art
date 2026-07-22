@@ -27,4 +27,4 @@ not_found_handling = "404-page"
 # e il valore restituito va incollato qui sotto (vedi README).
 [[kv_namespaces]]
 binding = "PUSH_SUBS"
-id = "sostituisci-con-id-namespace-kv"
+id = "ae0ced70fa8f430692cd26b62a88c6d9"
