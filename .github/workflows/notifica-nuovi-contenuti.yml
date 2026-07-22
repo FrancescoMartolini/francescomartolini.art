@@ -36,10 +36,16 @@ jobs:
           while IFS= read -r payload; do
             [ -z "$payload" ] && continue
             echo "Invio notifica progetto: $payload"
-            curl -sf -X POST "https://francescomartolini.art/notify" \
+            codice=$(curl -s -o /tmp/risposta.txt -w "%{http_code}" -X POST "https://francescomartolini.art/notify" \
               -H "Content-Type: application/json" \
               -H "x-notify-secret: $NOTIFY_SECRET" \
-              -d "$payload"
+              -d "$payload")
+            echo "Codice HTTP: $codice"
+            echo "Risposta: $(cat /tmp/risposta.txt)"
+            if [ "$codice" -lt 200 ] || [ "$codice" -ge 300 ]; then
+              echo "::error::/notify ha risposto $codice"
+              exit 1
+            fi
           done < /tmp/notifiche-progetti.txt
 
       - name: Invia notifiche per le nuove voci del Taccuino
@@ -50,8 +56,14 @@ jobs:
           while IFS= read -r payload; do
             [ -z "$payload" ] && continue
             echo "Invio notifica taccuino: $payload"
-            curl -sf -X POST "https://francescomartolini.art/notify" \
+            codice=$(curl -s -o /tmp/risposta.txt -w "%{http_code}" -X POST "https://francescomartolini.art/notify" \
               -H "Content-Type: application/json" \
               -H "x-notify-secret: $NOTIFY_SECRET" \
-              -d "$payload"
+              -d "$payload")
+            echo "Codice HTTP: $codice"
+            echo "Risposta: $(cat /tmp/risposta.txt)"
+            if [ "$codice" -lt 200 ] || [ "$codice" -ge 300 ]; then
+              echo "::error::/notify ha risposto $codice"
+              exit 1
+            fi
           done < /tmp/notifiche-taccuino.txt
