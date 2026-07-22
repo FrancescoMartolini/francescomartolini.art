@@ -1,16 +1,30 @@
 # wrangler.toml
-# Serve solo per testare le Functions in locale con:
-#   npx wrangler pages dev . --kv PUSH_SUBS
 #
-# In produzione i binding (KV, variabili, secret) si configurano dalla
-# dashboard di Cloudflare Pages → progetto → Settings → Functions /
-# Environment variables. Questo file NON viene letto automaticamente
-# da un deploy via Git di Cloudflare Pages: è solo un aiuto per lo
-# sviluppo locale, vedi README, sezione "Notifiche push".
+# Il progetto Cloudflare è un Worker (non una "Pages" classica): questo
+# file è la fonte di verità per il deploy — se manca o è incompleto,
+# il deploy fallisce con "Missing entry-point to Worker script or to
+# assets directory". Vedi README, sezione "NOTIFICHE PUSH".
+#
+# IMPORTANTE: il valore di "name" deve corrispondere ESATTAMENTE al
+# nome del progetto già esistente nella dashboard Cloudflare
+# (Workers & Pages → il tuo progetto). Verificalo e correggilo se serve.
 
-name = "francescomartolini-art"
+name = "francescomartoliniart"
 compatibility_date = "2026-07-01"
+main = "worker/index.js"
 
+# Serve il sito staticamente da qui: il Worker (worker/index.js)
+# interviene solo per /subscribe e /notify; per tutto il resto
+# Cloudflare serve direttamente i file, come prima.
+[assets]
+directory = "."
+binding = "ASSETS"
+not_found_handling = "404-page"
+
+# Namespace KV dove vengono salvate le iscrizioni alle notifiche push.
+# "id" non è un segreto: si crea una volta con
+#   npx wrangler kv namespace create PUSH_SUBS
+# e il valore restituito va incollato qui sotto (vedi README).
 [[kv_namespaces]]
 binding = "PUSH_SUBS"
 id = "sostituisci-con-id-namespace-kv"

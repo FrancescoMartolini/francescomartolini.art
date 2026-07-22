@@ -1,5 +1,4 @@
 # Francesco Martolini .art
-
 ## Guida completa al sito — v7.1
 
 ---
@@ -679,24 +678,49 @@ Per un dominio personalizzato: connetti il repository a [Netlify](https://netlif
 
 Il sito è una PWA in grado di inviare una push notification quando esce
 un nuovo progetto o una nuova voce del Taccuino — anche a sito chiuso.
-Tutta l'infrastruttura vive dentro il progetto Cloudflare Pages
-collegato a questa repo (Functions + KV), niente servizi terzi.
+Tutta l'infrastruttura vive dentro lo stesso progetto Cloudflare
+collegato a questa repo, niente servizi terzi.
+
+**Un punto importante sull'hosting:** il progetto Cloudflare collegato
+a questa repo è un **Worker** (deploy con `wrangler deploy`), non una
+"Pages" classica. Questo significa due cose:
+- `wrangler.toml`, nella root, è la **fonte di verità** per il deploy:
+  se manca o è incompleto, il build fallisce con l'errore *"Missing
+  entry-point to Worker script or to assets directory"*.
+- Non esiste una cartella `functions/` con auto-routing come nella
+  vecchia Cloudflare Pages: tutta la logice extra (subscribe/notify)
+  passa da un **unico Worker**, `worker/index.js`, che per il resto
+  (tutte le pagine, css, immagini...) si limita a inoltrare la
+  richiesta agli asset statici — il sito si comporta esattamente come
+  prima, invariato.
 
 **Come funziona, in breve:**
 
 1. Chi visita il sito può attivare gli avvisi da un piccolo invito in
    fondo al libro mobile (pagina "fin.") o nel footer desktop — testo
    in `notifiche.*` in `json/ui.json`, logica in `js/push.js`.
-2. Il consenso genera una *subscription* del browser, salvata da
-   `functions/subscribe.js` in Cloudflare KV (namespace `PUSH_SUBS`).
+2. Il consenso genera una *subscription* del browser, inviata a
+   `POST /subscribe`; `worker/index.js` la salva in Cloudflare KV
+   (namespace `PUSH_SUBS`).
 3. Quando `json/progetti.json` o `json/taccuino.json` cambiano su
    `main`, il workflow `.github/workflows/notifica-nuovi-contenuti.yml`
    confronta la versione nuova con quella precedente, individua le voci
    aggiunte (`scripts/notifica-nuovi-contenuti.py`) e chiama
    `POST /notify` per ciascuna.
-4. `functions/notify.js` legge tutte le subscription da KV e invia il
-   push a ognuna, usando `webpush-webcrypto` (nessuna dipendenza Node,
-   gira nativamente nelle Cloudflare Pages Functions).
+4. `worker/index.js` (funzione `gestisciNotify`) legge tutte le
+   subscription da KV e invia il push a ognuna, usando
+   `webpush-webcrypto` (nessuna dipendenza Node, gira nativamente nel
+   runtime dei Workers — nessun flag `nodejs_compat` da attivare).
+
+**File coinvolti:**
+```
+wrangler.toml         ← config del Worker: main, assets, KV binding
+.assetsignore          ← esclude sorgenti (worker/, scripts/...) dal sito pubblico
+worker/index.js         ← Worker: /subscribe, /notify, poi fallback su ASSETS
+service-worker.js       ← Service Worker lato browser (push, notificationclick)
+js/push.js              ← iscrizione lato client + UI
+package.json            ← dipendenza webpush-webcrypto (usata da worker/index.js)
+```
 
 **Setup, una tantum:**
 
@@ -717,24 +741,35 @@ collegato a questa repo (Functions + KV), niente servizi terzi.
    `VAPID_PUBLIC_KEY` (in cima al file). È l'unica delle tre chiavi che
    può stare nel codice pubblico.
 
-4. **Su Cloudflare Pages** → progetto → *Settings → Environment
-   variables*, aggiungi (in produzione, e se serve anche in preview):
-   - `VAPID_PUBLIC_KEY`
-   - `VAPID_PRIVATE_KEY` (spunta "Encrypt")
+4. **Crea il namespace KV** (in locale, con l'account Cloudflare già
+   collegato):
+   ```
+   npx wrangler kv namespace create PUSH_SUBS
+   ```
+   Copia l'`id` restituito e incollalo in `wrangler.toml`, al posto di
+   `sostituisci-con-id-namespace-kv`. Non è un dato segreto: può stare
+   nel repo pubblico.
+
+5. **Su Cloudflare** → dashboard → *Workers & Pages* → il progetto →
+   *Settings → Variables and Secrets*, aggiungi:
+   - `VAPID_PUBLIC_KEY` (tipo testo)
+   - `VAPID_PRIVATE_KEY` (tipo **Secret**)
    - `VAPID_CONTACT_EMAIL` → es. `mailto:info@francescomartolini.art`
-   - `NOTIFY_SECRET` (spunta "Encrypt")
+   - `NOTIFY_SECRET` (tipo **Secret**)
 
-5. **Crea il namespace KV** → Cloudflare dashboard → *Workers & Pages →
-   KV → Create namespace* (es. `PUSH_SUBS`), poi in *Settings →
-   Functions → KV namespace bindings* del progetto Pages collega la
-   variabile `PUSH_SUBS` a quel namespace.
+   Queste restano configurate stabilmente e non vengono toccate dai
+   deploy successivi via `wrangler deploy`, perché quel comando gestisce
+   solo ciò che è dichiarato in `wrangler.toml`.
 
-6. **Su GitHub** → repo → *Settings → Secrets and variables → Actions*,
+6. **Verifica il campo `name`** in `wrangler.toml`: deve corrispondere
+   esattamente al nome del progetto già esistente nella dashboard
+   Cloudflare. Se non coincide, correggilo prima del prossimo deploy.
+
+7. **Su GitHub** → repo → *Settings → Secrets and variables → Actions*,
    aggiungi un secret `NOTIFY_SECRET` con lo stesso valore del punto 2.
 
-7. Fai un commit qualsiasi su `main` per far ripartire il build di
-   Cloudflare Pages (serve perché legga il nuovo `package.json` e
-   installi `webpush-webcrypto` per le Functions).
+8. Fai un commit qualsiasi su `main` per far ripartire il build: legge
+   il `package.json` e installa `webpush-webcrypto` prima del deploy.
 
 **Da lì in poi non serve più toccare nulla**: ogni volta che
 `json/progetti.json` o `json/taccuino.json` cambiano su `main` (a mano
@@ -748,7 +783,8 @@ l'avviso in automatico.
   rimuovere `json/taccuino.json` dai `paths` del workflow (o l'intero
   blocco "Invia notifiche per le nuove voci del Taccuino") se preferisci
   notificare solo i Progetti.
-- Per testare le Functions in locale: `npx wrangler pages dev . --kv PUSH_SUBS` (vedi `wrangler.toml`).
+- Per testare tutto in locale: `npx wrangler dev` (legge `wrangler.toml`,
+  usa la KV reale collegata all'id inserito al punto 4).
 
 ---
 

@@ -1,0 +1,18 @@
+# File che NON devono essere pubblicati come asset statici del Worker.
+# Stessa sintassi di .gitignore. Vedi:
+# https://developers.cloudflare.com/workers/static-assets/
+
+worker/
+scripts/
+.github/
+TEMPLATE/
+node_modules/
+.git/
+.gitignore
+.assetsignore
+wrangler.toml
+package.json
+package-lock.json
+bun.lock
+bun.lockb
+README.md

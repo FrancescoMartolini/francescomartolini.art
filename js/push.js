@@ -12,7 +12,7 @@
 
   // Chiave pubblica VAPID — sostituire con quella generata da
   // scripts/genera-chiavi-vapid.mjs (vedi README, sezione "Notifiche push").
-  var VAPID_PUBLIC_KEY = 'INSERISCI_QUI_LA_CHIAVE_PUBBLICA_VAPID';
+  var VAPID_PUBLIC_KEY = 'BIqytjXGx4CLaoz794OwE0pA03nmNr0FXHDxRv2qKjj6kCNVlMSbFx-E0s3VyIOyjmGj3cJbs3jCWUzNcFOiY5c';
 
   var SW_URL = '/service-worker.js';
   var SUBSCRIBE_URL = '/subscribe';

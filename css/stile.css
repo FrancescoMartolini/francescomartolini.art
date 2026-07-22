@@ -1122,7 +1122,6 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .taccuino-data { font-size: 11px; font-weight: 300; letter-spacing: 0.2em; color: var(--grigio-medio); text-align: center; }
   .taccuino-foto { width: 100%; max-width: 360px; aspect-ratio: 4/3; overflow: hidden; background: var(--grigio-chiaro); }
   .taccuino-foto img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-  .taccuino-foto video { width: 100%; height: 100%; object-fit: cover; }
 
   .chi-sono-wrap { display: flex; flex-direction: column; gap: 20px; max-width: 100%; width: 100%; overflow-y: auto; max-height: 100%;}
   .chi-sono-testo h2 { font-family: var(--font-titolo); font-size: clamp(18px, 5vw, 26px); font-weight: 400; line-height: 1.25; margin-bottom: 14px; }
@@ -1835,41 +1834,4 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 /* Nasconde il bottone su mobile (l'overlay non ha senso lì) */
 @media (max-width: 768px) {
   #btn-libro { display: none; }
-}
-
-/* ════════════════════════════════
-   NOTIFICHE PUSH — opt-in silenzioso
-   (fondo del libro mobile + footer desktop)
-   ════════════════════════════════ */
-.notify-optin {
-  text-align: center;
-  padding: 20px 0 0;
-  margin-top: 12px;
-  border-top: 1px solid var(--grigio-chiaro);
-}
-.notify-invito {
-  font-family: var(--font-testo);
-  font-size: 12px;
-  color: var(--grigio-testo);
-  letter-spacing: 0.01em;
-  margin-bottom: 8px;
-}
-.notify-btn {
-  font-family: var(--font-testo);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--nero);
-  border-bottom: 1px solid var(--grigio-medio);
-  padding-bottom: 2px;
-  transition: color var(--transizione), border-color var(--transizione), opacity var(--transizione);
-}
-.notify-btn:hover { color: var(--grigio-testo); border-color: var(--grigio-testo); }
-.notify-btn:disabled { opacity: 0.5; cursor: default; }
-
-#site-footer-desktop .notify-optin {
-  border-top: none;
-  padding-top: 0;
-  margin-top: 0;
-  margin-bottom: 8px;
 }

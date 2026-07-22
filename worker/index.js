@@ -1,20 +1,61 @@
 /* ══════════════════════════════════════════════
-   functions/notify.js — Cloudflare Pages Function
-   Endpoint: POST /notify
+   worker/index.js — entry point del Worker Cloudflare.
 
-   Invia una push notification a tutti gli iscritti
-   salvati in KV (namespace "PUSH_SUBS"). Protetto
-   da un header segreto (NOTIFY_SECRET) così solo
-   la GitHub Action di pubblicazione può chiamarlo.
+   Il progetto è configurato su Cloudflare come Worker (non Pages
+   classica): tutto il traffico passa da qui. Per la quasi totalità
+   delle richieste (tutte le pagine del sito, css, js, immagini...)
+   ci limitiamo a inoltrare la richiesta agli asset statici tramite
+   env.ASSETS — il sito si comporta esattamente come prima.
 
-   Usa "webpush-webcrypto": nessuna dipendenza da
-   moduli Node, funziona nativamente nel runtime
-   dei Cloudflare Workers/Pages Functions.
+   Le uniche due eccezioni sono POST /subscribe e POST /notify, usate
+   dalle notifiche push (vedi README, sezione "NOTIFICHE PUSH").
    ══════════════════════════════════════════════ */
 
 import { ApplicationServerKeys, generatePushHTTPRequest } from 'webpush-webcrypto';
 
-export async function onRequestPost({ request, env }) {
+export default {
+  async fetch(request, env, ctx) {
+    var url = new URL(request.url);
+
+    if (request.method === 'POST' && url.pathname === '/subscribe') {
+      return gestisciSubscribe(request, env);
+    }
+
+    if (request.method === 'POST' && url.pathname === '/notify') {
+      return gestisciNotify(request, env);
+    }
+
+    // Tutto il resto: file statici del sito, invariati.
+    return env.ASSETS.fetch(request);
+  }
+};
+
+async function gestisciSubscribe(request, env) {
+  let sub;
+  try {
+    sub = await request.json();
+  } catch (e) {
+    return new Response('JSON non valido', { status: 400 });
+  }
+
+  var valida =
+    sub &&
+    typeof sub.endpoint === 'string' &&
+    sub.keys &&
+    typeof sub.keys.p256dh === 'string' &&
+    typeof sub.keys.auth === 'string';
+
+  if (!valida) {
+    return new Response('Subscription non valida', { status: 400 });
+  }
+
+  var chiave = 'sub:' + sub.endpoint;
+  await env.PUSH_SUBS.put(chiave, JSON.stringify(sub));
+
+  return new Response('ok');
+}
+
+async function gestisciNotify(request, env) {
   var secret = request.headers.get('x-notify-secret');
   if (!secret || secret !== env.NOTIFY_SECRET) {
     return new Response('unauthorized', { status: 401 });
@@ -70,7 +111,6 @@ export async function onRequestPost({ request, env }) {
         });
 
         if (risposta.status === 404 || risposta.status === 410) {
-          // Subscription scaduta o revocata dal browser: la rimuoviamo.
           await env.PUSH_SUBS.delete(voce.name);
           rimossi++;
         } else if (!risposta.ok) {
