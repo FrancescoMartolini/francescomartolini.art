@@ -2,7 +2,18 @@
 """
 Confronta la versione precedente e quella attuale di un file JSON
 (progetti.json o taccuino.json) e stampa, una per riga, il payload
-JSON della notifica push da inviare per ogni voce NUOVA (per id).
+JSON della notifica push da inviare per ogni voce da considerare
+"appena pubblicata".
+
+Cosa conta come "appena pubblicata":
+  - un id che non esisteva nella versione precedente (voce nuova di zecca)
+  - per i progetti: un id già esistente il cui campo "pubblicato" passa
+    da false a true (o compare per la prima volta come true) — è il
+    caso più comune, quando si scrive un progetto in bozza e poi lo si
+    pubblica in un commit successivo.
+
+Un progetto con "pubblicato": false nella versione NUOVA non genera mai
+una notifica, qualunque cosa fosse prima.
 
 Uso:
     python3 scripts/notifica-nuovi-contenuti.py progetti json/progetti.json /tmp/vecchio-progetti.json
@@ -39,6 +50,26 @@ def accorcia(testo, n=120):
     return testo if len(testo) <= n else testo[: n - 1].rstrip() + "…"
 
 
+def e_appena_pubblicato(voce_nuova, voce_vecchia, tipo):
+    """True se questa voce va notificata ora."""
+    if tipo != "progetti":
+        # Il Taccuino non ha un campo "pubblicato": ogni id nuovo conta.
+        return voce_vecchia is None
+
+    # Un progetto con pubblicato=false nella versione attuale non si notifica mai.
+    nuovo_pubblicato = voce_nuova.get("pubblicato", True)
+    if not nuovo_pubblicato:
+        return False
+
+    if voce_vecchia is None:
+        # Voce mai vista prima, e già pubblicata: notifica.
+        return True
+
+    vecchio_pubblicato = voce_vecchia.get("pubblicato", True)
+    # Notifica solo se prima era in bozza e ora non lo è più.
+    return (not vecchio_pubblicato) and nuovo_pubblicato
+
+
 def main():
     if len(sys.argv) != 4:
         print("Uso: notifica-nuovi-contenuti.py <progetti|taccuino> <nuovo.json> <vecchio.json>", file=sys.stderr)
@@ -57,11 +88,13 @@ def main():
         # nulla piuttosto che notificare in massa tutti i contenuti esistenti.
         return
 
-    id_precedenti = {str(voce.get("id")) for voce in vecchio}
+    vecchie_per_id = {str(v.get("id")): v for v in vecchio}
 
     for voce in nuovo:
         id_voce = str(voce.get("id"))
-        if id_voce in id_precedenti:
+        voce_vecchia = vecchie_per_id.get(id_voce)
+
+        if not e_appena_pubblicato(voce, voce_vecchia, tipo):
             continue
 
         if tipo == "progetti":
@@ -88,3 +121,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
