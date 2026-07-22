@@ -125,6 +125,7 @@ const ALIAS_COLONNE = {
   testoEn:['testo en', 'en', 'english', 'nota en'],
   data:   ['data', 'date'],
   foto:   ['foto', 'photo', 'immagine'],
+  video:  ['video', 'filmato', 'video url', 'url video'],
   camera: ['camera']
 };
 
@@ -143,14 +144,16 @@ function parseCsv(csv) {
   let idxTestoEn = trovaIndiceColonna(headerRiga, 'testoEn');
   let idxData    = trovaIndiceColonna(headerRiga, 'data');
   let idxFoto    = trovaIndiceColonna(headerRiga, 'foto');
+  let idxVideo   = trovaIndiceColonna(headerRiga, 'video');
   let idxCamera  = trovaIndiceColonna(headerRiga, 'camera');
 
   if (idxTesto === -1) idxTesto = 0;
   if (idxData  === -1) idxData  = 1;
   if (idxFoto  === -1) idxFoto  = 2;
   if (idxCamera === -1) idxCamera = 3;
-  // idxTestoEn resta -1 se la colonna non esiste ancora: nessun fallback,
-  // così le voci restano semplicemente in italiano finché non la aggiungi.
+  // idxTestoEn e idxVideo restano -1 se le colonne non esistono ancora:
+  // nessun fallback posizionale, così i fogli vecchi continuano a funzionare
+  // senza EN e senza video finché non aggiungi quelle colonne.
 
   return righe.slice(1).map((riga, i) => {
     const celle = parseRigaCsv(riga);
@@ -161,6 +164,7 @@ function parseCsv(csv) {
       testo: testoEn ? { it: testoIt, en: testoEn } : testoIt,
       data: celle[idxData] || '',
       foto: celle[idxFoto] || null,
+      video: idxVideo !== -1 ? (celle[idxVideo] || null) : null,
       camera: celle[idxCamera] || null
     };
   }).filter(v => (typeof v.testo === 'string' ? v.testo : v.testo.it));
@@ -269,6 +273,31 @@ function creaMobilePageContent() {
   return { mpc, pc };
 }
 
+// ── Media (foto o video) di una voce taccuino ──
+// Se la voce ha un video, ha priorità sulla foto (che può comunque
+// diventarne il poster). Nessun autoplay: coerente col ritmo lento
+// e silenzioso del libro — parte solo se il visitatore lo avvia.
+function creaMediaTaccuino(v, wrapClass) {
+  if (v.video) {
+    const fw = crea('div'); fw.className = wrapClass;
+    const video = crea('video');
+    video.src = v.video;
+    video.controls = true;
+    video.playsInline = true;
+    video.preload = 'metadata';
+    if (v.foto) video.poster = v.foto;
+    fw.appendChild(video);
+    return fw;
+  }
+  if (v.foto) {
+    const fw = crea('div'); fw.className = wrapClass;
+    const img = crea('img'); img.src = v.foto; img.alt = ''; img.draggable = false;
+    fw.appendChild(img);
+    return fw;
+  }
+  return null;
+}
+
 // ── Voce taccuino mobile ──
 function creaPaginaTaccuinoMobile(v) {
   const pt = creaPaginaMobile('T', 'Taccuino');
@@ -276,11 +305,8 @@ function creaPaginaTaccuinoMobile(v) {
   const tw = crea('div'); tw.className = 'taccuino-wrap';
     tw.style.overflowY = 'auto';
     tw.style.maxHeight = '80vh'; 
-  if (v.foto) {
-    const fw = crea('div'); fw.className = 'taccuino-foto';
-    const img = crea('img'); img.src = v.foto; img.alt = ''; img.draggable = false;
-    fw.appendChild(img); tw.appendChild(fw);
-  }
+  const media = creaMediaTaccuino(v, 'taccuino-foto');
+  if (media) tw.appendChild(media);
   tw.innerHTML += `<p class="taccuino-frase">${t(v.testo)}</p>${v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p><p class="taccuino-data">${formatData(v.data)}</p>` : ''}`;
   pc.appendChild(tw); pt.appendChild(mpc);
   return pt;
@@ -1105,10 +1131,12 @@ function apriTaccuino() {
 
   if (!_cacheTaccuino) {
     const voci = stato.taccuino.map(v => {
-      const foto = v.foto
-        ? `<div class="taccuino-voce-foto"><img src="${v.foto}" alt="" draggable="false" loading="lazy"></div>` : '';
+      const posterAttr = v.foto ? ` poster="${v.foto}"` : '';
+      const media = v.video
+        ? `<div class="taccuino-voce-foto"><video src="${v.video}" controls playsinline preload="metadata"${posterAttr}></video></div>`
+        : (v.foto ? `<div class="taccuino-voce-foto"><img src="${v.foto}" alt="" draggable="false" loading="lazy"></div>` : '');
       const cam = v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p>` : '';
-      return `<div class="taccuino-voce" data-testo="${t(v.testo).toLowerCase()}">${foto}<p class="taccuino-voce-frase">${t(v.testo)}</p>${cam}<p class="taccuino-voce-data">${formatData(v.data)}</p></div>`;
+      return `<div class="taccuino-voce" data-testo="${t(v.testo).toLowerCase()}">${media}<p class="taccuino-voce-frase">${t(v.testo)}</p>${cam}<p class="taccuino-voce-data">${formatData(v.data)}</p></div>`;
     }).join('');
     _cacheTaccuino = `
       <button class="taccuino-torna" onclick="chiudiTaccuino()">${tu('overlay.chiudi')}</button>
