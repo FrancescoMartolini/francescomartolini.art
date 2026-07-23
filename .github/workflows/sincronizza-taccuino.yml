@@ -34,4 +34,20 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add json/taccuino.json
           git commit -m "Sincronizza taccuino.json da Google Sheets [automatico]"
-          git push
+
+          # Se nel frattempo main è avanzato (es. un commit manuale quasi
+          # in contemporanea), ci riallineiamo con un rebase prima di
+          # pushare, riprovando qualche volta invece di fallire subito.
+          tentativi=0
+          finche_max=5
+          until git push; do
+            tentativi=$((tentativi + 1))
+            if [ "$tentativi" -ge "$finche_max" ]; then
+              echo "::error::Push fallito dopo $tentativi tentativi."
+              exit 1
+            fi
+            echo "Push rifiutato (remoto avanzato), riprovo con un rebase... (tentativo $tentativi)"
+            git fetch origin main
+            git rebase origin/main
+            sleep 3
+          done
