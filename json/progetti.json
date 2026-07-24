@@ -166,8 +166,8 @@
     }
   },
     {
-    "id": "PLAYLIST.00",
-    "titolo": "PLAYLIST.00",
+    "id": "PLAYLIST",
+    "titolo": "PLAYLIST",
     "anno": "2026",
     "descrizione":  {
       "it": "PLAYLIST è un progetto curatoriale che mette in relazione fotografia e musica.",
@@ -180,7 +180,115 @@
       {
         "tipo": "testo",
         "valore": {
-          "it":"PLAYLIST was born from the idea that an image can be experienced not only through sight, but also through listening.\n\nEach photograph is associated with a sonic experience selected by the author. Not as an accompaniment to the image, but as an emotional and perceptual key that allows the viewer to enter the scene.\n\nThe sonic experience does not describe what is represented in the photograph.\nIt tells what I felt at the moment I chose to preserve that instant.\n\nThis is the feeling I experienced when I took this photograph.\nI lend you a part of my inner world so that you can step inside the scene.\n\nA photograph does not have a single interpretation.\n\nImagine a person sitting alone on a bench.\n\nMost people might read that scene as melancholic, lonely, or distant. Yet, when I pressed the shutter, what I perceived could have been something entirely different: serenity, curiosity, anticipation, peace, or simply a suspended moment in time.\n\nFor this reason, the sonic experience associated with each photograph does not describe the person portrayed.\n\nIt tells the story of my gaze while I was observing them.\n\nEach sonic experience is a trace of my perception, an attempt to share not only what I saw, but also what I felt.\n\nPLAYLIST exists precisely within this invisible space between image and listening, where photography is not explained, but experienced.\n\nThe project takes shape as a printed publication composed of square images, short texts, and QR codes that provide access to the sonic experiences associated with each photograph.\n\nThe book becomes a contemplative object. A physical experience that comes alive through listening and invites the reader to share the way I perceived that moment.\n\nPLAYLIST is not a photographic project.\n\nIt is a way of reading photographic projects.\n\nThe images included in each volume originate from existing bodies of work and preserve their original meaning. Within PLAYLIST, they are reinterpreted through a new perspective, entering into dialogue with a soundscape built upon the author's emotions.\n\nEach chapter of the series, identified by a progressive number (PLAYLIST.00, PLAYLIST.01, PLAYLIST.02...), explores the relationship between photographic language and an emotional and sonic dimension.\n\nThe project unfolds across multiple levels:\n\n- the book, as a physical and contemplative experience;\n- the website, as an archive and a space for deeper exploration;\n- the playlist, as the sonic extension of the work.\n\nPLAYLIST is an evolving visual and sonic archive.\n\nAn open system that allows images to be heard and sound to be observed.",
+          "it":"PLAYLIST nasce dall'idea che un'immagine possa essere attraversata non solo attraverso lo sguardo, ma anche attraverso l'ascolto.\n\nOgni fotografia è associata a un'esperienza sonora selezionata dall'autore. Non come un accompagnamento all'immagine, ma come una chiave di accesso emotiva e percettiva alla scena.\n\nL'esperienza sonora non descrive ciò che è rappresentato nella fotografia.\nRacconta ciò che ho provato nel momento in cui ho scelto di fermare quell'istante.\n\nQuesta è la sensazione che ho provato quando ho scattato questa fotografia.\nTi presto una parte del mio mondo interiore affinché tu possa entrare nella scena.\n\nUna fotografia non possiede un'unica interpretazione.\n\nImmagina una persona seduta da sola su una panchina.\n\nMolti potrebbero leggere quella scena come malinconica, triste o segnata dalla solitudine. Ma, nel momento in cui ho premuto il pulsante di scatto, ciò che ho percepito poteva essere completamente diverso: serenità, curiosità, attesa, pace o semplicemente un istante sospeso.\n\nPer questo motivo l'esperienza sonora associata a ogni fotografia non racconta il soggetto ritratto.\n\nRacconta il mio sguardo mentre lo osservavo.\n\nOgni esperienza sonora è una traccia della mia percezione, un tentativo di condividere non solo ciò che ho visto, ma anche ciò che ho sentito.\n\nPLAYLIST nasce proprio in questo spazio invisibile tra immagine e ascolto, dove la fotografia non viene spiegata, ma vissuta.\n\nIl progetto prende forma attraverso una pubblicazione cartacea composta da immagini quadrate, testi brevi e QR code che permettono di accedere alle esperienze sonore associate alle fotografie.\n\nIl libro diventa così un oggetto contemplativo. Un'esperienza fisica che prende vita attraverso l'ascolto e invita il lettore a condividere il mio modo di percepire quell'istante.\n\nPLAYLIST non è un progetto fotografico.\n\nÈ un modo di leggere i progetti fotografici.\n\nLe immagini presenti nei volumi provengono da lavori già esistenti e mantengono il loro significato originario. All'interno di PLAYLIST vengono rilette attraverso una nuova prospettiva, entrando in dialogo con un paesaggio sonoro costruito sulle emozioni dell'autore.\n\nOgni capitolo della serie, identificato da un numero progressivo (PLAYLIST.00, PLAYLIST.01, PLAYLIST.02...), esplora la relazione tra un linguaggio fotografico e una dimensione emotiva e sonora.\n\nIl progetto si sviluppa su più livelli:\n\n- il libro, come esperienza fisica e contemplativa;\n- il sito web, come archivio e spazio di approfondimento;\n- la playlist, come estensione sonora dell'opera.\n\nPLAYLIST è un archivio visivo-sonoro in continua evoluzione.\n\nUn sistema aperto che permette alle immagini di essere ascoltate e alla musica di essere osservata.",
+          "en":"PLAYLIST was born from the idea that an image can be experienced not only through sight, but also through listening.\n\nEach photograph is associated with a sonic experience selected by the author. Not as an accompaniment to the image, but as an emotional and perceptual key that allows the viewer to enter the scene.\n\nThe sonic experience does not describe what is represented in the photograph.\nIt tells what I felt at the moment I chose to preserve that instant.\n\nThis is the feeling I experienced when I took this photograph.\nI lend you a part of my inner world so that you can step inside the scene.\n\nA photograph does not have a single interpretation.\n\nImagine a person sitting alone on a bench.\n\nMost people might read that scene as melancholic, lonely, or distant. Yet, when I pressed the shutter, what I perceived could have been something entirely different: serenity, curiosity, anticipation, peace, or simply a suspended moment in time.\n\nFor this reason, the sonic experience associated with each photograph does not describe the person portrayed.\n\nIt tells the story of my gaze while I was observing them.\n\nEach sonic experience is a trace of my perception, an attempt to share not only what I saw, but also what I felt.\n\nPLAYLIST exists precisely within this invisible space between image and listening, where photography is not explained, but experienced.\n\nThe project takes shape as a printed publication composed of square images, short texts, and QR codes that provide access to the sonic experiences associated with each photograph.\n\nThe book becomes a contemplative object. A physical experience that comes alive through listening and invites the reader to share the way I perceived that moment.\n\nPLAYLIST is not a photographic project.\n\nIt is a way of reading photographic projects.\n\nThe images included in each volume originate from existing bodies of work and preserve their original meaning. Within PLAYLIST, they are reinterpreted through a new perspective, entering into dialogue with a soundscape built upon the author's emotions.\n\nEach chapter of the series, identified by a progressive number (PLAYLIST.00, PLAYLIST.01, PLAYLIST.02...), explores the relationship between photographic language and an emotional and sonic dimension.\n\nThe project unfolds across multiple levels:\n\n- the book, as a physical and contemplative experience;\n- the website, as an archive and a space for deeper exploration;\n- the playlist, as the sonic extension of the work.\n\nPLAYLIST is an evolving visual and sonic archive.\n\nAn open system that allows images to be heard and sound to be observed."
+        }
+      }
+    ] 
+  },
+      {
+    "id": "PLAYLIST.00",
+    "titolo": "PLAYLIST.00",
+    "anno": "2026",
+    "descrizione":  {
+      "it": "PLAYLIST.00, Il primo progetto di questa serie,",
+      "en": "PLAYLIST.00, The first project in this series."
+    },
+    "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778786521/Scan_20260416_aijdfw.png",
+    "galleria": [],
+    "pagina_libro": 9,
+    "contenuto": [
+      {
+        "tipo": "testo",
+        "valore": {
+          "it":"PLAYLIST nasce dall'idea che un'immagine possa essere attraversata non solo attraverso lo sguardo, ma anche attraverso l'ascolto.\n\nOgni fotografia è associata a un'esperienza sonora selezionata dall'autore. Non come un accompagnamento all'immagine, ma come una chiave di accesso emotiva e percettiva alla scena.\n\nL'esperienza sonora non descrive ciò che è rappresentato nella fotografia.\nRacconta ciò che ho provato nel momento in cui ho scelto di fermare quell'istante.\n\nQuesta è la sensazione che ho provato quando ho scattato questa fotografia.\nTi presto una parte del mio mondo interiore affinché tu possa entrare nella scena.\n\nUna fotografia non possiede un'unica interpretazione.\n\nImmagina una persona seduta da sola su una panchina.\n\nMolti potrebbero leggere quella scena come malinconica, triste o segnata dalla solitudine. Ma, nel momento in cui ho premuto il pulsante di scatto, ciò che ho percepito poteva essere completamente diverso: serenità, curiosità, attesa, pace o semplicemente un istante sospeso.\n\nPer questo motivo l'esperienza sonora associata a ogni fotografia non racconta il soggetto ritratto.\n\nRacconta il mio sguardo mentre lo osservavo.\n\nOgni esperienza sonora è una traccia della mia percezione, un tentativo di condividere non solo ciò che ho visto, ma anche ciò che ho sentito.\n\nPLAYLIST nasce proprio in questo spazio invisibile tra immagine e ascolto, dove la fotografia non viene spiegata, ma vissuta.\n\nIl progetto prende forma attraverso una pubblicazione cartacea composta da immagini quadrate, testi brevi e QR code che permettono di accedere alle esperienze sonore associate alle fotografie.\n\nIl libro diventa così un oggetto contemplativo. Un'esperienza fisica che prende vita attraverso l'ascolto e invita il lettore a condividere il mio modo di percepire quell'istante.\n\nPLAYLIST non è un progetto fotografico.\n\nÈ un modo di leggere i progetti fotografici.\n\nLe immagini presenti nei volumi provengono da lavori già esistenti e mantengono il loro significato originario. All'interno di PLAYLIST vengono rilette attraverso una nuova prospettiva, entrando in dialogo con un paesaggio sonoro costruito sulle emozioni dell'autore.\n\nOgni capitolo della serie, identificato da un numero progressivo (PLAYLIST.00, PLAYLIST.01, PLAYLIST.02...), esplora la relazione tra un linguaggio fotografico e una dimensione emotiva e sonora.\n\nIl progetto si sviluppa su più livelli:\n\n- il libro, come esperienza fisica e contemplativa;\n- il sito web, come archivio e spazio di approfondimento;\n- la playlist, come estensione sonora dell'opera.\n\nPLAYLIST è un archivio visivo-sonoro in continua evoluzione.\n\nUn sistema aperto che permette alle immagini di essere ascoltate e alla musica di essere osservata.",
+          "en":"PLAYLIST was born from the idea that an image can be experienced not only through sight, but also through listening.\n\nEach photograph is associated with a sonic experience selected by the author. Not as an accompaniment to the image, but as an emotional and perceptual key that allows the viewer to enter the scene.\n\nThe sonic experience does not describe what is represented in the photograph.\nIt tells what I felt at the moment I chose to preserve that instant.\n\nThis is the feeling I experienced when I took this photograph.\nI lend you a part of my inner world so that you can step inside the scene.\n\nA photograph does not have a single interpretation.\n\nImagine a person sitting alone on a bench.\n\nMost people might read that scene as melancholic, lonely, or distant. Yet, when I pressed the shutter, what I perceived could have been something entirely different: serenity, curiosity, anticipation, peace, or simply a suspended moment in time.\n\nFor this reason, the sonic experience associated with each photograph does not describe the person portrayed.\n\nIt tells the story of my gaze while I was observing them.\n\nEach sonic experience is a trace of my perception, an attempt to share not only what I saw, but also what I felt.\n\nPLAYLIST exists precisely within this invisible space between image and listening, where photography is not explained, but experienced.\n\nThe project takes shape as a printed publication composed of square images, short texts, and QR codes that provide access to the sonic experiences associated with each photograph.\n\nThe book becomes a contemplative object. A physical experience that comes alive through listening and invites the reader to share the way I perceived that moment.\n\nPLAYLIST is not a photographic project.\n\nIt is a way of reading photographic projects.\n\nThe images included in each volume originate from existing bodies of work and preserve their original meaning. Within PLAYLIST, they are reinterpreted through a new perspective, entering into dialogue with a soundscape built upon the author's emotions.\n\nEach chapter of the series, identified by a progressive number (PLAYLIST.00, PLAYLIST.01, PLAYLIST.02...), explores the relationship between photographic language and an emotional and sonic dimension.\n\nThe project unfolds across multiple levels:\n\n- the book, as a physical and contemplative experience;\n- the website, as an archive and a space for deeper exploration;\n- the playlist, as the sonic extension of the work.\n\nPLAYLIST is an evolving visual and sonic archive.\n\nAn open system that allows images to be heard and sound to be observed."
+        }
+      },
+      {
+        "tipo": "spotify",
+        "valore": {
+          "playlistId": "6LIiTKNwUXfBmKRSApj9GJ",
+          "tracks": [
+            {
+              "uri": "spotify:track:7hYZepSsfTicIOJ0gHJjwQ",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784058189/Tabula-Rasa-I_vsmwhp.jpg"
+            },
+            {
+              "uri": "spotify:track:2d9KBVxb6bUfVCjjv1JAVe",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784058275/Father_d8i6fy.jpg"
+            },
+            {
+              "uri": "spotify:track:2ej1A2Ze6P2EOW7KfIosZR",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784058591/the-big-ship_ec1vo4.jpg"
+            },
+            {
+              "uri": "spotify:track:4Ms0GKHCtr5Lpg4dKOhO2I",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784059349/Building-steam-with_q2mocm.jpg"
+            },
+            {
+              "uri": "spotify:track:5S3F5GL8LASIjPg2PMiU1Q",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784058181/Emerald-Ruch_eqmgoe.jpg"
+            },
+            {
+              "uri": "spotify:track:5HgyC7aSmkHaLjfWowVkMk", 
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784058178/Andata_sqexpc.jpg"
+            },
+            {
+              "uri": "spotify:track:03C5oWy8fjzjZ0flZf2YNU",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784059422/Virginal-II_ro9m18.jpg"
+            },
+            {
+              "uri": "spotify:track:3v65IsDl6LDOHDu9bU4ZOn",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784059481/Zodiac-Shit_xe05u5.jpg"
+            },
+            {
+              "uri": "spotify:track:6Xajr512QEGAZ20bqAWkyT", 
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784059526/Near-Light_yjeynx.jpg"
+            },
+            {
+              "uri": "spotify:track:6fymXW3eFHPmIOdDfnLXS4",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784059574/emerald-and-stone_rrzr72.jpg"
+            },
+            {
+              "uri": "spotify:track:3rkJH9BaiCWpRY718WTkBP",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784059645/faleise_aqklir.jpg"
+            },
+            {
+              "uri": "spotify:track:2ZIaH69kaz55RM4Pjx6KXl",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784059723/two-thousand_cowmbt.jpg"
+            },
+            {
+              "uri": "spotify:track:0vp09QgBhShrQOL2w7P8k4",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784059771/Recovery_tqbth5.jpg"
+            },
+            {
+              "uri": "spotify:track:38KFHXttkrIpnUd0tTvkZj",
+              "image": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784059835/Creature_-Pt1_fcfxbu.jpg"
+            }
+            
+          ]
+        }
+      }
+    ]
+  },
+    {
+    "id": "PLAYLIST.01",
+    "titolo": "PLAYLIST.01",
+    "anno": "2026",
+    "descrizione":  {
+      "it": "PLAYLIST.01, Il Secondo progetto di questa serie.",
+      "en": "PLAYLIST.01, The second project in this series."
+    },
+    "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778786521/Scan_20260416_aijdfw.png",
+    "galleria": [],
+    "pagina_libro": 11,
+    "pubblicato":false,
+    "contenuto": [
+      {
+        "tipo": "testo",
+        "valore": {
+          "it":"PLAYLIST nasce dall'idea che un'immagine possa essere attraversata non solo attraverso lo sguardo, ma anche attraverso l'ascolto.\n\nOgni fotografia è associata a un'esperienza sonora selezionata dall'autore. Non come un accompagnamento all'immagine, ma come una chiave di accesso emotiva e percettiva alla scena.\n\nL'esperienza sonora non descrive ciò che è rappresentato nella fotografia.\nRacconta ciò che ho provato nel momento in cui ho scelto di fermare quell'istante.\n\nQuesta è la sensazione che ho provato quando ho scattato questa fotografia.\nTi presto una parte del mio mondo interiore affinché tu possa entrare nella scena.\n\nUna fotografia non possiede un'unica interpretazione.\n\nImmagina una persona seduta da sola su una panchina.\n\nMolti potrebbero leggere quella scena come malinconica, triste o segnata dalla solitudine. Ma, nel momento in cui ho premuto il pulsante di scatto, ciò che ho percepito poteva essere completamente diverso: serenità, curiosità, attesa, pace o semplicemente un istante sospeso.\n\nPer questo motivo l'esperienza sonora associata a ogni fotografia non racconta il soggetto ritratto.\n\nRacconta il mio sguardo mentre lo osservavo.\n\nOgni esperienza sonora è una traccia della mia percezione, un tentativo di condividere non solo ciò che ho visto, ma anche ciò che ho sentito.\n\nPLAYLIST nasce proprio in questo spazio invisibile tra immagine e ascolto, dove la fotografia non viene spiegata, ma vissuta.\n\nIl progetto prende forma attraverso una pubblicazione cartacea composta da immagini quadrate, testi brevi e QR code che permettono di accedere alle esperienze sonore associate alle fotografie.\n\nIl libro diventa così un oggetto contemplativo. Un'esperienza fisica che prende vita attraverso l'ascolto e invita il lettore a condividere il mio modo di percepire quell'istante.\n\nPLAYLIST non è un progetto fotografico.\n\nÈ un modo di leggere i progetti fotografici.\n\nLe immagini presenti nei volumi provengono da lavori già esistenti e mantengono il loro significato originario. All'interno di PLAYLIST vengono rilette attraverso una nuova prospettiva, entrando in dialogo con un paesaggio sonoro costruito sulle emozioni dell'autore.\n\nOgni capitolo della serie, identificato da un numero progressivo (PLAYLIST.00, PLAYLIST.01, PLAYLIST.02...), esplora la relazione tra un linguaggio fotografico e una dimensione emotiva e sonora.\n\nIl progetto si sviluppa su più livelli:\n\n- il libro, come esperienza fisica e contemplativa;\n- il sito web, come archivio e spazio di approfondimento;\n- la playlist, come estensione sonora dell'opera.\n\nPLAYLIST è un archivio visivo-sonoro in continua evoluzione.\n\nUn sistema aperto che permette alle immagini di essere ascoltate e alla musica di essere osservata.",
           "en":"PLAYLIST was born from the idea that an image can be experienced not only through sight, but also through listening.\n\nEach photograph is associated with a sonic experience selected by the author. Not as an accompaniment to the image, but as an emotional and perceptual key that allows the viewer to enter the scene.\n\nThe sonic experience does not describe what is represented in the photograph.\nIt tells what I felt at the moment I chose to preserve that instant.\n\nThis is the feeling I experienced when I took this photograph.\nI lend you a part of my inner world so that you can step inside the scene.\n\nA photograph does not have a single interpretation.\n\nImagine a person sitting alone on a bench.\n\nMost people might read that scene as melancholic, lonely, or distant. Yet, when I pressed the shutter, what I perceived could have been something entirely different: serenity, curiosity, anticipation, peace, or simply a suspended moment in time.\n\nFor this reason, the sonic experience associated with each photograph does not describe the person portrayed.\n\nIt tells the story of my gaze while I was observing them.\n\nEach sonic experience is a trace of my perception, an attempt to share not only what I saw, but also what I felt.\n\nPLAYLIST exists precisely within this invisible space between image and listening, where photography is not explained, but experienced.\n\nThe project takes shape as a printed publication composed of square images, short texts, and QR codes that provide access to the sonic experiences associated with each photograph.\n\nThe book becomes a contemplative object. A physical experience that comes alive through listening and invites the reader to share the way I perceived that moment.\n\nPLAYLIST is not a photographic project.\n\nIt is a way of reading photographic projects.\n\nThe images included in each volume originate from existing bodies of work and preserve their original meaning. Within PLAYLIST, they are reinterpreted through a new perspective, entering into dialogue with a soundscape built upon the author's emotions.\n\nEach chapter of the series, identified by a progressive number (PLAYLIST.00, PLAYLIST.01, PLAYLIST.02...), explores the relationship between photographic language and an emotional and sonic dimension.\n\nThe project unfolds across multiple levels:\n\n- the book, as a physical and contemplative experience;\n- the website, as an archive and a space for deeper exploration;\n- the playlist, as the sonic extension of the work.\n\nPLAYLIST is an evolving visual and sonic archive.\n\nAn open system that allows images to be heard and sound to be observed."
         }
       },
@@ -270,7 +378,7 @@
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1784576170/divinacommedia_r3rlbj.jpg",
     "galleria": [],
     "pubblicato": false,
-    "pagina_libro": 9,
+    "pagina_libro": 13,
     "contenuto": [
       {
         "tipo": "testo",
@@ -299,7 +407,7 @@
     },
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778413698/____7010_o2jk2o.jpg",
     "galleria": [],
-    "pagina_libro": 11,
+    "pagina_libro": 15,
     "pubblicato": false,
     "contenuto": [
       {
@@ -326,7 +434,7 @@
     },
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778787452/inspo_emmyoy.jpg",
     "galleria": [],
-    "pagina_libro": 13,
+    "pagina_libro": 17,
     "pubblicato": false,
     "contenuto": [
       {
