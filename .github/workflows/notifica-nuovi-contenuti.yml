@@ -1,25 +1,30 @@
 name: Notifica nuovi contenuti
 
-# Si attiva quando json/progetti.json o json/taccuino.json cambiano su
-# main (sia per un commit manuale, sia per il commit automatico del
-# workflow "Sincronizza Taccuino da Google Sheets"). Confronta la
-# versione precedente e quella nuova, e invia una push notification
-# per ogni voce aggiunta chiamando POST /notify sul sito (Cloudflare
-# Pages Function, vedi functions/notify.js).
+# ─────────────────────────────────────────────
+# FUNZIONALITÀ IN PAUSA.
+# Prima si attivava da sola a ogni push che toccava json/progetti.json
+# o json/taccuino.json. Per ora è disattivata: parte SOLO se lanciata
+# a mano dalla tab "Actions" del repo (pulsante "Run workflow").
+#
+# Per riattivarla come prima, sostituisci il blocco "on:" qui sotto con:
+#
+# on:
+#   push:
+#     branches: [main]
+#     paths:
+#       - 'json/progetti.json'
+#       - 'json/taccuino.json'
+# ─────────────────────────────────────────────
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'json/progetti.json'
-      - 'json/taccuino.json'
+  workflow_dispatch:
 
 jobs:
   notifica:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
