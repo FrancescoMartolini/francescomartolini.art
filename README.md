@@ -1,5 +1,5 @@
 # Francesco Martolini .art
-## Guida completa al sito — v7.1
+## Guida completa al sito — v7.2
 
 ---
 
@@ -428,7 +428,11 @@ I tre valori controllano:
 ]
 ```
 
-**galleria:** array opzionale. Se presente, il click apre il lightbox con tutte le immagini.
+**galleria:** array opzionale di immagini extra oltre alla `foto` di copertina. Se presente:
+- **su mobile**, il tap sulla copertina apre il lightbox con tutte le immagini della collaborazione;
+- **su desktop**, il click sul nome cliente (o Invio/Spazio da tastiera) apre inline una striscia a tutta larghezza con le immagini della galleria — un solo pannello aperto alla volta nella griglia.
+
+Se `galleria` è vuoto o assente, resta visibile solo la copertina e nessuna delle due interazioni è attiva.
 
 ---
 
@@ -697,8 +701,11 @@ a questa repo è un **Worker** (deploy con `wrangler deploy`), non una
 **Come funziona, in breve:**
 
 1. Chi visita il sito può attivare gli avvisi da un piccolo invito in
-   fondo al libro mobile (pagina "fin.") o nel footer desktop — testo
-   in `notifiche.*` in `json/ui.json`, logica in `js/push.js`.
+   fondo al libro mobile (pagina "fin.") — testo in `notifiche.*` in
+   `json/ui.json`, logica in `js/push.js`. L'equivalente nel footer
+   desktop esiste nel markup (`index.html`) ma è **commentato** al
+   momento: sull'area di lavoro attuale l'opt-in è attivo solo su
+   mobile.
 2. Il consenso genera una *subscription* del browser, inviata a
    `POST /subscribe`; `worker/index.js` la salva in Cloudflare KV
    (namespace `PUSH_SUBS`).
