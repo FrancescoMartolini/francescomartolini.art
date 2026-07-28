@@ -21,6 +21,7 @@ const stato = {
   taccuino: [],
   collaborazioni: [],
   intro: {},
+  playlist: {},
   sliderIdx: 0
 };
 
@@ -89,6 +90,68 @@ function formatNum(n) { return String(n).padStart(2, '0'); }
 
 function progettoPubblicato(pr) {
   return pr && pr.pubblicato !== false;
+}
+
+// ── PLAYLIST: la collana non è trattata come un progetto fotografico ──
+// Qualunque voce il cui id inizi per "playlist" (compreso un eventuale
+// "PLAYLIST" residuo senza numero) non va mai mostrata come progetto normale
+function isEntryPlaylist(pr) {
+  return !!(pr && pr.id && /^playlist/i.test(pr.id));
+}
+
+// Un volume vero e proprio della collana: deve avere un numero (PLAYLIST.00,
+// PLAYLIST.01, ...). Un "PLAYLIST" residuo senza numero viene ignorato ovunque.
+function isVolumePlaylist(pr) {
+  return !!(pr && pr.id && /^playlist\.\d+/i.test(pr.id));
+}
+
+// Progetti "veri" (esclude qualunque voce della collana PLAYLIST)
+function progettiPrincipali() {
+  return stato.progetti.filter(pr => !isEntryPlaylist(pr));
+}
+
+// Volumi PLAYLIST ordinati per numero (PLAYLIST.00, PLAYLIST.01, ...)
+function volumiPlaylist() {
+  return stato.progetti
+    .filter(isVolumePlaylist)
+    .slice()
+    .sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
+}
+
+function numeroVolume(id) {
+  const m = /(\d+)/.exec(id || '');
+  return m ? formatNum(m[1]) : '';
+}
+
+// Identificatore riservato della card "PLAYLIST" dentro la lista Progetti
+const ID_CARD_PLAYLIST = '__playlist__';
+
+// Card sintetica: rappresenta l'intera collana PLAYLIST come un unico
+// elemento dentro "Progetti" (non è un progetto vero, apre l'archivio)
+function cardPlaylist() {
+  const hero = (stato.playlist && stato.playlist.hero) || {};
+  const primoVolume = volumiPlaylist()[0];
+  const descrizione = {
+    it: (hero.sottotitolo && hero.sottotitolo.it || '').replace(/\n/g, ' '),
+    en: (hero.sottotitolo && hero.sottotitolo.en || '').replace(/\n/g, ' ')
+  };
+  return {
+    id: ID_CARD_PLAYLIST,
+    titolo: hero.titolo || 'PLAYLIST',
+    anno: hero.kicker || { it: 'Collana', en: 'Series' },
+    descrizione,
+    immagine_copertina: (primoVolume && primoVolume.immagine_copertina) || '',
+    pubblicato: true
+  };
+}
+
+// Progetti così come vengono mostrati in griglia/indice: i veri progetti
+// più, in una posizione fissa, la card PLAYLIST che apre l'archivio
+function progettiVisualizzati() {
+  const principali = progettiPrincipali();
+  const arr = principali.slice();
+  arr.splice(Math.min(2, arr.length), 0, cardPlaylist());
+  return arr;
 }
 
 // ── Favicon dinamica ──
@@ -172,15 +235,16 @@ function parseCsv(csv) {
 
 // ── Carica dati ──
 async function caricaDati() {
-  const [progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi] = await Promise.all([
+  const [progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi, playlist] = await Promise.all([
     fetch('json/progetti.json').then(r => r.json()),
     fetch('json/intervalli.json').then(r => r.json()),
     fetch('json/collaborazioni.json').then(r => r.json()),
     fetch('json/intro.json').then(r => r.json()).catch(() => ({ testo: '' })),
     fetch('json/pubblicazioni.json').then(r => r.json()).catch(() => []),
-    fetch('json/epiloghi.json').then(r => r.json()).catch(() => [])
+    fetch('json/epiloghi.json').then(r => r.json()).catch(() => []),
+    fetch('json/playlist.json').then(r => r.json()).catch(() => ({}))
   ]);
-  Object.assign(stato, { progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi});
+  Object.assign(stato, { progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi, playlist });
 
   try {
     //const r = await fetch(SHEETS_URL);
@@ -378,8 +442,9 @@ function isColorDark(colorStr) {
 function popolaDesktop() {
   // Hero image
   const heroImg = $('hero-img');
-  if (heroImg && stato.progetti[0]) {
-    heroImg.appendChild(creaImg(stato.progetti[0].immagine_copertina, t(stato.progetti[0].titolo), true));
+  const primoProgetto = progettiPrincipali()[0];
+  if (heroImg && primoProgetto) {
+    heroImg.appendChild(creaImg(primoProgetto.immagine_copertina, t(primoProgetto.titolo), true));
   }
 
   popolaSliderProgetti();
@@ -437,7 +502,8 @@ function popolaSliderProgetti() {
   const griglia = $('progetti-griglia-desktop');
   if (!griglia) return;
 
-  stato.progetti.forEach((pr, i) => {
+  const elenco = progettiVisualizzati();
+  elenco.forEach((pr, i) => {
     const inLavorazione = pr.pubblicato === false;
 
     const card = crea('div');
@@ -454,7 +520,9 @@ function popolaSliderProgetti() {
       creaImg(pr.immagine_copertina, t(pr.titolo))
     );
 
-    if (progettoPubblicato(pr)) {
+    if (pr.id === ID_CARD_PLAYLIST) {
+      card.addEventListener('click', () => apriProgetto(ID_CARD_PLAYLIST));
+    } else if (progettoPubblicato(pr)) {
       card.addEventListener('click', () => apriProgetto(pr.id));
     }
 
@@ -463,7 +531,7 @@ function popolaSliderProgetti() {
 
   const sx = $('proj-sx'), dx = $('proj-dx');
   if (!sx || !dx) return;
-  const visibili = 4, tot = stato.progetti.length;
+  const visibili = 4, tot = elenco.length;
   if (tot <= visibili) { sx.hidden = true; dx.hidden = true; return; }
   sx.hidden = true;
 
@@ -492,7 +560,7 @@ function apriPagina(tipo) {
 
     case 'tutti-progetti':
       contenuto.innerHTML = `<h1 class="overlay-titolo">${tu('overlay.tuttiProgetti')}</h1><div class="tutti-progetti-griglia" id="tutti-proj-grid"></div>`;
-      stato.progetti.forEach((pr, i) => {
+      progettiVisualizzati().forEach((pr, i) => {
         const inLavorazione = pr.pubblicato === false;
         const card = crea('div'); card.className = 'tutti-card' + (inLavorazione ? ' in-lavorazione' : '');
         card.innerHTML = `
@@ -504,7 +572,11 @@ function apriPagina(tipo) {
           ${inLavorazione ? `<p class="tutti-card-wip">${tu('overlay.inLavorazione')}</p>` : ''}
         `;
         card.querySelector('.tutti-card-img').appendChild(creaImg(pr.immagine_copertina, t(pr.titolo)));
-        if (!inLavorazione) card.addEventListener('click', () => apriProgetto(pr.id));
+        if (pr.id === ID_CARD_PLAYLIST) {
+          card.addEventListener('click', () => apriProgetto(ID_CARD_PLAYLIST));
+        } else if (!inLavorazione) {
+          card.addEventListener('click', () => apriProgetto(pr.id));
+        }
         $('tutti-proj-grid').appendChild(card);
       });
       break;
@@ -731,6 +803,7 @@ const SEZIONI_URL = {
   'chi-sono-pagina':       { slug: 'chi-sono',               titolo: 'Chi sono' },
   'collaborazioni-pagina': { slug: 'fotografie-commerciali', titolo: 'Fotografie Commerciali' },
   'tutti-studi':           { slug: 'intervalli',             titolo: 'Intervalli' },
+  'playlist-pagina':       { slug: 'playlist',                titolo: 'Playlist' },
 };
 
 // Legge l'URL corrente (al netto di BASE_PATH) e dice a quale pagina
@@ -754,7 +827,149 @@ function leggiRoute() {
   return null; // home
 }
 
+// Blocco "Acquista il volume" + navigazione tra i volumi della collana PLAYLIST
+function generaBloccoVolumePlaylist(pr) {
+  const volumi = volumiPlaylist();
+  const idx = volumi.findIndex(v => v.id === pr.id);
+  const prec = idx > 0 ? volumi[idx - 1] : null;
+  const succ = idx > -1 && idx < volumi.length - 1 ? volumi[idx + 1] : null;
+
+  const shopUrl = pr.shop_url || '';
+  const shopLabel = t(pr.shop_label) || tu('playlist.acquista');
+
+  return `
+    <div class="pl-acquista">
+      <p class="pl-eyebrow">${tu('playlist.acquistaEyebrow')}</p>
+      <div class="pl-acquista-riga">
+        <div class="pl-acquista-mockup">
+          <img src="${pr.immagine_copertina}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
+        </div>
+        <div class="pl-acquista-info">
+          <p class="pl-acquista-titolo"> ${t(pr.titolo)}</p>
+          ${shopUrl
+            ? `<a class="pl-acquista-btn" href="${shopUrl}" target="_blank" rel="noopener">${shopLabel}</a>`
+            : `<p class="pl-acquista-presto">${tu('playlist.prossimamente')}</p>`}
+        </div>
+      </div>
+    </div>
+
+    <div class="pl-volume-nav">
+      ${prec
+        ? `<button class="pl-volume-nav-link" onclick="apriProgetto('${prec.id}')"><span>${tu('playlist.volumePrecedente')}</span><strong>PLAYLIST.${numeroVolume(prec.id)}</strong></button>`
+        : `<span class="pl-volume-nav-link pl-volume-nav-link--vuoto" aria-hidden="true"></span>`}
+      <button class="pl-volume-nav-indice" onclick="apriProgetto('${ID_CARD_PLAYLIST}')">${tu('playlist.indice')}</button>
+      ${succ
+        ? `<button class="pl-volume-nav-link pl-volume-nav-link--dx" onclick="apriProgetto('${succ.id}')"><span>${tu('playlist.volumeSuccessivo')}</span><strong>PLAYLIST.${numeroVolume(succ.id)}</strong></button>`
+        : `<span class="pl-volume-nav-link pl-volume-nav-link--vuoto" aria-hidden="true"></span>`}
+    </div>`;
+}
+
+// Contenuto della pagina archivio PLAYLIST: Hero, Manifesto, Come funziona,
+// Filosofia, La serie. Si apre dentro #pagina-progetto, esattamente come un
+// progetto qualunque — non è più un'area a parte.
+function generaHTMLArchivioPlaylist() {
+  const pl = stato.playlist || {};
+  const hero = pl.hero || {};
+  const manifesto = pl.manifesto || {};
+  const processo = pl.processo || {};
+  const filosofia = pl.filosofia || {};
+
+  const manifestoParagrafi = t(manifesto.testo)
+    .split(/\n\s*\n/)
+    .filter(Boolean)
+    .map(par => `<p>${par.replace(/\n/g, '<br>')}</p>`)
+    .join('');
+
+  const filosofiaParagrafi = (t(filosofia.paragrafi) || [])
+    .map(par => `<p>${par}</p>`)
+    .join('');
+
+  const fasi = processo.fasi || [];
+  const stepsHTML = fasi.map((f, i) => `
+    <li class="pl-step">
+      <span class="pl-step-num">${formatNum(i + 1)}</span>
+      <span class="pl-step-label">${t(f)}</span>
+    </li>${i < fasi.length - 1 ? '<li class="pl-step-arrow" aria-hidden="true">&#8595;</li>' : ''}
+  `).join('');
+
+  return `
+    <div class="pl-hero">
+      <p class="pl-eyebrow">${t(hero.kicker)}</p>
+      <h1 class="pl-hero-titolo">${hero.titolo || 'PLAYLIST'}</h1>
+      <p class="pl-hero-sottotitolo">${t(hero.sottotitolo).replace(/\n/g, '<br>')}</p>
+    </div>
+
+    <div class="pl-sezione pl-serie">
+      <p class="pl-eyebrow">${tu('playlist.laSerie')}</p>
+      <div class="pl-volumi" id="pl-volumi-grid"></div>
+    </div>
+
+    <div class="pl-sezione pl-manifesto">
+      <p class="pl-eyebrow">${t(manifesto.eyebrow)}</p>
+      <div class="pl-manifesto-testo">${manifestoParagrafi}</div>
+    </div>
+
+    <div class="pl-sezione pl-processo">
+      <p class="pl-eyebrow">${t(processo.eyebrow)}</p>
+      <h2 class="pl-processo-titolo">${t(processo.titolo)}</h2>
+      <ol class="pl-processo-steps">${stepsHTML}</ol>
+    </div>
+
+    <div class="pl-sezione pl-filosofia">
+      <p class="pl-eyebrow">${t(filosofia.eyebrow)}</p>
+      <blockquote class="pl-filosofia-citazione">${t(filosofia.citazione)}</blockquote>
+      <div class="pl-filosofia-testo">${filosofiaParagrafi}</div>
+    </div>
+  `;
+}
+
+function popolaGrigliaVolumiPlaylist(root) {
+  const grid = root.querySelector('#pl-volumi-grid');
+  if (!grid) return;
+  volumiPlaylist().forEach(pr => {
+    const inLavorazione = pr.pubblicato === false;
+    const card = crea('div'); card.className = 'pl-volume' + (inLavorazione ? ' in-lavorazione' : '');
+    card.innerHTML = `
+      <div class="pl-volume-cover"></div>
+      <p class="pl-volume-num">PLAYLIST.${numeroVolume(pr.id)}</p>
+      <p class="pl-volume-titolo">${t(pr.sottotitolo) || t(pr.titolo)}</p>
+      ${inLavorazione ? `<p class="pl-volume-wip">${tu('overlay.inLavorazione')}</p>` : ''}
+    `;
+    card.querySelector('.pl-volume-cover').appendChild(creaImg(pr.immagine_copertina, t(pr.titolo)));
+    if (!inLavorazione) card.addEventListener('click', () => apriProgetto(pr.id));
+    grid.appendChild(card);
+  });
+}
+
+function apriArchivioPlaylist() {
+  document.title = `PLAYLIST — francescomartolini.art`;
+  const el = $('pagina-progetto');
+  const interno = el.querySelector('.progetto-interno');
+
+  el.style.removeProperty('--pr-bg');
+  el.style.removeProperty('--pr-text');
+  el.style.removeProperty('--pr-accent');
+
+  if (!_cacheProgetti[ID_CARD_PLAYLIST]) {
+    _cacheProgetti[ID_CARD_PLAYLIST] = `
+      <button class="progetto-torna" onclick="chiudiProgetto()">${tu('common.torna')}</button>
+      <div class="layout-editorial">
+        <div class="progetto-body">
+          ${generaHTMLArchivioPlaylist()}
+        </div>
+      </div>`;
+  }
+
+  interno.innerHTML = _cacheProgetti[ID_CARD_PLAYLIST];
+  el.classList.add('aperta');
+  el.scrollTop = 0;
+
+  popolaGrigliaVolumiPlaylist(el);
+  rivelaAlloScroll(el, '.pl-sezione, .pl-step');
+}
+
 function apriProgetto(id) {
+  if (id === ID_CARD_PLAYLIST) { apriArchivioPlaylist(); return; }
   const pr = stato.progetti.find(p => p.id === id);
   if (!pr || pr.pubblicato === false) return;
 
@@ -805,7 +1020,8 @@ function apriProgetto(id) {
         <div class="progetto-body">
           ${generaContenutoProgetto(pr)}
         </div>
-      </div>`;
+      </div>
+      ${isVolumePlaylist(pr) ? generaBloccoVolumePlaylist(pr) : ''}`;
   }
 
   interno.innerHTML = _cacheProgetti[id];
@@ -814,6 +1030,7 @@ function apriProgetto(id) {
 
   // Scroll reveal
   avviaReveal(el);
+  if (isVolumePlaylist(pr)) rivelaAlloScroll(el, '.pl-acquista, .pl-volume-nav');
 
   // Immagine sticky per layout archivio
   if ((pr.layoutType || '') === 'archivio') {
@@ -901,6 +1118,18 @@ function avviaReveal(overlayEl) {
       if (entry.isIntersecting) { entry.target.classList.add('visible'); obs.unobserve(entry.target); }
     });
   }, { root: overlayEl, threshold: 0.06 });
+  els.forEach(e => obs.observe(e));
+}
+
+// Scroll-reveal generico riutilizzabile (es. sezioni pagina PLAYLIST)
+function rivelaAlloScroll(overlayEl, selector) {
+  const els = overlayEl.querySelectorAll(selector);
+  els.forEach(e => e.classList.add('reveal'));
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('visible'); obs.unobserve(entry.target); }
+    });
+  }, { root: overlayEl, threshold: 0.12 });
   els.forEach(e => obs.observe(e));
 }
 
@@ -1183,14 +1412,15 @@ function costruisciIndice() {
     { num: '—',  label: tu('capitoli.introduzione'),  sub: null,               azione: () => { const p = $('intro-mobile'); if (p) navigaA([...document.querySelectorAll('.page, .pagina-progetto-mobile')].indexOf(p)); } },
   ];
 
-  // Progetti pubblicati
-  stato.progetti.forEach((pr, i) => {
+  // Progetti pubblicati (include la card PLAYLIST, che apre l'archivio della collana)
+  progettiVisualizzati().forEach((pr, i) => {
     if (pr.pubblicato === false) return;
     voci.push({
       num: formatNum(i + 1),
       label: t(pr.titolo),
       sub: t(pr.anno),
       azione: () => {
+        if (pr.id === ID_CARD_PLAYLIST) { apriProgetto(ID_CARD_PLAYLIST); return; }
         // Naviga alla pagina capitolo Progetti e poi apre il progetto
         const progettiSection = $('progetti');
         if (progettiSection) {
@@ -1275,8 +1505,9 @@ function costruisciMobile() {
   let tIdx = 0;
   const containerProgetti = $('mobile-progetti-container');
 
-  stato.progetti.forEach(pr => {
+  progettiVisualizzati().forEach(pr => {
     const inLavorazione = pr.pubblicato === false;
+    const isPlaylist = pr.id === ID_CARD_PLAYLIST;
     const p = creaPaginaMobile(t(pr.titolo).charAt(0).toUpperCase(), t(pr.titolo));
     p.appendChild(creaHeader());
 
@@ -1288,9 +1519,11 @@ function costruisciMobile() {
     const testo = crea('div'); testo.className = 'progetto-mobile-testo';
     const linkEsterno = pr.link_esterno
       ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">${t(pr.label_link) || tu('common.vediOnline')}</a>` : '';
-    const bottoneEntrata = inLavorazione
-      ? `<p class="progetto-in-lavorazione">${tu('overlay.inLavorazione')}</p>`
-      : `<button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">${tu('progetti_extra.entraNelProgetto')}</button>`;
+    const bottoneEntrata = isPlaylist
+      ? `<button class="link-progetto" style="pointer-events:all;">${tu('playlist.entraArchivio')}</button>`
+      : inLavorazione
+        ? `<p class="progetto-in-lavorazione">${tu('overlay.inLavorazione')}</p>`
+        : `<button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">${tu('progetti_extra.entraNelProgetto')}</button>`;
     testo.innerHTML = `
       <p class="progetto-anno">${t(pr.anno)}</p>
       <h2 class="progetto-titolo">${t(pr.titolo)}</h2>
@@ -1298,7 +1531,11 @@ function costruisciMobile() {
       ${bottoneEntrata}
       <!-- ${linkEsterno} -->
     `;
-    if (!inLavorazione) {
+    if (isPlaylist) {
+      testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(ID_CARD_PLAYLIST));
+      imgDiv.style.cursor = 'pointer';
+      imgDiv.addEventListener('click', () => apriProgetto(ID_CARD_PLAYLIST));
+    } else if (!inLavorazione) {
       testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(pr.id));
       imgDiv.style.cursor = 'pointer';
       imgDiv.addEventListener('click', () => apriProgetto(pr.id));
@@ -1937,6 +2174,8 @@ async function init() {
     if (pr) apriProgetto(route.id);
   } else if (route?.tipo === 'taccuino') {
     apriTaccuino();
+  } else if (route?.tipo === 'sezione' && route.pagina === 'playlist-pagina') {
+    apriProgetto(ID_CARD_PLAYLIST);
   } else if (route?.tipo === 'sezione') {
     apriPagina(route.pagina);
   }

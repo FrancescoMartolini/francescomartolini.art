@@ -36,6 +36,16 @@
     "descrizione": { "it": "Fotografie che non appartengono a un progetto, ma al mio modo di guardare.", "en": "Photographs that do not belong to a project, but to my way of looking." },
     "vediTutti": { "it": "Vedi tutti →", "en": "See all →" }
   },
+  "playlist": {
+    "laSerie": { "it": "La serie", "en": "The series" },
+    "entraArchivio": { "it": "Entra nell'archivio →", "en": "Enter the archive →" },
+    "acquista": { "it": "Acquista il volume", "en": "Buy the volume" },
+    "acquistaEyebrow": { "it": "Acquista il volume", "en": "Buy the volume" },
+    "prossimamente": { "it": "Prossimamente in libreria", "en": "Coming soon" },
+    "volumePrecedente": { "it": "Volume precedente", "en": "Previous volume" },
+    "volumeSuccessivo": { "it": "Volume successivo", "en": "Next volume" },
+    "indice": { "it": "Indice PLAYLIST", "en": "PLAYLIST index" }
+  },
   "taccuino": {
     "descrizione": { "it": "Appunti, pensieri, osservazioni.<br>Frammenti di un percorso in corso.", "en": "Notes, thoughts, observations.<br>Fragments of a path underway." },
     "leggiTutti": { "it": "Leggi tutti →", "en": "Read all →" }

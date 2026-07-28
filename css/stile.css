@@ -1893,3 +1893,138 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   border-top: 1px solid var(--grigio-chiaro);
 }
 
+
+/* ================================================================
+   PLAYLIST -- collana editoriale
+   Pagina archivio (overlay 'playlist-pagina') + blocco
+   acquisto/navigazione sulle pagine dei volumi + teaser
+   mobile/desktop nel flusso del libro.
+   ================================================================ */
+
+/* -- Hero -- */
+.pl-hero { max-width: 720px; margin: 0 auto 30px; text-align: center; }
+.pl-eyebrow {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.25em;
+  text-transform: uppercase; color: var(--grigio-medio); margin-bottom: 20px;
+}
+.pl-hero-titolo {
+  font-family: var(--font-titolo); font-size: clamp(48px, 10vw, 120px);
+  font-weight: 400; letter-spacing: 0.01em; line-height: 1; margin-bottom: 32px;
+}
+.pl-hero-sottotitolo {
+  font-size: clamp(14px, 1.6vw, 18px); font-weight: 300; line-height: 1.7;
+  color: var(--grigio-testo); font-style: italic;
+}
+
+/* -- Sezioni generiche (manifesto / come funziona / filosofia / serie) -- */
+.pl-sezione { max-width: 640px; margin: 0 auto 140px; }
+.pl-sezione.pl-serie { max-width: 1100px; }
+.pl-sezione:last-child { margin-bottom: 0; }
+
+.pl-manifesto-testo p {
+  font-size: 15px; font-weight: 300; line-height: 2;
+  color: var(--grigio-testo); margin-bottom: 24px;
+}
+.pl-manifesto-testo p:last-child { margin-bottom: 0; }
+
+.pl-processo { text-align: center; }
+.pl-processo-titolo {
+  font-family: var(--font-titolo); font-size: clamp(20px, 2.6vw, 30px);
+  font-weight: 400; margin-bottom: 56px;
+}
+.pl-processo-steps { list-style: none; display: flex; flex-direction: column; align-items: center; }
+.pl-step { display: flex; align-items: baseline; gap: 18px; padding: 16px 0; }
+.pl-step-num { font-size: 11px; font-weight: 300; color: var(--grigio-medio); letter-spacing: 0.1em; }
+.pl-step-label {
+  font-family: var(--font-titolo); font-size: clamp(18px, 2.4vw, 26px);
+  font-weight: 400; letter-spacing: 0.01em;
+}
+.pl-step-arrow { font-size: 13px; color: var(--grigio-medio); opacity: 0.55; line-height: 1; }
+
+.pl-filosofia { text-align: center; }
+.pl-filosofia-citazione {
+  font-family: var(--font-titolo); font-style: italic; font-size: clamp(22px, 3.4vw, 34px);
+  font-weight: 400; line-height: 1.3; margin-bottom: 40px;
+}
+.pl-filosofia-testo p {
+  font-size: 14px; font-weight: 300; line-height: 2;
+  color: var(--grigio-testo); margin-bottom: 18px;
+}
+.pl-filosofia-testo p:last-child { margin-bottom: 0; }
+
+.pl-serie .pl-eyebrow { text-align: center; }
+.pl-volumi {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 48px 28px; margin-top: 48px;
+}
+.pl-volume { cursor: pointer; text-align: center; }
+.pl-volume-cover {
+  aspect-ratio: 3/4; background: var(--grigio-chiaro); overflow: hidden;
+  margin-bottom: 18px; box-shadow: 5px 5px 0 var(--grigio-chiaro);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.pl-volume-cover img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; transition: transform 0.5s; }
+.pl-volume:hover .pl-volume-cover { transform: translate(-4px, -4px); box-shadow: 9px 9px 0 var(--grigio-chiaro); }
+.pl-volume:hover .pl-volume-cover img { transform: scale(1.04); }
+.pl-volume-num { font-size: 10px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--grigio-medio); margin-bottom: 6px; }
+.pl-volume-titolo { font-family: var(--font-titolo); font-size: 16px; font-weight: 400; font-style: italic; }
+.pl-volume.in-lavorazione { cursor: default; opacity: 0.5; }
+.pl-volume-wip { font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grigio-medio); margin-top: 8px; }
+
+@media (max-width: 900px) {
+  .pl-volumi { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* -- Blocco "Acquista il volume" + navigazione tra i volumi --
+   (iniettati in fondo alle pagine progetto quando isVolumePlaylist(pr)) */
+.pl-acquista {
+  max-width: 1100px; margin: 0 auto; padding: 96px clamp(24px, 6vw, 80px) 0;
+}
+.pl-acquista-riga { display: flex; align-items: center; gap: clamp(28px, 5vw, 56px); margin-top: 24px; }
+.pl-acquista-mockup {
+  flex: 0 0 clamp(140px, 18vw, 220px); aspect-ratio: 3/4;
+  background: var(--grigio-chiaro); overflow: hidden;
+  box-shadow: 6px 6px 0 var(--grigio-chiaro);
+}
+.pl-acquista-mockup img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.pl-acquista-info { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; }
+.pl-acquista-titolo { font-family: var(--font-titolo); font-size: clamp(18px, 2.4vw, 24px); font-weight: 400; font-style: italic; }
+.pl-acquista-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--nero); border: 1px solid var(--nero); padding: 16px 28px;
+  transition: background var(--transizione), color var(--transizione);
+}
+.pl-acquista-btn:hover { background: var(--nero); color: var(--bianco); }
+.pl-acquista-presto { font-size: 11px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grigio-medio); }
+
+.pl-volume-nav {
+  max-width: 1100px; margin: 80px auto 0; padding: 32px clamp(24px, 6vw, 80px) 64px;
+  border-top: 1px solid var(--grigio-chiaro);
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+}
+.pl-volume-nav-link {
+  display: flex; flex-direction: column; gap: 6px; text-align: left;
+  color: var(--pr-text, var(--nero)); cursor: pointer; flex: 1 1 0; min-width: 0;
+}
+.pl-volume-nav-link--dx { align-items: flex-end; text-align: right; }
+.pl-volume-nav-link--vuoto { flex: 1 1 0; }
+.pl-volume-nav-link span {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--grigio-medio); transition: color var(--transizione);
+}
+.pl-volume-nav-link strong {
+  font-family: var(--font-titolo); font-weight: 400; font-size: 16px; letter-spacing: 0.02em;
+}
+.pl-volume-nav-link:hover span { color: var(--pr-text, var(--nero)); }
+.pl-volume-nav-indice {
+  flex: 0 0 auto; font-size: 10px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--grigio-medio); cursor: pointer; transition: color var(--transizione);
+}
+.pl-volume-nav-indice:hover { color: var(--pr-text, var(--nero)); }
+
+@media (max-width: 768px) {
+  .pl-acquista-riga { flex-direction: column; align-items: flex-start; }
+  .pl-volume-nav { flex-wrap: wrap; }
+  .pl-volume-nav-indice { order: -1; flex: 0 0 100%; text-align: center; margin-bottom: 8px; }
+}
