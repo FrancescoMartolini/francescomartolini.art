@@ -56,26 +56,56 @@ jobs:
       # così non serve controllare a mano la tab "Actions" del repo.
       # Richiede due secrets nel repo (Settings → Secrets and variables →
       # Actions): TELEGRAM_BOT_TOKEN e TELEGRAM_CHAT_ID.
+            # Notifica l'esito su Telegram
       - name: Notifica Telegram (successo)
         if: success()
         env:
-          TELEGRAM_BOT_TOKEN: 8961104236:AAGK9ndDrVs9tvmPYAbFRKv7sQ2bo5vMS88
-          TELEGRAM_CHAT_ID: 148877314
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+          TOTALE=$(python3 - <<'PY'
+          import json
+
+          with open("json/taccuino.json", encoding="utf-8") as f:
+              data = json.load(f)
+
+          if isinstance(data, list):
+              print(len(data))
+          elif isinstance(data, dict):
+              print(len(data.keys()))
+          else:
+              print(0)
+          PY
+          )
+
+          DATA=$(date -u +'%Y-%m-%d %H:%M UTC')
+
+          MESSAGGIO=$(cat <<EOF
+          ✅ Taccuino sincronizzato
+
+          📚 Voci totali: ${TOTALE}
+          🆕 Nuove voci: 0
+          ✏️ Modificate: 0
+          🕒 Ora: ${DATA}
+          EOF
+          )
+
+          curl -s -X POST \
+            "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -d chat_id="${TELEGRAM_CHAT_ID}" \
-            -d text="✅ Taccuino sincronizzato correttamente ($(date -u +'%Y-%m-%d %H:%M UTC'))." \
+            --data-urlencode "text=${MESSAGGIO}" \
             > /dev/null
 
       - name: Notifica Telegram (errore)
         if: failure()
         env:
-          TELEGRAM_BOT_TOKEN: 8961104236:AAGK9ndDrVs9tvmPYAbFRKv7sQ2bo5vMS88
-          TELEGRAM_CHAT_ID: 148877314
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           LOG_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+
+          curl -s -X POST \
+            "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -d chat_id="${TELEGRAM_CHAT_ID}" \
-            -d text="❌ Sincronizzazione Taccuino fallita ($(date -u +'%Y-%m-%d %H:%M UTC')).
-Log: ${LOG_URL}" \
+            --data-urlencode "text=❌ Sincronizzazione Taccuino fallita 🔗 Log: ${LOG_URL}" \
             > /dev/null
