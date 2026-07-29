@@ -76,6 +76,5 @@ jobs:
           LOG_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -d chat_id="${TELEGRAM_CHAT_ID}" \
-            -d text="❌ Sincronizzazione Taccuino fallita ($(date -u +'%Y-%m-%d %H:%M UTC')).
-Log: ${LOG_URL}" \
+            -d text="❌ Sincronizzazione Taccuino fallita ($(date -u +'%Y-%m-%d %H:%M UTC')). Log: ${LOG_URL}" \
             > /dev/null
