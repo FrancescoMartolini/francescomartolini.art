@@ -139,6 +139,11 @@ python3 scripts/genera-route-statiche.py
 python3 scripts/serve-locale.py
 ```
 
+Script da inserire nel builder di Cloudeflare
+```bash
+python3 scripts/genera-sitemap.py && python3 scripts/genera-feed-rss.py && python3 scripts/genera-route-statiche.py
+```
+
 (`scripts/serve-locale.py` include comunque il fallback su `404.html` per eventuali URL non generati — utile per provare anche quel meccanismo di riserva)
 
 poi:

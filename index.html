@@ -43,6 +43,10 @@
   <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="images/icon.jpg">
   <link rel="manifest" href="images/manifest.json">
+  <link rel="alternate" type="application/rss+xml" title="Francesco Martolini — Tutto (Progetti, Taccuino, Istanze)" href="/feed.xml">
+  <link rel="alternate" type="application/rss+xml" title="Francesco Martolini — Progetti" href="/progetti/feedrss.xml">
+  <link rel="alternate" type="application/rss+xml" title="Francesco Martolini — Taccuino" href="/taccuino/feedrss.xml">
+  <link rel="alternate" type="application/rss+xml" title="Francesco Martolini — Istanze" href="/istanze/feedrss.xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -270,6 +274,7 @@
           <p class="fin-epilogo" id="fin-epilogo"></p>
           <div class="fin-footer">
             <p class="fin-copyright">© <span id="fin-anno"></span> Francesco Martolini</p>
+            <button type="button" class="fin-footer-link rss-trigger" data-i18n="rss.bottone">Feed RSS</button>
           </div>
         </div>
       </div>
@@ -284,10 +289,10 @@
   <!-- ══ FOOTER desktop ══ -->
   <footer id="site-footer-desktop">
     <div id="epilogo-desktop" class="epilogo-desktop"></div>
-    <!--div class="notify-optin" style="display:none">
+    <div class="notify-optin" style="display:none">
       <p class="notify-invito"></p>
       <button class="notify-btn" type="button"></button>
-    </div-->
+    </div>
     <div class="footer-riga">
       <span class="footer-logo">Francesco Martolini</span>
       <div class="footer-centro">
@@ -295,6 +300,7 @@
         <a href="tel:+393930336642" target="_blank" rel="noopener" data-i18n="footer.telefono">TELEFONO</a>
         <a href="https://instagram.com/francesco_martolini_ph" target="_blank" rel="noopener">Instagram</a>
         <a href="https://wa.me/393930336642?text=Ciao%2C%20vorrei%20collaborare%20con%20te%0AQuesta%20%C3%A8%20la%20mia%20idea%20cosa%20ne%20pensi%3F" aria-label="Chat with us on WhatsApp" target="_blank" rel="noopener noreferrer"> Chat WhatsApp</a>
+        <button type="button" class="footer-rss-btn rss-trigger" data-i18n="rss.bottone">Feed RSS</button>
       </div>
       <div class="footer-dx">© <span id="footer-anno"></span> <span data-i18n="footer.diritti">Tutti i diritti riservati</span></div>
     </div>
@@ -331,6 +337,51 @@
     <div class="taccuino-archivio-interno"></div>
   </section>
 
+  <!-- ══ POPUP FEED RSS ══ -->
+  <div id="rss-modal-backdrop" class="rss-modal-backdrop" hidden>
+    <div class="rss-modal" role="dialog" aria-modal="true" aria-labelledby="rss-modal-titolo">
+      <button type="button" class="rss-modal-chiudi" id="rss-modal-chiudi" aria-label="Chiudi">
+        <svg viewBox="0 0 24 24" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <p class="rss-modal-titolo" id="rss-modal-titolo" data-i18n="rss.titolo">Feed RSS</p>
+      <p class="rss-modal-intro" data-i18n="rss.intro">Copia uno di questi indirizzi nel tuo lettore di feed preferito.</p>
+      <ul class="rss-modal-lista">
+        <li class="rss-modal-riga">
+          <div class="rss-modal-info">
+            <span class="rss-modal-etichetta" data-i18n="rss.tutto">Tutto</span>
+            <span class="rss-modal-descrizione" data-i18n="rss.tuttoDescrizione">Progetti, Taccuino e Istanze insieme</span>
+            <code class="rss-modal-url">https://francescomartolini.art/feed.xml</code>
+          </div>
+          <button type="button" class="rss-modal-copia" data-url="https://francescomartolini.art/feed.xml" data-i18n="rss.copia">Copia</button>
+        </li>
+        <li class="rss-modal-riga">
+          <div class="rss-modal-info">
+            <span class="rss-modal-etichetta" data-i18n="rss.progetti">Progetti</span>
+            <span class="rss-modal-descrizione" data-i18n="rss.progettiDescrizione">Solo i nuovi capitoli</span>
+            <code class="rss-modal-url">https://francescomartolini.art/progetti/feedrss.xml</code>
+          </div>
+          <button type="button" class="rss-modal-copia" data-url="https://francescomartolini.art/progetti/feedrss.xml" data-i18n="rss.copia">Copia</button>
+        </li>
+        <li class="rss-modal-riga">
+          <div class="rss-modal-info">
+            <span class="rss-modal-etichetta" data-i18n="rss.taccuino">Taccuino</span>
+            <span class="rss-modal-descrizione" data-i18n="rss.taccuinoDescrizione">Solo le nuove voci del Taccuino</span>
+            <code class="rss-modal-url">https://francescomartolini.art/taccuino/feedrss.xml</code>
+          </div>
+          <button type="button" class="rss-modal-copia" data-url="https://francescomartolini.art/taccuino/feedrss.xml" data-i18n="rss.copia">Copia</button>
+        </li>
+        <li class="rss-modal-riga">
+          <div class="rss-modal-info">
+            <span class="rss-modal-etichetta" data-i18n="rss.istanze">Istanze</span>
+            <span class="rss-modal-descrizione" data-i18n="rss.istanzeDescrizione">Solo le nuove Istanze</span>
+            <code class="rss-modal-url">https://francescomartolini.art/istanze/feedrss.xml</code>
+          </div>
+          <button type="button" class="rss-modal-copia" data-url="https://francescomartolini.art/istanze/feedrss.xml" data-i18n="rss.copia">Copia</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
   <!-- ══ COOKIE ══ -->
   <div id="cookie-banner">
     <p class="cookie-testo" data-i18n="cookie.testo">Questo sito usa solo cookie tecnici essenziali. Nessun cookie di profilazione.</p>
@@ -356,6 +407,7 @@
   <script src="js/i18n.js"></script>
   <script src="js/libro.js"></script>
   <script src="js/push.js"></script>
+  <script src="js/rss-modal.js"></script>
   <!-- ══ LOGICA OVERLAY LIBRO ══ -->
   <script>
     (function () {

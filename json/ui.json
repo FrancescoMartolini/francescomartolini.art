@@ -36,16 +36,6 @@
     "descrizione": { "it": "Fotografie che non appartengono a un progetto, ma al mio modo di guardare.", "en": "Photographs that do not belong to a project, but to my way of looking." },
     "vediTutti": { "it": "Vedi tutti →", "en": "See all →" }
   },
-  "playlist": {
-    "laSerie": { "it": "La serie", "en": "The series" },
-    "entraArchivio": { "it": "Entra nell'archivio →", "en": "Enter the archive →" },
-    "acquista": { "it": "Acquista il volume", "en": "Buy the volume" },
-    "acquistaEyebrow": { "it": "Acquista il volume", "en": "Buy the volume" },
-    "prossimamente": { "it": "Prossimamente in libreria", "en": "Coming soon" },
-    "volumePrecedente": { "it": "Volume precedente", "en": "Previous volume" },
-    "volumeSuccessivo": { "it": "Volume successivo", "en": "Next volume" },
-    "indice": { "it": "Indice PLAYLIST", "en": "PLAYLIST index" }
-  },
   "taccuino": {
     "descrizione": { "it": "Appunti, pensieri, osservazioni.<br>Frammenti di un percorso in corso.", "en": "Notes, thoughts, observations.<br>Fragments of a path underway." },
     "leggiTutti": { "it": "Leggi tutti →", "en": "Read all →" }
@@ -143,5 +133,21 @@
     "attivo": { "it": "Avvisi attivi.", "en": "Notifications on." },
     "negato": { "it": "Hai bloccato le notifiche per questo sito.", "en": "You've blocked notifications for this site." },
     "errore": { "it": "Non è stato possibile attivare gli avvisi.", "en": "Couldn't enable notifications." }
+  },
+  "rss": {
+    "bottone": { "it": "Feed RSS", "en": "RSS Feed" },
+    "titolo": { "it": "Feed RSS", "en": "RSS Feed" },
+    "intro": { "it": "Copia uno di questi indirizzi nel tuo lettore di feed preferito (Feedly, NetNewsWire, Reeder...) per ricevere gli aggiornamenti.", "en": "Copy one of these addresses into your favourite feed reader (Feedly, NetNewsWire, Reeder...) to receive updates." },
+    "tutto": { "it": "Tutto", "en": "Everything" },
+    "tuttoDescrizione": { "it": "Progetti, Taccuino e Istanze insieme", "en": "Progetti, Taccuino and Istanze together" },
+    "progetti": { "it": "Progetti", "en": "Projects" },
+    "progettiDescrizione": { "it": "Solo i nuovi capitoli", "en": "New chapters only" },
+    "taccuino": { "it": "Taccuino", "en": "Taccuino" },
+    "taccuinoDescrizione": { "it": "Solo le nuove voci del Taccuino", "en": "New Taccuino entries only" },
+    "istanze": { "it": "Istanze", "en": "Istanze" },
+    "istanzeDescrizione": { "it": "Solo le nuove Istanze", "en": "New Istanze only" },
+    "copia": { "it": "Copia", "en": "Copy" },
+    "copiato": { "it": "Copiato ✓", "en": "Copied ✓" },
+    "chiudi": { "it": "Chiudi", "en": "Close" }
   }
 }
