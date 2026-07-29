@@ -1,5 +1,5 @@
 # Francesco Martolini .art
-## Guida completa al sito — v7.2
+## Guida completa al sito — v8.0
 
 ---
 
@@ -26,33 +26,50 @@ francescomartolini.art/
 ├── 404.html                      ← rete di sicurezza per URL non noti (vedi sezione URL)
 ├── sitemap.xml                   ← generata automaticamente (vedi sezione Sitemap)
 ├── robots.txt                    ← punta alla sitemap
-├── .gitignore                    ← esclude le pagine generate da scripts/genera-route-statiche.py
+├── service-worker.js             ← Service Worker (notifiche push, vedi sezione dedicata)
+├── wrangler.toml                 ← config del Worker Cloudflare (hosting + notifiche)
+├── package.json / package-lock.json ← dipendenza webpush-webcrypto (usata dal Worker)
+├── .gitignore                    ← esclude le pagine/i feed generati a ogni build
+├── .assetsignore                 ← esclude scripts/worker dagli asset pubblici serviti da Cloudflare
+│
+├── worker/
+│   └── index.js                  ← Worker Cloudflare: /subscribe, /notify, poi fallback su asset statici
+│
 ├── scripts/
-│   ├── serve-locale.py           ← server per testare in locale (vedi sezione URL)
-│   ├── genera-route-statiche.py  ← genera le pagine reali dei progetti/sezioni (vedi sezione URL)
-│   └── genera-sitemap.py         ← genera sitemap.xml da json/progetti.json
+│   ├── serve-locale.py               ← server per testare in locale (vedi sezione URL)
+│   ├── genera-route-statiche.py      ← genera le pagine reali dei progetti/sezioni (vedi sezione URL)
+│   ├── genera-sitemap.py             ← genera sitemap.xml da json/progetti.json
+│   ├── genera-feed-rss.py            ← genera i 4 feed RSS (vedi sezione FEED RSS)
+│   ├── genera-chiavi-vapid.mjs       ← genera le chiavi VAPID per le notifiche push (una tantum)
+│   ├── sincronizza-taccuino.py       ← importa il Taccuino da Google Sheets (vedi sezione dedicata)
+│   └── notifica-nuovi-contenuti.py   ← individua le voci nuove e invia le notifiche push
 │
 ├── css/
-│   └── stile.css                 ← stile globale (desktop + mobile)
+│   ├── stile.css                 ← stile globale (desktop + mobile)
+│   └── stile-i18n-addon.css      ← stili aggiuntivi per l'interfaccia IT/EN
 │
 ├── js/
-│   └── libro.js                  ← motore del sito
+│   ├── libro.js                  ← motore del sito
+│   ├── i18n.js                   ← traduzione IT/EN dell'interfaccia
+│   ├── push.js                   ← notifiche push lato client (vedi sezione dedicata — attualmente in pausa)
+│   └── rss-modal.js              ← popup "Feed RSS" (vedi sezione dedicata)
 │
 ├── json/
 │   ├── progetti.json             ← dati progetti fotografici
-│   ├── intervalli.json           ← dati sequenze studi
+│   ├── playlist.json             ← testi introduttivi/manifesto della collana PLAYLIST
+│   ├── intervalli.json           ← dati sequenze studi ("Istanze" nell'etichetta pubblica)
 │   ├── collaborazioni.json       ← dati fotografie commerciali
 │   ├── pubblicazioni.json        ← dati pubblicazioni e press
 │   ├── intro.json                ← testo introduzione
 │   ├── epiloghi.json             ← frasi di chiusura (pagina "fin")
-│   └── taccuino.json             ← frasi taccuino (fallback locale)
+│   ├── taccuino.json             ← frasi taccuino (fallback locale)
+│   └── ui.json                   ← testi dell'interfaccia (menu, notifiche, popup RSS...)
 │
 ├── fonts/
-│   └── Francescomartolini-Regular.otf   ← font calligrafico personale (taccuino)
+│   └── Francescomartolini-Regular.otf / .woff2   ← font calligrafico personale (taccuino)
 │
 ├── images/
-│   ├── favicon.svg
-│   ├── apple-touch-icon.svg
+│   ├── favicon.svg, apple-touch-icon.svg, icon-192.png, icon-512.png
 │   ├── manifest.json
 │   ├── chi-sono-img.jpg
 │   └── progetti/
@@ -124,9 +141,9 @@ dove `<id>` è lo slug già presente in `json/progetti.json` (campo `id`). Le al
 - Un link diretto tipo `francescomartolini.art/progetti/alberi` funziona comunque: all'avvio il sito rileva l'URL con cui si è arrivati, apre subito quella pagina, poi riporta silenziosamente la barra alla radice (`history.replaceState`, vedi fondo di `init()` in `js/libro.js`) — l'utente vede la pagina giusta, ma l'URL torna pulito.
 - Non essendoci più voci di history create dal sito, il tasto "indietro" del browser non chiude più le pagine aperte (si esce direttamente dal sito, verso la pagina precedente nella cronologia del browser) — invariato rispetto a prima di introdurre gli URL parlanti.
 
-**Perché c'è `404.html`:** GitHub Pages è hosting statico, non gestisce redirect lato server. `404.html` intercetta l'accesso diretto a un percorso tipo `/progetti/alberi` (che altrimenti darebbe 404) e rimanda a `index.html`, che ripristina l'URL corretto tramite `history.replaceState` prima che la pagina sia visibile. Se in futuro si cambia hosting (es. Netlify, Vercel), questo file **non serve più**: basta un redirect `/* → /index.html` nella configurazione del nuovo host.
+**Perché c'è `404.html`:** l'hosting attuale (Cloudflare Worker, vedi sezione "PUBBLICAZIONE") serve gli asset in modo statico e non gestisce redirect lato server per percorsi arbitrari — lo stesso valeva su GitHub Pages, dove il sito girava prima. `404.html` intercetta l'accesso diretto a un percorso tipo `/progetti/alberi` (che altrimenti darebbe 404) e rimanda a `index.html`, che ripristina l'URL corretto tramite `history.replaceState` prima che la pagina sia visibile. Su Cloudflare questo comportamento è configurato in `wrangler.toml` con `not_found_handling = "404-page"`. Se in futuro si cambia hosting (es. Netlify, Vercel) con redirect server-side nativi, questo file **non serve più**: basta un redirect `/* → /index.html` nella configurazione del nuovo host.
 
-**Sottopercorso GitHub Pages (Project Page):** finché non è collegato il dominio personalizzato `francescomartolini.art`, il sito vive su GitHub Pages sotto `francescomartolini.github.io/francescomartolini.art/` — cioè con un prefisso nel percorso, non alla radice del dominio. `BASE_PATH` (in `js/libro.js`, calcolato all'avvio guardando `location.hostname`/`location.pathname`) e il tag `<base>` generato dinamicamente in cima a `index.html` gestiscono questo automaticamente, sia per gli URL dei progetti sia per i percorsi relativi di CSS/JS/immagini/JSON. Se in futuro si collega il dominio personalizzato, il prefisso sparisce da solo, senza bisogno di modificare il codice.
+**Sottopercorso GitHub Pages (legacy):** il sito è nato su GitHub Pages, dove finché non era collegato il dominio personalizzato viveva sotto `francescomartolini.github.io/francescomartolini.art/` — con un prefisso nel percorso, non alla radice del dominio. Il deploy automatico su GitHub Pages (`.github/workflows/static.yml`) è ora **disattivato** ("tolto githubpages") a favore del Worker Cloudflare, ma il codice che gestiva quel prefisso è stato lasciato: `BASE_PATH` (in `js/libro.js`, calcolato all'avvio guardando `location.hostname`/`location.pathname`) e il tag `<base>` generato dinamicamente in cima a `index.html` continuano a riconoscere un eventuale hostname `github.io` e a comportarsi di conseguenza — innocuo sul dominio Cloudflare, dove non scatta mai.
 
 **Limite noto — anteprime nei messaggi:** quando un link viene condiviso su WhatsApp/iMessage/Telegram, l'anteprima (immagine, titolo) è generata dai tag `<meta og:...>` statici in `index.html`, sempre gli stessi per tutto il sito. Il link si apre correttamente sul progetto giusto, ma l'anteprima mostrerà titolo/immagine generici del sito, non quelli del progetto specifico. Per anteprime per-progetto servirebbe pre-rendering lato server — non presente al momento.
 
@@ -441,6 +458,33 @@ Se `galleria` è vuoto o assente, resta visibile solo la copertina e nessuna del
 
 ---
 
+### `json/playlist.json`
+
+Testi editoriali della serie **PLAYLIST** (non i singoli capitoli
+PLAYLIST.00/01/02..., quelli restano voci normali in
+`json/progetti.json`): l'introduzione della collana, mostrata prima
+dei capitoli veri e propri.
+
+```json
+{
+  "hero": {
+    "kicker": { "it": "Collana editoriale", "en": "Editorial series" },
+    "titolo": "PLAYLIST",
+    "sottotitolo": { "it": "...", "en": "..." }
+  },
+  "manifesto": {
+    "eyebrow": { "it": "Manifesto", "en": "Manifesto" },
+    "testo": { "it": "...", "en": "..." }
+  }
+}
+```
+
+Caricato in `caricaDati()` (`js/libro.js`) insieme agli altri JSON, con
+fallback silenzioso a `{}` se manca o non risponde — non è mai
+bloccante per il resto del sito.
+
+---
+
 ### `json/pubblicazioni.json`
 
 ```json
@@ -662,6 +706,7 @@ Punto nero con anello. Cambia colore automaticamente:
 | Layout progetto | `json/progetti.json` → campo `layoutType` |
 | Tema colori progetto | `json/progetti.json` → campo `theme` |
 | Playlist Spotify + foto sincronizzate | `json/progetti.json` → blocco `contenuto` di tipo `spotify` |
+| Testi introduttivi collana Playlist | `json/playlist.json` |
 | Intervalli | `json/intervalli.json` |
 | Collaborazioni commerciali | `json/collaborazioni.json` |
 | Pubblicazioni e press | `json/pubblicazioni.json` |
@@ -675,15 +720,33 @@ Punto nero con anello. Cambia colore automaticamente:
 
 ### PUBBLICAZIONE
 
-Il sito è pubblicato su GitHub Pages. Ogni commit e push aggiorna automaticamente il sito.
+Il sito è ospitato su **Cloudflare Worker** (vedi sezione "NOTIFICHE PUSH" per i dettagli tecnici dell'hosting). Il deploy su GitHub Pages (`.github/workflows/static.yml`) è stato disattivato ("tolto githubpages") — il workflow resta nel repository ma non gira più sui push a `main`.
 
-`404.html` nella root è necessario per far funzionare gli URL diretti dei progetti (`/progetti/<id>`) su GitHub Pages — vedi sezione "URL PARLANTI E CONDIVISIONE PROGETTI". Se si migra a un host con redirect server-side (Netlify, Vercel...), `404.html` diventa superfluo.
+**Differenza importante rispetto a prima:** con GitHub Pages ogni push a `main` pubblicava automaticamente. Con il Worker Cloudflare **il deploy non è automatico**: va lanciato a mano da terminale con:
 
-Per un dominio personalizzato: connetti il repository a [Netlify](https://netlify.com) (gratuito).
+```
+npx wrangler deploy
+```
+
+dopo ogni commit + push che si vuole rendere live (vedi sezione "NOTIFICHE PUSH" per la configurazione completa di `wrangler.toml`).
+
+`404.html` nella root resta necessario per far funzionare gli URL diretti dei progetti (`/progetti/<id>`) — vedi sezione "URL PARLANTI E CONDIVISIONE PROGETTI".
 
 ---
 
 ### NOTIFICHE PUSH
+
+> **Stato attuale: in pausa.** Il sistema è tutto pronto (Worker, Service
+> Worker, KV, workflow) ma è stato messo in stand-by:
+> - `js/push.js` → `var ATTIVO = false;` disattiva l'opt-in lato client
+>   e la chiave `VAPID_PUBLIC_KEY` è tornata al placeholder.
+> - `.github/workflows/notifica-nuovi-contenuti.yml` non parte più da
+>   solo sui push a `json/progetti.json`/`json/taccuino.json`: va
+>   lanciato a mano dalla tab *Actions* del repo (*Run workflow*).
+>
+> Per riattivare: rimetti `ATTIVO = true` e la vera `VAPID_PUBLIC_KEY`
+> in `js/push.js`, e nel workflow sostituisci `on: workflow_dispatch`
+> con il blocco `on: push` commentato in cima al file stesso.
 
 Il sito è una PWA in grado di inviare una push notification quando esce
 un nuovo progetto o una nuova voce del Taccuino — anche a sito chiuso.
@@ -797,6 +860,44 @@ l'avviso in automatico.
   notificare solo i Progetti.
 - Per testare tutto in locale: `npx wrangler dev` (legge `wrangler.toml`,
   usa la KV reale collegata all'id inserito al punto 4).
+
+---
+
+### FEED RSS
+
+Il sito genera **4 feed RSS 2.0 statici**, ricreati da zero a ogni
+build da `scripts/genera-feed-rss.py`:
+
+| Feed | URL | Contenuto |
+|---|---|---|
+| Tutto | `/feed.xml` | Progetti + Taccuino + Istanze, un unico ordine cronologico |
+| Progetti | `/progetti/feedrss.xml` | Solo i progetti pubblicati (`pubblicato != false`) |
+| Taccuino | `/taccuino/feedrss.xml` | Le ultime 30 voci del Taccuino |
+| Istanze | `/istanze/feedrss.xml` | Le voci pubblicate di `json/intervalli.json` |
+
+Come `genera-route-statiche.py` e `genera-sitemap.py`, va eseguito a
+ogni build — è già incluso nel comando build di Cloudflare (vedi
+sezione "AMBIENTE DI SVILUPPO LOCALE"). Le cartelle/file generati
+(`progetti/feedrss.xml`, `taccuino/feedrss.xml`, `istanze/feedrss.xml`,
+`feed.xml`) non vanno committati: sono in `.gitignore` e si ricreano da
+soli.
+
+**Nota sul nome "Istanze":** è solo l'etichetta pubblica, cambiata di
+recente. Il file dati resta `json/intervalli.json`, il percorso della
+sezione sul sito resta `/intervalli` (menu, titoli di pagina, link
+"vedi tutti") — solo il feed dedicato vive all'indirizzo
+`/istanze/feedrss.xml` e nel popup RSS compare come "Istanze". Se in
+futuro si rinomina anche la sezione stessa, i tre punti da allineare
+sono: `menu.intervalli` in `json/ui.json`, gli `id`/`data-i18n` in
+`index.html` che iniziano con `intervalli`, e la funzione
+`genera_feed_istanze()` in `scripts/genera-feed-rss.py`.
+
+**Come si presentano i feed ai visitatori:** un bottone "Feed RSS" — in
+fondo al libro mobile (pagina "fin.") e nel footer desktop — apre un
+popup (`js/rss-modal.js`) con i 4 indirizzi e un tasto "Copia" per
+ciascuno. Nessun link cliccabile diretto verso l'XML: solo testo da
+incollare nel proprio lettore di feed. Testi del popup in `rss.*` in
+`json/ui.json`; markup del popup in `index.html` (`#rss-modal-backdrop`).
 
 ---
 
