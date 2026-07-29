@@ -51,3 +51,31 @@ jobs:
             git rebase origin/main
             sleep 3
           done
+
+      # Notifica l'esito su Telegram, sia in caso di successo che di errore,
+      # così non serve controllare a mano la tab "Actions" del repo.
+      # Richiede due secrets nel repo (Settings → Secrets and variables →
+      # Actions): TELEGRAM_BOT_TOKEN e TELEGRAM_CHAT_ID.
+      - name: Notifica Telegram (successo)
+        if: success()
+        env:
+          TELEGRAM_BOT_TOKEN: 8961104236:AAGK9ndDrVs9tvmPYAbFRKv7sQ2bo5vMS88
+          TELEGRAM_CHAT_ID: 148877314
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" \
+            -d text="✅ Taccuino sincronizzato correttamente ($(date -u +'%Y-%m-%d %H:%M UTC'))." \
+            > /dev/null
+
+      - name: Notifica Telegram (errore)
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: 8961104236:AAGK9ndDrVs9tvmPYAbFRKv7sQ2bo5vMS88
+          TELEGRAM_CHAT_ID: 148877314
+        run: |
+          LOG_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" \
+            -d text="❌ Sincronizzazione Taccuino fallita ($(date -u +'%Y-%m-%d %H:%M UTC')).
+Log: ${LOG_URL}" \
+            > /dev/null

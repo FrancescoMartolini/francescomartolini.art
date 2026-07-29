@@ -37,6 +37,7 @@ SEZIONI = [
     "fotografie-commerciali",
     "intervalli",
     "taccuino",
+    "playlist",
 ]
 
 

@@ -26,6 +26,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://francescomartolini.art/playlist</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://francescomartolini.art/progetti/la-pelle-della-citta</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

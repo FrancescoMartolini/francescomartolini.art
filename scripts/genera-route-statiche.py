@@ -38,7 +38,7 @@ CARTELLA = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # root d
 INDEX = os.path.join(CARTELLA, "index.html")
 
 # Stesse sezioni di SEZIONI_URL in js/libro.js e SEZIONI in genera-sitemap.py
-SEZIONI = ["chi-sono", "fotografie-commerciali", "intervalli", "taccuino"]
+SEZIONI = ["chi-sono", "fotografie-commerciali", "intervalli", "taccuino", "playlist"]
 
 
 def progetti_pubblicati():
