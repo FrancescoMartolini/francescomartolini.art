@@ -60,8 +60,8 @@ jobs:
       - name: Notifica Telegram (successo)
         if: success()
         env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_BOT_TOKEN: 8961104236:AAGK9ndDrVs9tvmPYAbFRKv7sQ2bo5vMS88
+          TELEGRAM_CHAT_ID: 148877314
         run: |
           TOTALE=$(python3 - <<'PY'
           import json
@@ -99,8 +99,8 @@ jobs:
       - name: Notifica Telegram (errore)
         if: failure()
         env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_BOT_TOKEN: 8961104236:AAGK9ndDrVs9tvmPYAbFRKv7sQ2bo5vMS88
+          TELEGRAM_CHAT_ID: 148877314
         run: |
           LOG_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
