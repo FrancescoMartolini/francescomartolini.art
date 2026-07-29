@@ -904,6 +904,8 @@ function generaHTMLArchivioPlaylist() {
       <div class="pl-volumi" id="pl-volumi-grid"></div>
     </div>
 
+    <div class="pl-arrow">↓</div>
+
     <div class="pl-sezione pl-manifesto">
       <p class="pl-eyebrow">${t(manifesto.eyebrow)}</p>
       <div class="pl-manifesto-testo">${manifestoParagrafi}</div>
