@@ -1853,64 +1853,6 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 @media (max-width: 768px) {
   #btn-libro { display: none; }
 }
-<<<<<<< HEAD
-
-/* ════════════════════════════════
-   NOTIFICHE PUSH — opt-in silenzioso
-   (fondo del libro mobile + footer desktop)
-   ════════════════════════════════ */
-.notify-optin {
-  text-align: center;
-}
-.notify-invito {
-  font-family: var(--font-titolo);
-  font-style: italic;
-  font-weight: 400;
-  font-size: clamp(11px, 3vw, 13px);
-  color: var(--grigio-testo);
-  line-height: 1.6;
-  letter-spacing: 0.01em;
-  max-width: 260px;
-  margin: 0 auto 10px;
-}
-.notify-btn {
-  appearance: none;
-  background: none;
-  border: none;
-  padding: 0;
-  font-family: var(--font-testo);
-  font-size: 10px;
-  font-weight: 400;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--grigio-medio);
-  cursor: pointer;
-  transition: color var(--transizione);
-}
-.notify-btn:hover { color: var(--nero); }
-.notify-btn:disabled { opacity: 0.5; cursor: default; }
-
-/* Libro mobile: ancorato in basso sopra la nav fissa, fuori dal
-   blocco centrato del "fin." — occupa lo spazio altrimenti vuoto
-   tra l'epilogo/copyright e la barra di navigazione. */
-@media (max-width: 768px) {
-  .page-fin .notify-optin {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 64px;
-    padding: 0 24px;
-  }
-}
-
-/* Footer desktop: resta in linea, separata da un filo sottile. */
-#site-footer-desktop .notify-optin {
-  padding-top: 20px;
-  margin-top: 0;
-  margin-bottom: 8px;
-  border-top: 1px solid var(--grigio-chiaro);
-}
-
 
 /* ════════════════════════════════
    POPUP FEED RSS
@@ -2042,7 +1984,6 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .rss-modal-riga { flex-direction: column; align-items: flex-start; gap: 10px; }
   .rss-modal-copia { align-self: flex-start; }
 }
-=======
 
 /* ════════════════════════════════
    NOTIFICHE PUSH — opt-in silenzioso
@@ -2236,4 +2177,3 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .pl-volume-nav { flex-wrap: wrap; }
   .pl-volume-nav-indice { order: -1; flex: 0 0 100%; text-align: center; margin-bottom: 8px; }
 }
->>>>>>> refs/remotes/origin/main

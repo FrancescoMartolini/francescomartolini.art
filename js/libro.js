@@ -1522,7 +1522,7 @@ function costruisciMobile() {
     const linkEsterno = pr.link_esterno
       ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">${t(pr.label_link) || tu('common.vediOnline')}</a>` : '';
     const bottoneEntrata = isPlaylist
-      ? `<button class="link-progetto" style="pointer-events:all;">${tu('playlist.entraArchivio')}</button>`
+      ? `<button class="link-progetto" style="pointer-events:all;">Entra nell'archivio</button>`
       : inLavorazione
         ? `<p class="progetto-in-lavorazione">${tu('overlay.inLavorazione')}</p>`
         : `<button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">${tu('progetti_extra.entraNelProgetto')}</button>`;
