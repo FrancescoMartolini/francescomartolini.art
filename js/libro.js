@@ -820,6 +820,9 @@ function leggiRoute() {
 
   if (path === '/taccuino') return { tipo: 'taccuino' };
 
+  const mVoceTaccuino = path.match(/^\/taccuino\/([^/?#]+)$/);
+  if (mVoceTaccuino) return { tipo: 'taccuino-voce', id: decodeURIComponent(mVoceTaccuino[1]) };
+
   const mProgetto = path.match(/^\/progetti\/([^/?#]+)$/);
   if (mProgetto) return { tipo: 'progetto', id: decodeURIComponent(mProgetto[1]) };
 
@@ -1357,7 +1360,7 @@ function chiudiProgetto() {
 // ── Taccuino archivio ──
 let _cacheTaccuino = null;
 
-function apriTaccuino() {
+function apriTaccuino(idVoce) {
   const el = $('pagina-taccuino-archivio');
   const interno = el.querySelector('.taccuino-archivio-interno');
 
@@ -1370,7 +1373,7 @@ function apriTaccuino() {
         ? `<div class="taccuino-voce-foto"><video src="${v.video}" controls playsinline preload="metadata"${posterAttr}></video></div>`
         : (v.foto ? `<div class="taccuino-voce-foto"><img src="${v.foto}" alt="" draggable="false" loading="lazy"></div>` : '');
       const cam = v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p>` : '';
-      return `<div class="taccuino-voce" data-testo="${t(v.testo).toLowerCase()}">${media}<p class="taccuino-voce-frase">${t(v.testo)}</p>${cam}<p class="taccuino-voce-data">${formatData(v.data)}</p></div>`;
+      return `<div class="taccuino-voce" data-id="${v.id}" data-testo="${t(v.testo).toLowerCase()}">${media}<p class="taccuino-voce-frase">${t(v.testo)}</p>${cam}<p class="taccuino-voce-data">${formatData(v.data)}</p></div>`;
     }).join('');
     _cacheTaccuino = `
       <button class="taccuino-torna" onclick="chiudiTaccuino()">${tu('overlay.chiudi')}</button>
@@ -1395,8 +1398,25 @@ function apriTaccuino() {
     });
     risultati.textContent = q ? `${vis} ${vis === 1 ? tu('taccuino_extra.risultatoSing') : tu('taccuino_extra.risultatiPlur')}` : '';
   });
-  setTimeout(() => input.focus(), 300);
   el.classList.add('aperta'); el.scrollTop = 0;
+
+  // Link diretto a una singola nota (es. da una caption Instagram: si
+  // copia/incolla il link, si tocca, si atterra sulla nota, non su un
+  // elenco da scorrere). In questo caso non apriamo la tastiera di
+  // ricerca: chi arriva da un link vuole leggere quella nota, non cercare.
+  const voce = idVoce != null
+    ? lista.querySelector(`.taccuino-voce[data-id="${CSS.escape(String(idVoce))}"]`)
+    : null;
+
+  if (voce) {
+    setTimeout(() => {
+      voce.scrollIntoView({ block: 'center' });
+      voce.classList.add('evidenziata');
+      voce.addEventListener('animationend', () => voce.classList.remove('evidenziata'), { once: true });
+    }, 300);
+  } else {
+    setTimeout(() => input.focus(), 300);
+  }
 }
 
 function chiudiTaccuino() {
@@ -1892,11 +1912,7 @@ function aggiornaUI() {
 // ── Tema ──
 function avviaTema() {
   if (localStorage.getItem('tema') === 'scuro') document.body.classList.add('tema-scuro');
-  // Delegation: copre sia il bottone desktop (#tema-toggle) sia tutte le
-  // istanze mobile (.tema-toggle-mobile), incluse quelle generate dinamicamente
-  // da creaHeader() dopo l'avvio (progetti, taccuino, intervalli...).
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.tema-toggle-btn')) return;
+  $('tema-toggle')?.addEventListener('click', () => {
     document.body.classList.toggle('tema-scuro');
     localStorage.setItem('tema', document.body.classList.contains('tema-scuro') ? 'scuro' : 'chiaro');
   });
@@ -2183,6 +2199,8 @@ async function init() {
     if (pr) apriProgetto(route.id);
   } else if (route?.tipo === 'taccuino') {
     apriTaccuino();
+  } else if (route?.tipo === 'taccuino-voce') {
+    apriTaccuino(route.id);
   } else if (route?.tipo === 'sezione' && route.pagina === 'playlist-pagina') {
     apriProgetto(ID_CARD_PLAYLIST);
   } else if (route?.tipo === 'sezione') {
