@@ -144,14 +144,14 @@ body.tema-scuro {
 .menu-voci a:hover { color: var(--nero); }
 .menu-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--nero); }
 
-#tema-toggle {
+.tema-toggle-btn {
   width: 28px; height: 28px;
   display: flex; align-items: center; justify-content: center;
   color: var(--grigio-medio); transition: color var(--transizione);
 }
 
-#tema-toggle:hover { color: var(--nero); }
-#tema-toggle svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; }
+.tema-toggle-btn:hover { color: var(--nero); }
+.tema-toggle-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; }
 
 /* ════════════════════════════════
    DESKTOP LAYOUT
