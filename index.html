@@ -72,6 +72,11 @@
         <li><a class="section-link" onclick="apriTaccuino()" data-i18n="menu.taccuino">Taccuino</a></li>
         <li><div class="menu-dot"></div></li>
         <li>
+          <button id="tema-toggle" class="tema-toggle-btn" aria-label="Tema chiaro/scuro" data-i18n-attr="aria-label:nav.temaChiaroScuro">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </button>
+        </li>
+        <li>
           <div class="lang-toggle" aria-label="Cambia lingua">
             <span class="lang-option" data-lang="it">IT</span>
             <span class="lang-sep">—</span>
@@ -84,9 +89,6 @@
             Libro
           </button>
         </li-->
-        <!--button id="tema-toggle" aria-label="Tema chiaro/scuro">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-        </button-->
       </ul>
     </nav>
     
@@ -100,6 +102,7 @@
       <div class="mobile-page-content">
         <div class="pagina-header">
           <div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label" data-i18n="oraCorrente">ORA CORRENTE</div></div>
+          <button class="tema-toggle-btn tema-toggle-mobile" aria-label="Tema chiaro/scuro" data-i18n-attr="aria-label:nav.temaChiaroScuro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
         </div>
         <div class="lang-toggle-mobile" aria-label="Cambia lingua">
           <span class="lang-option" data-lang="it">IT</span>
@@ -131,7 +134,7 @@
     <!-- INDICE mobile (solo mobile, generato anche via JS per posizione dinamica) -->
     <section class="page mobile-only" id="indice-mobile" data-favicon="≡" data-titolo="Indice">
       <div class="mobile-page-content">
-        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
+        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div><button class="tema-toggle-btn tema-toggle-mobile" aria-label="Tema chiaro/scuro" data-i18n-attr="aria-label:nav.temaChiaroScuro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div>
         <div class="pagina-corpo">
           <div class="indice-wrap" id="indice-lista">
             <!-- Popolato da JS -->
@@ -143,7 +146,7 @@
     <!-- PROGETTI -->
     <section class="page" id="progetti" data-favicon="P" data-titolo="Progetti">
       <div class="mobile-page-content">
-        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
+        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div><button class="tema-toggle-btn tema-toggle-mobile" aria-label="Tema chiaro/scuro" data-i18n-attr="aria-label:nav.temaChiaroScuro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div>
         <div class="pagina-corpo"><div style="max-width: 300px;"><p class="capitolo-label"><span data-i18n="capitolo">Capitolo</span> 01</p><h2 class="capitolo-titolo" data-i18n="progetti.titolo">Progetti</h2><p class="capitolo-descrizione" data-i18n="progetti.descrizioneCapitolo">I progetti principali. Serie fotografiche.</p></div></div>
       </div>
       <div class="desktop-section desktop-progetti">
@@ -185,7 +188,7 @@
     <!-- STUDI / INTERVALLI -->
     <section class="page" id="intervalli" data-favicon="I" data-titolo="Intervalli">
       <div class="mobile-page-content">
-        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
+        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div><button class="tema-toggle-btn tema-toggle-mobile" aria-label="Tema chiaro/scuro" data-i18n-attr="aria-label:nav.temaChiaroScuro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div>
         <div class="pagina-corpo"><div style="max-width: 300px;"><p class="capitolo-label"><span data-i18n="capitolo">Capitolo</span> 02</p><h2 class="capitolo-titolo" data-i18n="intervalli.titolo">Intervalli</h2><p class="capitolo-descrizione" data-i18n="intervalli.descrizione">Fotografie che non appartengono a un progetto, ma al mio modo di guardare.</p></div></div>
       </div>
       <div class="desktop-section desktop-studi">
@@ -204,7 +207,7 @@
     <!-- CHI SONO — pagina capitolo (solo mobile) -->
     <section class="page mobile-only" id="chi-sono-capitolo" data-favicon="C" data-titolo="Chi sono">
       <div class="mobile-page-content">
-        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
+        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div><button class="tema-toggle-btn tema-toggle-mobile" aria-label="Tema chiaro/scuro" data-i18n-attr="aria-label:nav.temaChiaroScuro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div>
         <div class="pagina-corpo"><div style="max-width: 300px;"><p class="capitolo-label"><span data-i18n="capitolo">Capitolo</span> 03</p><h2 class="capitolo-titolo" data-i18n="chiSono.titolo">Chi sono</h2><p class="capitolo-descrizione" data-i18n="chiSono.descrizioneCapitolo">Un ritratto essenziale. Parole e immagini che raccontano il percorso.</p></div></div>
       </div>
     </section>
@@ -212,7 +215,7 @@
     <!-- CHI SONO — contenuto -->
     <section class="page" id="chi-sono" data-favicon="C" data-titolo="Chi sono">
       <div class="mobile-page-content">
-        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div></div>
+        <div class="pagina-header"><div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div><button class="tema-toggle-btn tema-toggle-mobile" aria-label="Tema chiaro/scuro" data-i18n-attr="aria-label:nav.temaChiaroScuro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div>
           <div class="chi-sono-wrap">
             <div class="chi-sono-testo">
               <h2 data-i18n-html="chiSono.h2">Un ritratto essenziale.<br><em>Parole e immagini che raccontano il percorso.</em></h2>

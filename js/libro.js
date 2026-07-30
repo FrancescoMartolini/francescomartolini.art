@@ -317,7 +317,10 @@ function creaImg(src, alt, eager) {
 // ── Header data/ora mobile (riutilizzato ovunque) ──
 function creaHeader() {
   const ph = crea('div'); ph.className = 'pagina-header';
-  ph.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>`;
+  ph.innerHTML = `<div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label">ORA CORRENTE</div></div>
+    <button class="tema-toggle-btn tema-toggle-mobile" aria-label="${tu('nav.temaChiaroScuro') || 'Tema chiaro/scuro'}" data-i18n-attr="aria-label:nav.temaChiaroScuro">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>`;
   return ph;
 }
 
@@ -1522,7 +1525,7 @@ function costruisciMobile() {
     const linkEsterno = pr.link_esterno
       ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">${t(pr.label_link) || tu('common.vediOnline')}</a>` : '';
     const bottoneEntrata = isPlaylist
-      ? `<button class="link-progetto" style="pointer-events:all;">Entra nell'archivio</button>`
+      ? `<button class="link-progetto" style="pointer-events:all;">Entra nell'Archivio</button>`
       : inLavorazione
         ? `<p class="progetto-in-lavorazione">${tu('overlay.inLavorazione')}</p>`
         : `<button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">${tu('progetti_extra.entraNelProgetto')}</button>`;
@@ -1889,7 +1892,11 @@ function aggiornaUI() {
 // ── Tema ──
 function avviaTema() {
   if (localStorage.getItem('tema') === 'scuro') document.body.classList.add('tema-scuro');
-  $('tema-toggle')?.addEventListener('click', () => {
+  // Delegation: copre sia il bottone desktop (#tema-toggle) sia tutte le
+  // istanze mobile (.tema-toggle-mobile), incluse quelle generate dinamicamente
+  // da creaHeader() dopo l'avvio (progetti, taccuino, intervalli...).
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tema-toggle-btn')) return;
     document.body.classList.toggle('tema-scuro');
     localStorage.setItem('tema', document.body.classList.contains('tema-scuro') ? 'scuro' : 'chiaro');
   });

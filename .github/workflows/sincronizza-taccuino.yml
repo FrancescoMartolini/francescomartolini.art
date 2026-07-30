@@ -21,6 +21,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Salva lo stato del Taccuino prima della sincronizzazione
+        # Serve solo a genera-caption-instagram.py per capire quali voci
+        # sono nuove. Non è uno stato persistente: vive solo per la durata
+        # di questo job, il repo committato è l'unica fonte di verità.
+        run: cp json/taccuino.json /tmp/taccuino-precedente.json
+
       - name: Sincronizza taccuino.json
         run: python3 scripts/sincronizza-taccuino.py
 
@@ -52,16 +58,28 @@ jobs:
             sleep 3
           done
 
+      # Genera la caption Instagram per ogni nuova voce del Taccuino e la
+      # invia sul bot Telegram, pronta da copiare/incollare nel Broadcast
+      # Channel. Gira SOLO se lo step precedente (commit+push) è andato a
+      # buon fine: se il push fallisce, json/taccuino.json committato resta
+      # quello vecchio e riproveremo al run successivo, senza rischio di
+      # notifiche duplicate o perse.
+      - name: Genera e invia caption Instagram per le nuove voci
+        if: success()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 scripts/genera-caption-instagram.py json/taccuino.json /tmp/taccuino-precedente.json
+
       # Notifica l'esito su Telegram, sia in caso di successo che di errore,
       # così non serve controllare a mano la tab "Actions" del repo.
       # Richiede due secrets nel repo (Settings → Secrets and variables →
       # Actions): TELEGRAM_BOT_TOKEN e TELEGRAM_CHAT_ID.
-            # Notifica l'esito su Telegram
       - name: Notifica Telegram (successo)
         if: success()
         env:
-          TELEGRAM_BOT_TOKEN: 8961104236:AAGK9ndDrVs9tvmPYAbFRKv7sQ2bo5vMS88
-          TELEGRAM_CHAT_ID: 148877314
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           TOTALE=$(python3 - <<'PY'
           import json
@@ -99,8 +117,8 @@ jobs:
       - name: Notifica Telegram (errore)
         if: failure()
         env:
-          TELEGRAM_BOT_TOKEN: 8961104236:AAGK9ndDrVs9tvmPYAbFRKv7sQ2bo5vMS88
-          TELEGRAM_CHAT_ID: 148877314
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           LOG_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 

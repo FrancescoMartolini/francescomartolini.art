@@ -96,7 +96,8 @@
     "indietro": { "it": "← Indietro", "en": "← Back" },
     "avanti": { "it": "Avanti →", "en": "Next →" },
     "visualizzaComeLibro": { "it": "Visualizza come libro", "en": "View as book" },
-    "comeSiLegge": { "it": "Come si legge questo libro", "en": "How to read this book" }
+    "comeSiLegge": { "it": "Come si legge questo libro", "en": "How to read this book" },
+    "temaChiaroScuro": { "it": "Tema chiaro/scuro", "en": "Light/dark theme" }
   },
   "overlay": {
     "chiudi": { "it": "Chiudi", "en": "Close" },
