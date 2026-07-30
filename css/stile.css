@@ -953,16 +953,6 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .taccuino-risultati { font-size: 11px; font-weight: 300; letter-spacing: 0.15em; color: var(--grigio-medio); white-space: nowrap; text-transform: uppercase; }
 
 .taccuino-voce { border-top: 1px solid var(--grigio-chiaro); padding: 28px 0; text-align: center}
-/* Nota raggiunta tramite link diretto (es. da una caption Instagram): un
-   richiamo visivo breve e silenzioso, non un'animazione vistosa. */
-.taccuino-voce.evidenziata { animation: taccuino-evidenzia 2.4s ease; }
-@keyframes taccuino-evidenzia {
-  0%   { background: var(--grigio-chiaro); }
-  100% { background: transparent; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .taccuino-voce.evidenziata { animation: none; }
-}
 .taccuino-voce:last-child { border-bottom: 1px solid var(--grigio-chiaro); }
 .taccuino-voce-frase { font-family: var(--font-taccuino); font-size: clamp(20px, 2.8vw, 30px); line-height: 1.4; margin-bottom: 10px; }
 .taccuino-voce-foto { width: 100%; aspect-ratio: 3/2; overflow: hidden; margin-bottom: 16px; background: var(--grigio-chiaro); }
@@ -1118,10 +1108,22 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
     margin-top: 4px;
   }
 
-  .pagina-header { display: flex; justify-content: center; margin: 12px; flex-shrink: 0; }
+  .pagina-header { position: relative; display: flex; justify-content: center; margin: 12px; flex-shrink: 0; }
   .data-ora { text-align: center; font-size: 11px; font-weight: 300; color: var(--grigio-medio); line-height: 1.6; letter-spacing: 0.06em; }
   .ora-live { font-variant-numeric: tabular-nums; }
   .ora-label { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--grigio-medio); margin-top: 2px; }
+
+  /* Bottone tema mobile: angolo della riga dell'ora corrente, senza spostare
+     la centratura di .data-ora (che resta il punto focale della riga). */
+  .tema-toggle-mobile {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px; height: 24px;
+    z-index: 6;
+  }
+  .tema-toggle-mobile svg { width: 13px; height: 13px; }
   .pagina-corpo { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0; overflow-y: auto; width: 100%;}
 
   .titolo-principale { font-family: var(--font-titolo); font-size: clamp(36px, 10vw, 56px); font-weight: 400; line-height: 1.1; letter-spacing: -0.02em; }
