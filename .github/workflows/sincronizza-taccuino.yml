@@ -2,7 +2,7 @@
 # pubblicati, così il sito può sempre leggere il Taccuino da un file
 # locale veloce invece che dal foglio "live" ad ogni visita (vedi
 # scripts/sincronizza-taccuino.py e SHEETS_TIMEOUT_MS in js/libro.js).
-name: Sincronizza Taccuino da Google Sheets
+name: Sincronizza Taccuino da Google Sheets 
 
 on:
   schedule:
