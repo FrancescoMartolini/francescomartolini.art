@@ -36,7 +36,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-SITO_URL = "https://francescomartolini.art/taccuino"
+SITO_URL_BASE = "https://francescomartolini.art/taccuino"
 
 
 def carica(path):
@@ -71,10 +71,11 @@ def pulisci(testo):
 
 def genera_caption(voce):
     corpo = pulisci(testo_it(voce))
+    link = f"{SITO_URL_BASE}/{voce.get('id')}"
     return (
         "📖 Nuova pagina del Taccuino\n\n"
         f"{corpo}\n\n"
-        f"🔗 {SITO_URL}\n\n"
+        f"🔗 {link}\n\n"
         "#Taccuino #Fotografia"
     )
 
