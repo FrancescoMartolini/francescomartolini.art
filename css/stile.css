@@ -676,6 +676,8 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
 .reveal.visible { opacity: 1; transform: none; }
 
+.section-nota {font-family: var(--font-taccuino); font-size: clamp(20px, 2.8vw, 30px); line-height: 1.4; margin-bottom: 10px;}
+
 /* ══════════════════════════════════════════════
    LAYOUT 1: editorial
    Ispirato a Arch-Workman.
@@ -895,6 +897,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 }
 .layout-base .section-text p { margin-bottom: 18px; }
 .layout-base .section-text p:last-child { margin-bottom: 0; }
+.layout-base .section-nota {font-family: var(--font-taccuino); font-size: clamp(20px, 2.8vw, 30px); line-height: 1.4; margin-bottom: 10px;}
 .layout-base .section-image {
   width: 100%;
   margin-bottom: 10px;

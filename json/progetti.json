@@ -280,15 +280,10 @@
       "it": "Divina Commedia",
       "en": "Divine Comedy"
     },
-    "anno": "",
+    "anno": "2026",
     "descrizione": {
       "it": "Questo sarà un progetto che durerà anni! lo scopo finale è ritrarre 99 immagini una per ogni canto della divina commedia",
       "en": "This will be a project lasting years! The final goal is to portray 99 images, one for each canto of the Divine Comedy"
-    },
-    "testo_lungo": "",
-    "testo_lungo_bozza": {
-      "it": "Non è un progetto su Dante. È un progetto sul viaggio — quella condizione strana in cui ci si trova in mezzo, senza sapere bene da dove si viene né dove si va.",
-      "en": "This is not a project about Dante. It is a project about the journey — that strange condition of finding yourself in the middle, without quite knowing where you came from or where you are going."
     },
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1784576170/divinacommedia_r3rlbj.jpg",
     "galleria": [],
@@ -307,22 +302,22 @@
         }
       },
       {
-        "tipo": "immagine",
-        "valore": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1785776290/divina-commedia-cantoI-2_wkvpe7.jpg"
-      },
-      {
-        "tipo": "testo",
-        "valore": {
-          "it": "Nel mezzo del cammin di nostra vita mi ritrovai per una selva oscura, ché la diritta via era smarrita.",
-          "en": "In the middle of the journey of our life I found myself in a dark wood, for the straight way had been lost."
-        }
-      },
-      {
         "tipo": "embed",
         "valore": {
           "url": "https://archive.org/embed/lp_la-divina-commedia-inferno-purgatorio_dante-alighieri-carlo-dangelo-giorgio-albe/disc1/01.01.+Inferno+-+Canto+1+letto+.mp3",
           "label": "Canto I - Inferno"
         }
+      },
+      {
+        "tipo": "testo",
+        "valore": {
+          "it": "Nel mezzo del cammin di nostra vita \n mi ritrovai per una selva oscura,\n ché la diritta via era smarrita...",
+          "en": "Nel mezzo del cammin di nostra vita \n mi ritrovai per una selva oscura,\n ché la diritta via era smarrita..."
+        }
+      },
+      {
+        "tipo": "immagine",
+        "valore": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1785776290/divina-commedia-cantoI-2_wkvpe7.jpg"
       }
     ]
   },

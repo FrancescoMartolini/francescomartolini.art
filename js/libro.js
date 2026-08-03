@@ -1260,6 +1260,8 @@ function generaContenutoProgetto(pr) {
           colonnaHTML += generaSpotifyHTML(b.valore); break;
         case 'embed':
           colonnaHTML += generaEmbedHTML(b.valore); break;
+        case 'nota':
+          colonnaHTML += `<div class="section-nota">${t(b.valore)}</div>`; break;
         case 'separatore':
           colonnaHTML += `<hr class="progetto-separatore">`; break;
       }
