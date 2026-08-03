@@ -1,0 +1,209 @@
+/* ============================================================
+   FRANCESCO MARTOLINI .ART — FOGLIO DI STAMPA
+   ============================================================
+   Filosofia: il sito è un libro. Stampare deve significare
+   "stampare il capitolo che si sta leggendo" — non l'interfaccia
+   che lo contiene. Qui si toglie tutto ciò che è comando (header,
+   menu, frecce, pulsanti, overlay di sistema) e resta solo ciò
+   che è contenuto: testo e immagini, come su carta.
+
+   Non si aggiunge identità grafica nuova: si riusano gli stessi
+   font, gli stessi colori base (--nero/--bianco) e la stessa
+   gerarchia tipografica già definite in stile.css, semplicemente
+   riportate a una resa "inchiostro su carta".
+   ============================================================ */
+
+@media print {
+
+  /* ── 1. Pagina fisica ──────────────────────────────────────
+     Margini ampi, in linea con lo spazio bianco editoriale del
+     sito. Nessun titolo/URL automatico del browser: quello lo
+     gestisce il browser stesso in stampa (fuori dal nostro controllo);
+     qui definiamo solo un numero di pagina minimo, coerente con
+     un libro stampato. */
+  @page {
+    size: auto;
+    margin: 2.2cm 1.8cm;
+  }
+
+  @page {
+    @bottom-right {
+      content: counter(page);
+    }
+  }
+
+  /* ── 2. Tema: sempre inchiostro su carta ───────────────────
+     Anche se il visitatore sta leggendo in tema scuro, o un
+     progetto ha un tema colore custom iniettato via JS
+     (--pr-bg/--pr-text/--pr-accent), in stampa si torna sempre
+     a nero su bianco. !important su una custom property vince
+     sia sulla classe .tema-scuro sia sullo style inline del JS,
+     che non è mai dichiarato !important. */
+  html, body, body.tema-scuro,
+  #pagina-progetto, #overlay-pagina, #pagina-taccuino-archivio, .page {
+    --nero: #000000 !important;
+    --bianco: #ffffff !important;
+    --grigio-chiaro: #e8e6e0 !important;
+    --grigio-medio: #666666 !important;
+    --grigio-testo: #333333 !important;
+    --progetti-bg: #ffffff !important;
+    --progetti-fg: #000000 !important;
+    --pr-bg: #ffffff !important;
+    --pr-text: #000000 !important;
+    --pr-accent: #555555 !important;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* ── 3. Via tutta l'interfaccia, resta solo il libro ───────
+     Navigazione, comandi di svolta pagina, toggle, banner,
+     modali, cursore custom: nessuno di questi è "capitolo". */
+  #site-header,
+  #site-footer-desktop,
+  #mobile-nav,
+  #indicatore,
+  #cursore, #cursore-ring,
+  #cookie-banner,
+  #lightbox,
+  #rss-modal-backdrop,
+  .overlay-chiudi,
+  .progetto-torna,
+  .taccuino-torna,
+  .tema-toggle-btn,
+  .lang-toggle, .lang-toggle-mobile,
+  .pagina-header,
+  .freccia, .nota-nav,
+  .slider-arrow,
+  .notify-optin,
+  .rss-trigger,
+  .pl-volume-nav,
+  iframe {
+    display: none !important;
+  }
+
+  /* ── 4. Il sistema di paginazione mobile (il "libro" a swipe)
+     Sulle pagine .page il sito usa position:absolute + opacity
+     per simulare le pagine di un libro sullo schermo. Su carta
+     quel meccanismo non serve: la pagina attiva torna in flusso
+     normale, così il contenuto può estendersi su più fogli invece
+     di restare tagliato all'altezza di un viewport. Le pagine non
+     attive non si stampano: si stampa il capitolo aperto, non
+     l'intero libro insieme. */
+  .page {
+    position: static !important;
+    inset: auto !important;
+    transform: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    display: none !important;
+  }
+  .page.attiva {
+    display: flex !important;
+  }
+  .mobile-page-content {
+    height: auto !important;
+    padding: 0 !important;
+  }
+
+  /* ── 5. Overlay a schermo intero (progetto, archivio, taccuino)
+     Sono fixed/inset:0 con overflow-y:auto e vengono fatti
+     scorrere in vista via transform. In stampa un elemento fixed
+     rischia di restare ancorato a una sola pagina fisica: lo
+     riportiamo in flusso solo quando è effettivamente aperto. */
+  #pagina-progetto, #overlay-pagina, #pagina-taccuino-archivio {
+    display: none !important;
+  }
+  #pagina-progetto.aperta, #overlay-pagina.aperta, #pagina-taccuino-archivio.aperta {
+    display: block !important;
+    position: static !important;
+    inset: auto !important;
+    transform: none !important;
+    overflow: visible !important;
+    height: auto !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .overlay-inner, .progetto-interno, .taccuino-archivio-interno {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  /* ── 6. Contenuto rivelato allo scroll ──────────────────────
+     Testi e immagini dei progetti compaiono con un fade-in
+     legato all'IntersectionObserver: senza scroll reale restano
+     a opacity:0 e sparirebbero dal foglio stampato. Qui si
+     considera tutto già "rivelato". */
+  .page.attiva *,
+  #pagina-progetto.aperta *,
+  #overlay-pagina.aperta *,
+  #pagina-taccuino-archivio.aperta * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  /* ── 7. Immagini e contenitori legati al viewport ──────────
+     Alcuni contenitori (copertina progetto, immagine sticky del
+     layout archivio, hero) sono alti quanto lo schermo per un
+     effetto immersivo a video. Su carta quell'altezza va tolta,
+     altrimenti l'immagine viene tagliata a un frammento. */
+  .progetto-cover, .progetto-cover-img,
+  .hero-immagine,
+  .layout-archivio .progetto-cover-img,
+  [class$="-img"], [class*="-img-"],
+  [class$="-foto"], [class*="-foto-"] {
+    position: static !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+  .progetto-cover-img img,
+  .hero-immagine img,
+  [class$="-img"] img, [class*="-img-"] img,
+  [class$="-foto"] img, [class*="-foto-"] img,
+  .section-gallery img, .section-image img, .section-imagetext img {
+    height: auto !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ── 8. Tipografia da carta ─────────────────────────────────
+     Stessi font del sito, dimensioni pensate per la lettura
+     stampata: corpo leggibile, titoli che restano ancorati al
+     paragrafo successivo, niente vedove/orfane, niente immagini
+     o citazioni spezzate a metà tra un foglio e l'altro. */
+  body {
+    font-size: 11pt;
+    line-height: 1.6;
+  }
+  h1, h2, h3, .progetto-interno-titolo, .progetto-cover-titolo,
+  .taccuino-archivio-interno h1 {
+    break-after: avoid;
+    orphans: 3;
+    widows: 3;
+  }
+  p, .section-text, .section-quote {
+    orphans: 3;
+    widows: 3;
+  }
+  .section-image, .section-imagetext, .section-gallery,
+  .section-quote, img, figure {
+    break-inside: avoid;
+  }
+
+  /* ── 9. Link: restano leggibili anche fuori dallo schermo ──
+     Su carta un link non è cliccabile: dove porta a un indirizzo
+     esterno, lo si scrive accanto, come una nota a piè di testo. */
+  a { color: #000000 !important; text-decoration: none !important; }
+  .link-esterno-btn::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    color: #555555;
+  }
+}

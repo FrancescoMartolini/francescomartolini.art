@@ -319,7 +319,10 @@
       },
       {
         "tipo": "embed",
-        "valore": "https://archive.org/embed/lp_la-divina-commedia-inferno-purgatorio_dante-alighieri-carlo-dangelo-giorgio-albe/disc1/01.01.+Inferno+-+Canto+1+letto+.mp3"
+        "valore": {
+          "url": "https://archive.org/embed/lp_la-divina-commedia-inferno-purgatorio_dante-alighieri-carlo-dangelo-giorgio-albe/disc1/01.01.+Inferno+-+Canto+1+letto+.mp3",
+          "label": "Canto I - Inferno"
+        }
       }
     ]
   },
