@@ -76,6 +76,11 @@
   "nav_extra": {
     "inizio": { "it": "← Inizio", "en": "← Start" }
   },
+  "segnalibro": {
+    "messaggio": { "it": "Continua da dove eri", "en": "Continue where you left off" },
+    "pagina": { "it": "pag.", "en": "p." },
+    "ricomincia": { "it": "Ricomincia dall'inizio", "en": "Start over" }
+  },
   "taccuino_extra": {
     "cercaPlaceholder": { "it": "Cerca nel taccuino...", "en": "Search the notebook..." },
     "risultatoSing": { "it": "risultato", "en": "result" },

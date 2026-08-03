@@ -11,6 +11,9 @@
 const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?gid=1174325309&single=true&output=csv';
 const SHEETS_URL_EN = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?gid=1079818483&single=true&output=csv';
 
+// ── Segnalibro: ricorda a che pagina il lettore era arrivato ──
+const SEGNALIBRO_KEY = 'libro-pagina';
+
 const stato = {
   lang: localStorage.getItem('lang') || 'it',
   paginaCorrente: 0,
@@ -1841,6 +1844,9 @@ function paginaPrecedente() { navigaA(stato.paginaCorrente - 1); }
 
 function aggiornaUI() {
   if (!isMobile()) return;
+  // Segnalibro: salva la pagina corrente ad ogni spostamento reale nel libro
+  // (navigaA e lo scrub sull'indicatore passano entrambi da qui).
+  try { localStorage.setItem(SEGNALIBRO_KEY, String(stato.paginaCorrente)); } catch (e) {}
   const pagine = document.querySelectorAll('.page, .pagina-progetto-mobile');
   const pCorrente = pagine[stato.paginaCorrente];
   document.querySelectorAll('.indicatore-dot').forEach((d, i) => d.classList.toggle('attivo', i === stato.paginaCorrente));
@@ -1887,6 +1893,41 @@ function aggiornaUI() {
     aggiorneFavicon(pCorrente.dataset.favicon || 'f');
     document.title = `${pCorrente.dataset.titolo || 'Francesco Martolini .art'} — Francesco Martolini .art`;
   }
+}
+
+// ── Segnalibro: piccola tab in stile nastro di libro, sul frontespizio.
+// Non forza mai il salto di pagina: propone soltanto di riprendere la
+// lettura, così il frontespizio resta comunque la pagina di apertura
+// predefinita se il lettore ignora la proposta o la chiude.
+function mostraSegnalibro(idx) {
+  if (!isMobile() || !idx || idx <= 0 || idx >= stato.totPagine) return;
+  const home = $('home');
+  if (!home || document.getElementById('segnalibro-tab')) return;
+
+  const tab = crea('button');
+  tab.id = 'segnalibro-tab';
+  tab.className = 'segnalibro-tab';
+  tab.innerHTML = `
+    <span class="segnalibro-testo">${tu('segnalibro.messaggio')}</span>
+    <span class="segnalibro-pagina">${tu('segnalibro.pagina')} ${formatNum(idx + 1)}</span>
+  `;
+  tab.addEventListener('click', () => {
+    tab.remove();
+    navigaA(idx);
+  });
+
+  const chiudi = crea('button');
+  chiudi.className = 'segnalibro-chiudi';
+  chiudi.setAttribute('aria-label', tu('segnalibro.ricomincia'));
+  chiudi.textContent = '×';
+  chiudi.addEventListener('click', (e) => {
+    e.stopPropagation();
+    tab.remove();
+    try { localStorage.setItem(SEGNALIBRO_KEY, '0'); } catch (err) {}
+  });
+  tab.appendChild(chiudi);
+
+  home.appendChild(tab);
 }
 
 // ── Tema ──
@@ -2147,10 +2188,20 @@ async function init() {
 
   await caricaDati();
 
+  // Segnalibro: leggiamo il valore salvato PRIMA che aggiornaUI() lo
+  // sovrascriva con la pagina 0 (il frontespizio resta comunque la pagina
+  // di apertura predefinita: proponiamo solo di riprendere da lì).
+  let paginaSalvata = -1;
+  try {
+    const v = parseInt(localStorage.getItem(SEGNALIBRO_KEY), 10);
+    if (!Number.isNaN(v)) paginaSalvata = v;
+  } catch (e) {}
+
   if (isMobile()) {
     costruisciMobile();
     document.querySelector('.page')?.classList.add('attiva');
     aggiornaUI();
+    if (paginaSalvata > 0 && !leggiRoute()) mostraSegnalibro(paginaSalvata);
     document.addEventListener('keydown', gestisciTastiera);
     document.addEventListener('touchstart', gestisciTouchStart, { passive: true });
     document.addEventListener('touchend', gestisciTouchEnd, { passive: true });
