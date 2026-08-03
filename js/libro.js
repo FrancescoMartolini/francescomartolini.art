@@ -1339,11 +1339,11 @@ function generaMappaHTML(pr) {
 
 function generaEmbedHTML(v) {
   // Blocco iframe generico: YouTube, Vimeo, SoundCloud, o qualsiasi embed esterno.
-  // Schema: { url, label?, ratio? } — ratio tipo "16:9", "4:3", "1:1" (default 16:9)
+  // Schema: { url, label?, ratio? } — ratio tipo "16:9", "4:3", "1:1" (default )
   if (!v || !v.url) return '';
   const src = t(v.url);
   const label = t(v.label) || '';
-  const ratio = (v.ratio || '16:9').replace(':', '/');
+  const ratio = (v.ratio || '').replace(':', '/');
   return `<div class="section-embed">
     ${label ? `<p class="section-embed-label">${label}</p>` : ''}
     <div class="section-embed-frame" style="aspect-ratio:${ratio};">
