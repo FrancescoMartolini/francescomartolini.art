@@ -1196,6 +1196,8 @@ function generaContenutoProgetto(pr) {
           }</div>`;
         case 'quote':
           return `<blockquote class="section-quote">${t(s.content) || ''}</blockquote>`;
+        case 'embed':
+          return generaEmbedHTML(s);
         case 'map': {
           const msrc = s.url || (s.lat && s.lng ? `https://maps.google.com/maps?q=${s.lat},${s.lng}&z=${s.zoom || 13}&output=embed` : '');
           if (!msrc) return '';
@@ -1256,6 +1258,8 @@ function generaContenutoProgetto(pr) {
           colonnaHTML += generaMappaHTML(pr); break;
         case 'spotify':
           colonnaHTML += generaSpotifyHTML(b.valore); break;
+        case 'embed':
+          colonnaHTML += generaEmbedHTML(b.valore); break;
         case 'separatore':
           colonnaHTML += `<hr class="progetto-separatore">`; break;
       }
@@ -1307,6 +1311,7 @@ function generaContenutoProgetto(pr) {
       }
       case 'mappa': return generaMappaHTML(pr);
       case 'spotify': return generaSpotifyHTML(b.valore);
+      case 'embed': return generaEmbedHTML(b.valore);
       case 'separatore': return `<hr class="progetto-separatore">`;
       default: return '';
     }
@@ -1329,6 +1334,21 @@ function generaMappaHTML(pr) {
   return `<div class="section-map">
     <p class="section-map-label">${label}</p>
     <iframe src="${src}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </div>`;
+}
+
+function generaEmbedHTML(v) {
+  // Blocco iframe generico: YouTube, Vimeo, SoundCloud, o qualsiasi embed esterno.
+  // Schema: { url, label?, ratio? } — ratio tipo "16:9", "4:3", "1:1" (default 16:9)
+  if (!v || !v.url) return '';
+  const src = t(v.url);
+  const label = t(v.label) || '';
+  const ratio = (v.ratio || '16:9').replace(':', '/');
+  return `<div class="section-embed">
+    ${label ? `<p class="section-embed-label">${label}</p>` : ''}
+    <div class="section-embed-frame" style="aspect-ratio:${ratio};">
+      <iframe src="${src}" title="${label || 'Contenuto incorporato'}" loading="lazy" allow="fullscreen; autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
   </div>`;
 }
 

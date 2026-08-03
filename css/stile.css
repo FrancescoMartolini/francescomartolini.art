@@ -663,6 +663,15 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 }
 .spotify-carosello-img.visibile { opacity: 1; }
 
+/* Sezione Embed: iframe generico (YouTube, Vimeo, SoundCloud, ecc.) */
+.section-embed { margin: 0 0 56px; }
+.section-embed-label {
+  font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--pr-accent, var(--grigio-medio)); opacity: 0.7; margin-bottom: 12px;
+}
+.section-embed-frame { width: 100%; overflow: hidden; background: var(--grigio-chiaro); }
+.section-embed-frame iframe { width: 100%; height: 100%; border: none; display: block; }
+
 /* Scroll reveal */
 .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
 .reveal.visible { opacity: 1; transform: none; }

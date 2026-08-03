@@ -166,7 +166,7 @@
   {
     "id": "PLAYLIST.00",
     "titolo": "PLAYLIST.00 - Archivio",
-    "layoutType": "editorial",
+    "layoutType": "magazine",
     "anno": "2026",
     "descrizione": {
       "it": "Le fotografie raccolte in questo volume sono rimaste per anni nel mio archivio, in attesa del linguaggio giusto per essere raccontate. PLAYLIST.00 è quel linguaggio.",
@@ -253,7 +253,7 @@
   {
     "id": "PLAYLIST.01",
     "titolo": "PLAYLIST.01",
-    "layoutType": "editorial",
+    "layoutType": "magazine",
     "anno": "2026",
     "pubblicato": false,
     "descrizione": {
@@ -292,7 +292,6 @@
     },
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1784576170/divinacommedia_r3rlbj.jpg",
     "galleria": [],
-    "pubblicato": false,
     "contenuto": [
       {
         "tipo": "testo",
@@ -300,6 +299,27 @@
           "it": "Non è un progetto su Dante. È un progetto sul viaggio — quella condizione strana in cui ci si trova in mezzo, senza sapere bene da dove si viene né dove si va.",
           "en": "This is not a project about Dante. It is a project about the journey — that strange condition of finding yourself in the middle, without quite knowing where you came from or where you are going."
         }
+      },
+      {
+        "titolo": {
+          "it": "Canto I - Inferno",
+          "en": "Canto I - Inferno"
+        }
+      },
+      {
+        "tipo": "immagine",
+        "valore": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1785776290/divina-commedia-cantoI-2_wkvpe7.jpg"
+      },
+      {
+        "tipo": "testo",
+        "valore": {
+          "it": "Nel mezzo del cammin di nostra vita mi ritrovai per una selva oscura, ché la diritta via era smarrita.",
+          "en": "In the middle of the journey of our life I found myself in a dark wood, for the straight way had been lost."
+        }
+      },
+      {
+        "tipo": "embed",
+        "valore": "https://archive.org/embed/lp_la-divina-commedia-inferno-purgatorio_dante-alighieri-carlo-dangelo-giorgio-albe/disc1/01.01.+Inferno+-+Canto+1+letto+.mp3"
       }
     ]
   },
@@ -354,6 +374,32 @@
         "valore": {
           "it": "Le immagini sono realizzate con una HP Photosmart 715, una fotocamera digitale dei primi anni 2000 con una risoluzione di 3.3 megapixel. Questa limitazione diventa il punto di partenza del progetto. La serie è composta da tre fotografie.\n Tutte le immagini sono: \n - scattate nello stesso punto della città\n\n - realizzate in tre giorni diversi\n - costruite attorno alla presenza di tre elementi ripetuti nella scena\n Ogni fotografia viene poi ritagliata in formato 1:1 e convertita in bianco e nero, per enfatizzare le forme, la ripetizione e il carattere grezzo del sensore digitale.\n Il progetto segue una struttura semplice e quasi matematica:\n - 3.3 megapixel — la risoluzione della fotocamera\n - 3 fotografie — la struttura della serie\n - 3 elementi — la composizione di ogni immagine\n - 3 giorni — il tempo in cui il progetto prende forma\n Lo stesso spazio urbano viene osservato più volte, lasciando che la città cambi naturalmente: persone, oggetti e luce si trasformano, mentre l'inquadratura rimane la stessa.\n Le tre fotografie della serie verranno aggiunte qui una volta completato il progetto.",
           "en": "The images are made with an HP Photosmart 715, a digital camera from the early 2000s with a resolution of 3.3 megapixels. This limitation becomes the starting point of the project. The series is made up of three photographs.\n All the images are: \n - taken at the same spot in the city\n\n - made on three different days\n - built around the presence of three repeated elements in the scene\n Each photograph is then cropped to a 1:1 format and converted to black and white, to emphasize the shapes, the repetition, and the raw character of the digital sensor.\n The project follows a simple, almost mathematical structure:\n - 3.3 megapixels — the camera's resolution\n - 3 photographs — the structure of the series\n - 3 elements — the composition of each image\n - 3 days — the time in which the project takes shape\n The same urban space is observed several times, letting the city change naturally: people, objects, and light transform, while the framing stays the same.\n The three photographs of the series will be added here once the project is completed."
+        }
+      }
+    ]
+  },
+  {
+    "id": "Quellochehaivisto",
+    "titolo": "Quello che Hai Visto",
+    "anno": "",
+    "descrizione": {
+      "it": "Una fotocamera passa di mano in mano. Ogni persona racconta il proprio mondo, un'immagine alla volta.",
+      "en": "A camera passes from hand to hand. Each person tells their story, one image at a time."
+    },
+    "testo_lungo": "",
+    "testo_lungo_bozza": {
+      "it": "",
+      "en": ""
+      },
+    "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1785776062/Quellochehaivisto-COVER_ntf7ba.jpg",
+    "galleria": [],
+    "pubblicato": false,
+    "contenuto": [
+      {
+        "tipo": "testo",
+        "valore": {
+          "it":"",
+          "en":""
         }
       }
     ]

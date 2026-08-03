@@ -273,7 +273,7 @@ Ogni progetto costruisce il proprio contenuto interno con `contenuto`: un array 
 ]
 ```
 
-Tipi disponibili: `titolo`, `testo`, `immagine`, `galleria`, `mappa`, `separatore`, `spotify`.
+Tipi disponibili: `titolo`, `testo`, `immagine`, `galleria`, `mappa`, `separatore`, `spotify`, `embed`.
 
 **I campi `valore` di tipo testo (`titolo`, `testo`) accettano sia una stringa semplice sia un oggetto bilingue** `{ "it": "...", "en": "..." }`.
 
@@ -312,6 +312,29 @@ Per copiarlo correttamente:
 - **Web player:** tre puntini → *Condividi* → *Copia link brano* → ottieni un URL tipo `https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC?si=...`. Prendi solo i 22 caratteri tra `/track/` e `?`, e scrivi `spotify:track:` davanti.
 
 Il player viene creato con la [Spotify iFrame API](https://developer.spotify.com/documentation/embeds/references/iframe-api) ufficiale (script caricato dinamicamente in `js/libro.js` → `caricaSpotifyIframeAPI()` / `avviaSpotifySections()`), che espone l'evento `playback_update` con l'URI del brano attualmente in ascolto. Se un ad-blocker (uBlock, Brave Shields, ecc.) è attivo, può bloccare lo script e l'embed non carica: testare in incognito senza estensioni in caso di pagina vuota.
+
+---
+
+#### Blocco `embed` — iframe generico (YouTube, Vimeo, SoundCloud, tool esterni...)
+
+Per incorporare un contenuto esterno qualsiasi che non sia una mappa o una playlist Spotify (video, player audio, applicazioni embeddabili, ecc.).
+
+```json
+{
+  "tipo": "embed",
+  "valore": {
+    "url": "https://www.youtube.com/embed/XXXXXXXXXXX",
+    "label": "Didascalia opzionale",
+    "ratio": "16:9"
+  }
+}
+```
+
+- **`url`** (obbligatorio) — deve essere l'URL di **embed**, non l'URL della pagina normale. Es. YouTube: `https://www.youtube.com/embed/ID_VIDEO` (non `watch?v=`); Vimeo: `https://player.vimeo.com/video/ID`. Accetta anche un oggetto bilingue `{ "it": "...", "en": "..." }` se serve un embed diverso per lingua.
+- **`label`** (opzionale) — piccola didascalia mostrata sopra l'iframe, stessa stringa/oggetto bilingue di `titolo`/`testo`.
+- **`ratio`** (opzionale, default `"16:9"`) — proporzioni del riquadro, es. `"4:3"`, `"1:1"`, `"9:16"` per contenuti verticali.
+
+**Perché un `<iframe>` "generico" incollato a mano non funziona:** il sistema di contenuti legge solo i `tipo` gestiti esplicitamente da `generaContenutoProgetto()` in `js/libro.js` (`titolo`, `testo`, `immagine`, `galleria`, `mappa`, `spotify`, `embed`, `separatore`). Qualsiasi altro `tipo`, o un tag `<iframe>` scritto direttamente nel JSON come stringa, viene ignorato — il JSON viene sempre interpretato come dati, mai come HTML eseguibile. Usa il blocco `embed` sopra descritto.
 
 ---
 
