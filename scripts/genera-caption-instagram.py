@@ -28,6 +28,7 @@ prima di eseguire sincronizza-taccuino.py). Nessun file di "ultimo id
 notificato" da mantenere: json/taccuino.json committato nel repo È
 già quella memoria.
 """
+import hashlib
 import json
 import os
 import re
@@ -80,11 +81,35 @@ def genera_caption(voce):
     )
 
 
+def impronta(voce):
+    """Identificatore stabile basato sul CONTENUTO della voce, non sulla
+    sua posizione.
+
+    L'id dentro taccuino.json è puramente posizionale (assegnato da
+    sincronizza-taccuino.py come "numero di riga nel foglio"): se una
+    riga viene cancellata o se ne inserisce una nuova non in fondo al
+    foglio, gli id di tutte le righe successive slittano e un id può
+    finire per indicare una voce completamente diversa da quella a cui
+    puntava prima. Confrontare "è nuovo?" per id, in quel caso, dà
+    risposte sbagliate. Confrontando invece il contenuto stesso (testo +
+    data + foto + video) il rilevamento resta corretto qualunque cosa
+    succeda alla numerazione delle righe nel foglio.
+    """
+    chiave = "|".join([
+        testo_it(voce),
+        str(voce.get("data") or ""),
+        str(voce.get("foto") or ""),
+        str(voce.get("video") or ""),
+    ])
+    return hashlib.sha1(chiave.encode("utf-8")).hexdigest()
+
+
 def trova_voci_nuove(nuovo, vecchio):
-    id_vecchi = {str(v.get("id")) for v in vecchio}
-    nuove = [v for v in nuovo if str(v.get("id")) not in id_vecchi]
-    # Ordine cronologico di pubblicazione: dal più vecchio id nuovo al più recente.
-    nuove.sort(key=lambda v: v.get("id", 0))
+    impronte_viste = {impronta(v) for v in vecchio}
+    nuove = [v for v in nuovo if impronta(v) not in impronte_viste]
+    # Ordine cronologico di pubblicazione: dalla data meno recente alla
+    # più recente tra le voci nuove (le date mancanti finiscono per prime).
+    nuove.sort(key=lambda v: v.get("data") or "")
     return nuove
 
 
