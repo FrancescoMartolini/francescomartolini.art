@@ -1,5 +1,13 @@
 [
   {
+    "id": 17,
+    "testo": "Primo Appunto <br> LA SELVA OSCURA <br> <br> Una fotografia. <br> Una voce. <br> Una traccia lasciata da Dante nel presente. <br> Sto cercando il modo di trasformare il viaggio di Dante in immagini. <br> Non una rappresentazione della Commedia, ma ciò che ancora oggi rimane della sua voce.",
+    "data": "2026-08-03",
+    "foto": null,
+    "video": null,
+    "camera": null
+  },
+  {
     "id": 16,
     "testo": {
       "it": "Oggi ho trovato il modo per stampare il mio prototipo di PLAYLIST.00 si chiama ZINE… proverò e vi mostrerò quello che verrà fuori",
