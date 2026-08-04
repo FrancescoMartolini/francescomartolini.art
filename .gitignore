@@ -10,4 +10,11 @@
 /playlist/
 feed.xml
 
+# Generati a ogni deploy (minificazione one-shot via terser/clean-css,
+# vedi README sezione "Script da inserire nel builder di Cloudflare") —
+# non vanno committati, si ricreano da soli. Il sorgente leggibile
+# resta js/libro.js e css/stile.css: si continua a editare quelli.
+js/libro.min.js
+css/stile.min.css
+
 .DS_Store

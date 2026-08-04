@@ -36,6 +36,7 @@ francescomartolini.art/
 │   └── index.js                  ← Worker Cloudflare: /subscribe, /notify, poi fallback su asset statici
 │
 ├── scripts/
+│   ├── prepara-deploy.sh              ← script unico da mettere nel builder Cloudflare (vedi sezione URL PARLANTI)
 │   ├── serve-locale.py               ← server per testare in locale (vedi sezione URL)
 │   ├── genera-route-statiche.py      ← genera le pagine reali dei progetti/sezioni (vedi sezione URL)
 │   ├── genera-sitemap.py             ← genera sitemap.xml da json/progetti.json
@@ -156,10 +157,16 @@ python3 scripts/genera-route-statiche.py
 python3 scripts/serve-locale.py
 ```
 
-Script da inserire nel builder di Cloudeflare
+Script da inserire nel builder di Cloudeflare (campo "Build command")
 ```bash
-python3 scripts/genera-sitemap.py && python3 scripts/genera-feed-rss.py && python3 scripts/genera-route-statiche.py
+bash scripts/prepara-deploy.sh
 ```
+
+Tutti i comandi (sitemap, feed RSS, pagine statiche, minificazione) vivono in `scripts/prepara-deploy.sh`, tracciato su git — non più una riga incollata a mano nel pannello Cloudflare e persa da nessuna parte nel repo. Per cambiare cosa gira in fase di deploy si modifica quel file, si committa, fine.
+
+**Minificazione:** ultimi comandi dello script. `index.html` punta sempre a `js/libro.js` e `css/stile.css` — mai a un file `.min` separato, né in locale né in produzione — quindi non c'è niente da tenere sincronizzato tra i due ambienti. Il trucco è nell'ordine: si minifica su un file temporaneo (`.js.min` / `.css.min`) e poi lo si sposta *sopra* il sorgente, sostituendolo, con lo stesso nome che `index.html` già carica.
+
+**Importante:** questo funziona solo perché il builder Cloudflare gira su un checkout temporaneo, creato e scartato a ogni deploy — sovrascrivere `js/libro.js`/`css/stile.css` lì dentro non tocca mai il repo né i sorgenti che editi in locale. Se in futuro il deploy dovesse girare invece dalla stessa cartella/macchina usata per `git`/`wrangler` (es. lanciando questo script a mano da terminale prima di `npx wrangler deploy`), **non va fatto così**: si sovrascriverebbero i sorgenti veri, serve prima un `git stash`/checkout pulito o tornare all'approccio con file `.min` separati.
 
 (`scripts/serve-locale.py` include comunque il fallback su `404.html` per eventuali URL non generati — utile per provare anche quel meccanismo di riserva)
 
