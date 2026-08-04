@@ -1261,7 +1261,7 @@ function generaContenutoProgetto(pr) {
         case 'embed':
           colonnaHTML += generaEmbedHTML(b.valore); break;
         case 'nota':
-          colonnaHTML += `<div class="section-nota">${t(b.valore)}</div>`; break;
+          colonnaHTML += `<p class="section-nota">${t(b.valore)}</p>`; break;
         case 'separatore':
           colonnaHTML += `<hr class="progetto-separatore">`; break;
       }
@@ -1314,6 +1314,7 @@ function generaContenutoProgetto(pr) {
       case 'mappa': return generaMappaHTML(pr);
       case 'spotify': return generaSpotifyHTML(b.valore);
       case 'embed': return generaEmbedHTML(b.valore);
+      case 'nota': return `<p class="section-nota">${t(b.valore)}</p>`;
       case 'separatore': return `<hr class="progetto-separatore">`;
       default: return '';
     }
@@ -1341,7 +1342,7 @@ function generaMappaHTML(pr) {
 
 function generaEmbedHTML(v) {
   // Blocco iframe generico: YouTube, Vimeo, SoundCloud, o qualsiasi embed esterno.
-  // Schema: { url, label?, ratio? } — ratio tipo "16:9", "4:3", "1:1" (default )
+  // Schema: { url, label?, ratio? } — ratio tipo "16:9", "4:3", "1:1" (default vuoto)
   if (!v || !v.url) return '';
   const src = t(v.url);
   const label = t(v.label) || '';

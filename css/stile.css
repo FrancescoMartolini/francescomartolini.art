@@ -676,7 +676,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
 .reveal.visible { opacity: 1; transform: none; }
 
-.section-nota {font-family: var(--font-taccuino); font-size: clamp(20px, 2.8vw, 30px); line-height: 1.4; margin-bottom: 10px;}
+.section-nota {font-family: var(--font-taccuino); font-size: clamp(20px, 2.8vw, 30px); line-height: 1.4; margin-bottom: 10px; text-align-last: center}
 
 /* ══════════════════════════════════════════════
    LAYOUT 1: editorial
@@ -897,7 +897,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 }
 .layout-base .section-text p { margin-bottom: 18px; }
 .layout-base .section-text p:last-child { margin-bottom: 0; }
-.layout-base .section-nota {font-family: var(--font-taccuino); font-size: clamp(20px, 2.8vw, 30px); line-height: 1.4; margin-bottom: 10px;}
+.layout-base .section-nota {font-family: var(--font-taccuino); font-size: clamp(20px, 2.8vw, 30px); line-height: 1.4; margin-bottom: 10px; text-align-last: center}
 .layout-base .section-image {
   width: 100%;
   margin-bottom: 10px;
@@ -1199,7 +1199,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .chi-sono-testo p { font-size: 12px; font-weight: 300; line-height: 1.9; color: var(--grigio-testo); margin-bottom: 10px; }
   .chi-sono-contatti { display: flex; flex-direction: column; align-items: center; }
   .contatti-label { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--grigio-medio); margin-bottom: 6px; }
-  .contatti-nota { font-size: 11px; font-weight: 300; line-height: 1.7; color: var(--grigio-testo); font-style: italic; margin-bottom: 12px; }
+  .contatti-nota { font-size: 11px; font-weight: 300; line-height: 1.7; color: var(--grigio-testo); font-style: italic; margin-bottom: 12px; text-align-last: center}
 
   .fin-wrap { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0;}
   .fin-titolo { font-family: var(--font-titolo); font-size: clamp(60px, 22vw, 110px); font-weight: 400; font-style: italic; line-height: 1; margin-bottom: 28px; }
@@ -1275,7 +1275,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 
   #mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 44px; background: var(--bianco); border-top: 1px solid var(--grigio-chiaro); z-index: 200; display: flex; align-items: center; justify-content: center; }
 
-  .nota-nav { position: absolute; left: 20px; top: 0; height: 44px; display: flex; align-items: center; font-family: var(--font-titolo); font-style: italic; font-size: 16px; color: var(--grigio-medio); background: none; border: none; padding: 0 6px; transition: color var(--transizione); }
+  .nota-nav { position: absolute; left: 20px; top: 0; height: 44px; display: flex; align-items: center; font-family: var(--font-titolo); font-style: italic; font-size: 16px; color: var(--grigio-medio); background: none; border: none; padding: 0 6px; transition: color var(--transizione);  text-align-last: center}
   .nota-nav:hover { color: var(--nero); }
 
   .freccia { justify-content: center; width: 120px; font-size: 11px; font-weight: 300; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grigio-medio); padding: 0 20px; height: 44px; display: flex; align-items: center; transition: color var(--transizione); background: none; border: none; user-select: none; }
@@ -1390,7 +1390,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 /* overlay "note" — istruzioni di lettura */
 .overlay-titolo-nota { font-size: clamp(26px, 6vw, 36px); margin-bottom: 40px; font-style: italic; }
 .nota-testo { max-width: 420px; }
-.nota-testo p { font-size: 14px; font-weight: 300; line-height: 2; color: var(--grigio-testo); margin-bottom: 22px; }
+.nota-testo p { font-size: 14px; font-weight: 300; line-height: 2; color: var(--grigio-testo); margin-bottom: 22px; text-align-last: center}
 
 /* overlay "tutti studi" nota */
 .overlay-sottotitolo {
