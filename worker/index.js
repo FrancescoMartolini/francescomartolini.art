@@ -42,6 +42,21 @@ export default {
       return gestisciNotify(request, env);
     }
 
+    if (request.method === 'GET' && url.pathname === '/debug-telegram') {
+      return new Response(
+        JSON.stringify({
+          TELEGRAM_BOT_TOKEN_configurato: !!env.TELEGRAM_BOT_TOKEN,
+          TELEGRAM_WEBHOOK_SECRET_configurato: !!env.TELEGRAM_WEBHOOK_SECRET,
+          TELEGRAM_WEBHOOK_SECRET_lunghezza: (env.TELEGRAM_WEBHOOK_SECRET || '').length,
+          TELEGRAM_ALLOWED_CHAT_ID_configurato: !!env.TELEGRAM_ALLOWED_CHAT_ID,
+          TELEGRAM_ALLOWED_CHAT_ID_lunghezza: (env.TELEGRAM_ALLOWED_CHAT_ID || '').length,
+          AI_binding_configurato: !!env.AI,
+          PUSH_SUBS_configurato: !!env.PUSH_SUBS
+        }, null, 2),
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
     if (url.pathname === '/telegram/webhook') {
       var telegramSecret = url.searchParams.get('secret');
       if (telegramSecret !== env.TELEGRAM_WEBHOOK_SECRET) {
