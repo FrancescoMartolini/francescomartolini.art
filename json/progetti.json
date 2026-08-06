@@ -142,11 +142,40 @@
       "it": "Streetphotograpy in formato 65:24",
       "en": "Street photography in 65:24 format"
     },
-    "testo_lungo": {
-      "it": "Il progetto, nato nel 2020, prende ispirazione dalla leggendaria Hasselblad XPan, una fotocamera analogica capace di sfruttare in modo innovativo la pellicola da 35mm. A differenza delle comuni macchine fotografiche, l'XPan combinava due fotogrammi consecutivi, dando vita a immagini panoramiche nel formato unico di 65x24mm.\n\nQuesto progetto raccoglie e reinterpreta quella visione, adattandola alla fotografia contemporanea: le immagini di una fotocamera tradizionale vengono ritagliate per ricreare l'iconico formato panoramico, trasformando così il modo in cui osserviamo e raccontiamo la street photography. \nNe nasce un nuovo linguaggio visivo, capace di enfatizzare il dinamismo e la profondità della scena urbana, offrendo una prospettiva inedita e immersiva sul mondo che ci circonda.",
-      "en": "The project, born in 2020, draws inspiration from the legendary Hasselblad XPan, an analogue camera capable of using 35mm film in an innovative way. Unlike ordinary cameras, the XPan combined two consecutive frames, giving rise to panoramic images in the unique 65x24mm format.\n\nThis project gathers and reinterprets that vision, adapting it to contemporary photography: images from a traditional camera are cropped to recreate the iconic panoramic format, transforming the way we look at and tell street photography. \nA new visual language emerges from this, capable of emphasizing the dynamism and depth of the urban scene, offering an unprecedented and immersive perspective on the world around us."
-    },
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778414649/cover_bpfi9g.jpg",
+    "contenuto":[
+      {
+        "tipo": "testo",
+        "valore": {
+          "it": "Il progetto, nato nel 2020, prende ispirazione dalla leggendaria Hasselblad XPan, una fotocamera analogica capace di sfruttare in modo innovativo la pellicola da 35mm. A differenza delle comuni macchine fotografiche, l'XPan combinava due fotogrammi consecutivi, dando vita a immagini panoramiche nel formato unico di 65x24mm.\n\nQuesto progetto raccoglie e reinterpreta quella visione, adattandola alla fotografia contemporanea: le immagini di una fotocamera tradizionale vengono ritagliate per ricreare l'iconico formato panoramico, trasformando così il modo in cui osserviamo e raccontiamo la street photography. \nNe nasce un nuovo linguaggio visivo, capace di enfatizzare il dinamismo e la profondità della scena urbana, offrendo una prospettiva inedita e immersiva sul mondo che ci circonda.",
+          "en": "The project, born in 2020, draws inspiration from the legendary Hasselblad XPan, an analogue camera capable of using 35mm film in an innovative way. Unlike ordinary cameras, the XPan combined two consecutive frames, giving rise to panoramic images in the unique 65x24mm format.\n\nThis project gathers and reinterprets that vision, adapting it to contemporary photography: images from a traditional camera are cropped to recreate the iconic panoramic format, transforming the way we look at and tell street photography. \nA new visual language emerges from this, capable of emphasizing the dynamism and depth of the urban scene, offering an unprecedented and immersive perspective on the world around us."        }
+      },
+      {
+        "tipo": "immagine",
+        "valore": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1785864393/OlafulEliasson-neltuotempo-1_mrnuuy.jpg"
+      },
+      {
+        "tipo": "immagine",
+        "valore": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1785864393/OlafulEliasson-neltuotempo-2_nvwf9i.jpg"
+      },
+      {
+        "tipo": "testo",
+        "valore": {
+          "it":"Foto scattate nella mostra dedicata a Olafur Eliasson a Palazzo Strozzi di Firenze.",
+          "en": "Photos taken at the exhibition dedicated to Olafur Eliasson at Palazzo Strozzi in Florence."
+        }
+      },
+      {
+        "tipo": "separatore"
+      },
+      {
+        "tipo": "titolo",
+        "valore": {
+          "it": "Galleria",
+          "en": "Gallery"
+        }
+      }
+    ],
     "galleria": [
       "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1779218647/1_lm16em.jpg",
       "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1779218647/3_lwsbjj.jpg",

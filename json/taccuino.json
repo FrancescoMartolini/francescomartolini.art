@@ -1,7 +1,21 @@
 [
   {
+    "id": 18,
+    "testo": {
+      "it": "Ho ritorvato una delle foto più belle a parer mio che abbia mai fatto",
+      "en": "I found one of the most beautiful photos in my opinion I have ever taken"
+    },
+    "data": "2026-08-04",
+    "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1785864393/OlafulEliasson-neltuotempo-1_mrnuuy.jpg",
+    "video": null,
+    "camera": "Scattata con Canon 1D Mark III"
+  },
+  {
     "id": 17,
-    "testo": "Primo Appunto <br> LA SELVA OSCURA <br> <br> Una fotografia. <br> Una voce. <br> Una traccia lasciata da Dante nel presente. <br> Sto cercando il modo di trasformare il viaggio di Dante in immagini. <br> Non una rappresentazione della Commedia, ma ciò che ancora oggi rimane della sua voce.",
+    "testo": {
+      "it": "Primo Appunto <br> LA SELVA OSCURA <br> <br> Una fotografia. <br> Una voce. <br> Una traccia lasciata da Dante nel presente. <br> Sto cercando il modo di trasformare il viaggio di Dante in immagini. <br> Non una rappresentazione della Commedia, ma ciò che ancora oggi rimane della sua voce.",
+      "en": "First Note <br> THE DARK FOREST <br> <br> A photograph. <br> A voice. <br> A trace left by Dante in the present. <br> I am looking for a way to transform Dante's journey into images. <br> Not a representation of the Comedy, but what still remains of his voice today."
+    },
     "data": "2026-08-03",
     "foto": null,
     "video": null,
