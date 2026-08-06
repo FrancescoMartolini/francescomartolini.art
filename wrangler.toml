@@ -42,3 +42,10 @@ binding = "AI"
 pattern = "francescomartolini.art"
 zone_name = "francescomartolini.art"
 custom_domain = true
+
+[observability.logs]
+enabled = true
+invocation_logs = true
+
+[observability.traces]
+enabled = false
