@@ -28,3 +28,17 @@ not_found_handling = "404-page"
 [[kv_namespaces]]
 binding = "PUSH_SUBS"
 id = "ae0ced70fa8f430692cd26b62a88c6d9"
+
+# Binding per Workers AI, usato dal bot Telegram per generare le
+# caption Instagram (vedi worker/index.js, funzione generateCaption).
+[ai]
+binding = "AI"
+
+# Route del dominio custom. Senza questa voce, wrangler considera la
+# route "solo remota" (impostata a mano su dashboard) e la rimuove ad
+# ogni deploy, facendo tornare il Worker al solo dominio
+# *.workers.dev — è quello che è appena successo nell'ultimo deploy.
+[[routes]]
+pattern = "francescomartolini.art"
+zone_name = "francescomartolini.art"
+custom_domain = true
