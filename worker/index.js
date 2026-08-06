@@ -17,44 +17,12 @@ export default {
   async fetch(request, env, ctx) {
     var url = new URL(request.url);
 
-    // Rotta diagnostica TEMPORANEA — non rivela mai i valori dei
-    // secret, solo se sono configurati e quanto sono lunghi. Da
-    // rimuovere una volta risolto il problema del 401.
-    if (request.method === 'GET' && url.pathname === '/debug-notify') {
-      return new Response(
-        JSON.stringify({
-          NOTIFY_SECRET_configurato: !!env.NOTIFY_SECRET,
-          NOTIFY_SECRET_lunghezza: (env.NOTIFY_SECRET || '').length,
-          VAPID_PUBLIC_KEY_configurato: !!env.VAPID_PUBLIC_KEY,
-          VAPID_PRIVATE_KEY_configurato: !!env.VAPID_PRIVATE_KEY,
-          VAPID_CONTACT_EMAIL_configurato: !!env.VAPID_CONTACT_EMAIL,
-          PUSH_SUBS_configurato: !!env.PUSH_SUBS
-        }, null, 2),
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
     if (request.method === 'POST' && url.pathname === '/subscribe') {
       return gestisciSubscribe(request, env);
     }
 
     if (request.method === 'POST' && url.pathname === '/notify') {
       return gestisciNotify(request, env);
-    }
-
-    if (request.method === 'GET' && url.pathname === '/debug-telegram') {
-      return new Response(
-        JSON.stringify({
-          TELEGRAM_BOT_TOKEN_configurato: !!env.TELEGRAM_BOT_TOKEN,
-          TELEGRAM_WEBHOOK_SECRET_configurato: !!env.TELEGRAM_WEBHOOK_SECRET,
-          TELEGRAM_WEBHOOK_SECRET_lunghezza: (env.TELEGRAM_WEBHOOK_SECRET || '').length,
-          TELEGRAM_ALLOWED_CHAT_ID_configurato: !!env.TELEGRAM_ALLOWED_CHAT_ID,
-          TELEGRAM_ALLOWED_CHAT_ID_lunghezza: (env.TELEGRAM_ALLOWED_CHAT_ID || '').length,
-          AI_binding_configurato: !!env.AI,
-          PUSH_SUBS_configurato: !!env.PUSH_SUBS
-        }, null, 2),
-        { headers: { 'Content-Type': 'application/json' } }
-      );
     }
 
     if (url.pathname === '/telegram/webhook') {
