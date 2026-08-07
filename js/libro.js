@@ -8,6 +8,9 @@
 
 'use strict';
 
+// Attualmente non utilizzate: il taccuino legge solo json/taccuino.json
+// (vedi caricaDati() e README, sezione TACCUINO). Tenute qui pronte per
+// una eventuale riattivazione della lettura live dal foglio Google.
 //const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?gid=1174325309&single=true&output=csv';
 //const SHEETS_URL_EN = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?gid=1079818483&single=true&output=csv';
 
@@ -249,19 +252,31 @@ async function caricaDati() {
   ]);
   Object.assign(stato, { progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi, playlist });
 
+  // ── Google Sheets DISATTIVATO (vedi README, sezione TACCUINO) ──
+  // Il taccuino ora si scrive solo su json/taccuino.json (a mano o via
+  // bot Telegram /nuovanota). Il blocco sotto tentava prima una lettura
+  // live dal foglio Google pubblicato in CSV, con fallback al JSON in
+  // caso di errore; resta qui commentato, pronto da riattivare
+  // rimuovendo i commenti, nel caso servisse di nuovo in futuro.
+  //
+  // try {
+  //   const r = await fetch(localStorage.getItem('lang') === 'en' ? SHEETS_URL_EN : SHEETS_URL);
+  //   if (!r.ok) throw new Error();
+  //   stato.taccuino = parseCsv(await r.text()).sort((a, b) => new Date(b.data) - new Date(a.data));
+  //   _cacheTaccuino = null;
+  // } catch {
+  //   try {
+  //     stato.taccuino = (await fetch('json/taccuino.json').then(r => r.json()))
+  //       .sort((a, b) => new Date(b.data) - new Date(a.data));
+  //   } catch { stato.taccuino = []; }
+  //   _cacheTaccuino = null;
+  // }
+
   try {
-    //const r = await fetch(SHEETS_URL);
-    const r = await fetch(localStorage.getItem('lang') === 'en' ? SHEETS_URL_EN : SHEETS_URL);
-    if (!r.ok) throw new Error();
-    stato.taccuino = parseCsv(await r.text()).sort((a, b) => new Date(b.data) - new Date(a.data));
-    _cacheTaccuino = null;
-  } catch {
-    try {
-      stato.taccuino = (await fetch('json/taccuino.json').then(r => r.json()))
-        .sort((a, b) => new Date(b.data) - new Date(a.data));
-    } catch { stato.taccuino = []; }
-    _cacheTaccuino = null;
-  }
+    stato.taccuino = (await fetch('json/taccuino.json').then(r => r.json()))
+      .sort((a, b) => new Date(b.data) - new Date(a.data));
+  } catch { stato.taccuino = []; }
+  _cacheTaccuino = null;
 }
 
 // ── Orologio ──

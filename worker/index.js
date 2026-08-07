@@ -42,21 +42,6 @@ export default {
       return gestisciNotify(request, env);
     }
 
-    if (request.method === 'GET' && url.pathname === '/debug-telegram') {
-      return new Response(
-        JSON.stringify({
-          TELEGRAM_BOT_TOKEN_configurato: !!env.TELEGRAM_BOT_TOKEN,
-          TELEGRAM_WEBHOOK_SECRET_configurato: !!env.TELEGRAM_WEBHOOK_SECRET,
-          TELEGRAM_WEBHOOK_SECRET_lunghezza: (env.TELEGRAM_WEBHOOK_SECRET || '').length,
-          TELEGRAM_ALLOWED_CHAT_ID_configurato: !!env.TELEGRAM_ALLOWED_CHAT_ID,
-          TELEGRAM_ALLOWED_CHAT_ID_lunghezza: (env.TELEGRAM_ALLOWED_CHAT_ID || '').length,
-          AI_binding_configurato: !!env.AI,
-          PUSH_SUBS_configurato: !!env.PUSH_SUBS
-        }, null, 2),
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
     if (url.pathname === '/telegram/webhook') {
       var telegramSecret = url.searchParams.get('secret');
       if (telegramSecret !== env.TELEGRAM_WEBHOOK_SECRET) {
@@ -339,11 +324,17 @@ async function inviaCaptionProgetto(chatId, project, env) {
 var CAMPI_NOTA = [
   { chiave: 'testo_it', domanda: 'Testo della nota, in italiano:' },
   { chiave: 'testo_en', domanda: 'Stesso testo, in inglese:' },
-  { chiave: 'data', domanda: 'Data (formato AAAA-MM-GG, es. 2026-08-07). Scrivi "-" per usare la data di oggi:' },
   { chiave: 'foto', domanda: 'URL della foto (o "-" se non c\'è):' },
   { chiave: 'video', domanda: 'URL del video (o "-" se non c\'è):' },
   { chiave: 'camera', domanda: 'Camera/fotocamera usata (o "-" se non specificata):' }
 ];
+
+// La data della nota è sempre "oggi", nel fuso orario italiano (non UTC,
+// altrimenti scrivendo dopo mezzanotte risulterebbe il giorno sbagliato).
+// Formato en-CA per comodità: restituisce direttamente AAAA-MM-GG.
+function dataOggiRoma() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome' }).format(new Date());
+}
 
 async function salvaNotaState(chatId, stato, env) {
   await env.PUSH_SUBS.put('telegram_nota_state:' + chatId, JSON.stringify(stato), { expirationTtl: 1800 });
@@ -402,9 +393,6 @@ async function gestisciPassoNuovaNota(chatId, text, stato, env) {
 
   if ((stato.step === 'foto' || stato.step === 'video' || stato.step === 'camera') && valore === '-') {
     valore = null;
-  }
-  if (stato.step === 'data' && valore === '-') {
-    valore = new Date().toISOString().slice(0, 10);
   }
 
   stato.data[stato.step] = valore;
@@ -531,10 +519,10 @@ async function handleTelegramUpdate(update, env) {
   }
 
   if (text === '/nuovanota') {
-    var nuovoStato = { step: CAMPI_NOTA[0].chiave, data: {} };
+    var nuovoStato = { step: CAMPI_NOTA[0].chiave, data: { data: dataOggiRoma() } };
     await salvaNotaState(chatId, nuovoStato, env);
     await sendTelegramMessage(chatId,
-      'Creiamo una nuova nota per il taccuino. Scrivi /annulla in qualsiasi momento per interrompere.\n\n' +
+      'Creiamo una nuova nota per il taccuino (data: ' + nuovoStato.data.data + '). Scrivi /annulla in qualsiasi momento per interrompere.\n\n' +
       CAMPI_NOTA[0].domanda, env);
     return;
   }

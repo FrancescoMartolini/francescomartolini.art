@@ -33,7 +33,7 @@ francescomartolini.art/
 ├── .assetsignore                 ← esclude scripts/worker dagli asset pubblici serviti da Cloudflare
 │
 ├── worker/
-│   └── index.js                  ← Worker Cloudflare: /subscribe, /notify, poi fallback su asset statici
+│   └── index.js                  ← Worker Cloudflare: /subscribe, /notify, /telegram/webhook (bot), poi fallback su asset statici
 │
 ├── scripts/
 │   ├── prepara-deploy.sh              ← script unico da mettere nel builder Cloudflare (vedi sezione URL PARLANTI)
@@ -42,7 +42,7 @@ francescomartolini.art/
 │   ├── genera-sitemap.py             ← genera sitemap.xml da json/progetti.json
 │   ├── genera-feed-rss.py            ← genera i 4 feed RSS (vedi sezione FEED RSS)
 │   ├── genera-chiavi-vapid.mjs       ← genera le chiavi VAPID per le notifiche push (una tantum)
-│   ├── sincronizza-taccuino.py       ← importa il Taccuino da Google Sheets (vedi sezione dedicata)
+│   ├── sincronizza-taccuino.py       ← importa il Taccuino da Google Sheets (DISATTIVATO, vedi sezione dedicata)
 │   └── notifica-nuovi-contenuti.py   ← individua le voci nuove e invia le notifiche push
 │
 ├── css/
@@ -575,47 +575,156 @@ Array di frasi brevi per la pagina finale "fin.".
 
 ---
 
-### TACCUINO — GOOGLE SHEETS (fonte principale)
+### TACCUINO — SCRITTURA
 
-Il taccuino si scrive su Google Sheets, ma **il sito non legge più il foglio in tempo reale
-ad ogni visita** — solo `json/taccuino.json`, sincronizzato automaticamente. Questo perché il
-CSV pubblicato di Google Sheets può essere molto lento "a freddo" (anche 30-60s+ se non viene
-richiesto da un po'), e prima bloccava il rendering dell'intero sito fino alla risposta.
+Il Taccuino si scrive in due modi, entrambi diretti su `json/taccuino.json`:
 
-**Come funziona oggi:**
+1. **Bot Telegram** (consigliato): comando `/nuovanota` — vedi sezione
+   "BOT TELEGRAM" più sotto. Chiede i campi uno alla volta e fa il
+   commit da solo.
+2. **A mano**: modifica diretta di `json/taccuino.json`, seguendo la
+   struttura in fondo a questa sezione.
 
-1. Scrivi una nuova voce nel foglio Google, come sempre.
-2. `.github/workflows/sincronizza-taccuino.yml` gira ogni notte (06:00 UTC) — oppure a mano da
-   **Actions → Sincronizza Taccuino da Google Sheets → Run workflow** se vuoi vederla subito —
-   e lancia `scripts/sincronizza-taccuino.py`, che scarica i due fogli (IT/EN), li combina e
-   riscrive `json/taccuino.json` **solo se qualcosa è cambiato**. Se ci sono modifiche, fa
-   commit + push, il che a sua volta fa scattare il deploy normale (`static.yml`).
-3. `js/libro.js` legge `json/taccuino.json` all'avvio. In più, prova comunque a chiamare anche
-   il foglio live (`caricaDati()`), ma con un timeout di `SHEETS_TIMEOUT_MS` (3000ms di default):
-   se Google non risponde in tempo, usa subito `json/taccuino.json` senza bloccare la pagina.
-   Questo è solo un bonus per vedere una voce freschissima nello stesso giorno in cui viene
-   scritta, prima che scatti la sync notturna — non è il meccanismo principale.
+`js/libro.js` (funzione `caricaDati()`) legge `json/taccuino.json`
+all'avvio del sito e ordina le voci per data (più recente prima) — non
+importa in che posizione dell'array viene aggiunta una nuova voce.
 
-**Setup iniziale del foglio (se se ne crea uno nuovo):**
+**Struttura di una voce:**
 
-1. Crea un foglio con intestazioni: `testo` / `testo en` / `data` / `foto` / `video` / `camera`
-   (le colonne si riconoscono per nome, non per posizione — vedi `TEMPLATE/taccuino_template.xlsx`)
-2. File → Condividi → Pubblica sul web → CSV
-3. In `js/libro.js` **e** in `scripts/sincronizza-taccuino.py` sostituisci:
-   ```javascript
-   const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/XXXXXXXX/pub?output=csv';
+```json
+{
+  "id": 18,
+  "testo": {
+    "it": "Testo in italiano.",
+    "en": "Text in English."
+  },
+  "data": "2026-08-04",
+  "foto": "https://res.cloudinary.com/.../immagine.jpg",
+  "video": null,
+  "camera": "Scattata con Canon 1D Mark III"
+}
+```
+
+`foto` e `video` possono essere `null`. Se una voce ha sia `video` che
+`foto`, la foto diventa il poster (fotogramma di anteprima) del video;
+se manca, viene usato il primo fotogramma. Nessun autoplay: il video
+parte solo se il visitatore lo avvia, per restare coerente col ritmo
+silenzioso del libro.
+
+---
+
+### TACCUINO — GOOGLE SHEETS (integrazione disattivata)
+
+**Il Taccuino si scriveva in origine su Google Sheets**, con una sync
+automatica notturna che riscriveva `json/taccuino.json`. Questa
+integrazione è **attualmente disattivata** (non cancellata: il codice
+resta nel repository, commentato, per chiunque volesse riattivarla su
+un fork o in futuro) da quando il Taccuino si scrive tramite il bot
+Telegram.
+
+**Perché è stata disattivata:** il bot Telegram scrive direttamente su
+`json/taccuino.json` via commit GitHub. La sync notturna da Google
+Sheets riscriveva però quel file da zero a ogni esecuzione, cancellando
+qualunque voce aggiunta dal bot che non fosse anche presente nel
+foglio — le due fonti di verità erano incompatibili tra loro senza
+lavoro aggiuntivo per farle convivere.
+
+**Cosa è stato commentato, se si volesse riattivare:**
+
+- `.github/workflows/sincronizza-taccuino.yml` — il trigger `schedule`
+  (sync automatica alle 6:00 UTC) è commentato. Resta `workflow_dispatch`
+  (lancio manuale da tab Actions), quindi il workflow è ancora
+  eseguibile a mano se serve.
+- `js/libro.js`, funzione `caricaDati()` — il tentativo di lettura live
+  dal foglio Google (`SHEETS_URL` / `SHEETS_URL_EN`) è commentato; il
+  sito legge sempre e solo `json/taccuino.json`.
+- `scripts/sincronizza-taccuino.py` — invariato, pronto a essere
+  richiamato dal workflow se riattivato.
+
+**Per riattivarla:** rimuovi i commenti nei due punti sopra. Attenzione:
+prima di farlo, assicurati che il foglio Google contenga anche le voci
+nel frattempo aggiunte via bot Telegram (altrimenti la prima sync le
+cancellerebbe da `json/taccuino.json`).
+
+---
+
+### BOT TELEGRAM
+
+Un bot Telegram, ospitato nello stesso Worker Cloudflare del sito
+(`worker/index.js`), permette di generare caption Instagram per i
+progetti e di scrivere nuove voci del Taccuino direttamente dal
+telefono, senza aprire un editor.
+
+**Comandi disponibili:**
+
+| Comando | Cosa fa |
+|---|---|
+| `/start` | Messaggio di benvenuto, elenco comandi |
+| `/lista` | Elenco di tutti i progetti con il loro `id` |
+| `/post <id>` | Genera con AI una caption Instagram IT+EN per il progetto, nel tono editoriale del sito (nessun linguaggio da social media manager, nessuna emoji nella caption) |
+| `/rigenera <id>` | Rigenera la caption per un progetto, se il primo risultato non convince |
+| `/nuovanota` | Avvia un flusso guidato per scrivere una nuova voce del Taccuino: chiede testo IT, testo EN, data, foto, video, camera uno alla volta, mostra un riepilogo e chiede conferma prima di pubblicare |
+| `/annulla` | Interrompe il flusso di `/nuovanota` in corso, senza salvare nulla |
+
+**Come funziona `/nuovanota`:** lo stato della conversazione (a che
+campo sei arrivato, cosa hai già risposto) viene salvato temporaneamente
+nel namespace KV `PUSH_SUBS` (lo stesso usato per le notifiche push),
+con scadenza automatica dopo 30 minuti di inattività. Alla conferma
+finale (`CONFERMA`), il bot legge `json/taccuino.json` da GitHub,
+aggiunge la nuova voce con il prossimo `id` libero, e fa un commit vero
+tramite le API GitHub Contents — lo stesso commit che, come ogni push su
+`main`, fa ripartire la build automatica del sito.
+
+**Setup, una tantum** (in aggiunta ai secret VAPID/NOTIFY_SECRET della
+sezione "NOTIFICHE PUSH"):
+
+1. **Crea il bot** con [@BotFather](https://t.me/BotFather) su Telegram
+   (`/newbot`), copia il token restituito.
+2. **Trova il tuo Chat ID** con [@userinfobot](https://t.me/userinfobot).
+3. **Genera un secret per il webhook:**
    ```
-   (gli URL vanno tenuti identici nei due file — uno li usa per il tentativo live nel browser,
-   l'altro per la sync notturna)
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+4. **Crea un GitHub Fine-grained Personal Access Token**
+   ([github.com/settings/tokens?type=beta](https://github.com/settings/tokens?type=beta)):
+   Repository access → *Only select repositories* → solo
+   `francescomartolini.art`; Permissions → Contents → *Read and write*.
+   Nessun altro permesso serve.
+5. **Imposta i secret sul Worker**, da terminale nella cartella del
+   progetto (non dal dashboard — i secret aggiunti da terminale si
+   applicano subito al Worker live, senza bisogno di un nuovo deploy):
+   ```
+   npx wrangler secret put TELEGRAM_BOT_TOKEN
+   npx wrangler secret put TELEGRAM_WEBHOOK_SECRET
+   npx wrangler secret put TELEGRAM_ALLOWED_CHAT_ID
+   npx wrangler secret put GITHUB_TOKEN
+   ```
+6. **Verifica in `wrangler.toml`** che sia presente il binding AI:
+   ```toml
+   [ai]
+   binding = "AI"
+   ```
+   Usato da `/post` e `/rigenera` per generare le caption
+   (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`, Cloudflare Workers AI).
+7. **Registra il webhook**, sostituendo `<TOKEN>` e `<SECRET>` con i
+   valori del punto 1 e 3:
+   ```
+   https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://francescomartolini.art/telegram/webhook?secret=<SECRET>&allowed_updates=["message"]
+   ```
+8. Manda `/start` al bot su Telegram per verificare che risponda.
 
-**Fallback finale:** se anche `json/taccuino.json` mancasse o fosse illeggibile, il taccuino
-resta semplicemente vuoto — non blocca mai il resto del sito.
+**File coinvolti:**
+```
+worker/index.js   ← rotta POST /telegram/webhook, tutta la logica del bot
+wrangler.toml     ← binding [ai]
+```
 
-**Colonna `video`:** incolla un URL video Cloudinary (`.../video/upload/...`). Se una riga ha
-sia `video` che `foto`, la foto diventa il poster (fotogramma di anteprima) del video; se manca,
-il browser mostra il primo fotogramma. Se `video` è vuoto la riga si comporta come prima (solo
-foto o solo testo). Nessun autoplay: il video parte solo se il visitatore lo avvia, per restare
-coerente col ritmo silenzioso del libro.
+**Note di sicurezza:** `TELEGRAM_ALLOWED_CHAT_ID` limita l'uso del bot
+al solo chat ID configurato — chiunque altro scriva al bot riceve un
+messaggio di accesso negato. Il `GITHUB_TOKEN` è limitato (Fine-grained)
+al solo repository del sito e al solo permesso Contents, quindi anche
+in caso di fuga del token il danno massimo possibile è la scrittura di
+file in questo repository, non l'accesso all'intero account GitHub.
 
 ---
 
@@ -708,9 +817,8 @@ Punto nero con anello. Cambia colore automaticamente:
 - Lazy loading su tutte le immagini tranne l'hero
 - Cache HTML per overlay progetto e taccuino (apertura istantanea dalla seconda volta)
 - Inserimento a blocchi con `requestAnimationFrame` per studi e collaborazioni
-- Timeout di 3s (`SHEETS_TIMEOUT_MS` in `js/libro.js`) sul tentativo di fetch live a Google
-  Sheets, con fallback immediato a `json/taccuino.json` — il rendering non resta mai bloccato
-  in attesa di Google (vedi sezione TACCUINO — GOOGLE SHEETS sopra per il meccanismo completo)
+- Lettura diretta di `json/taccuino.json` (nessun fetch a servizi esterni
+  per il taccuino — vedi sezione TACCUINO — GOOGLE SHEETS sopra)
 
 ---
 
@@ -730,7 +838,7 @@ Punto nero con anello. Cambia colore automaticamente:
 | Titolo del libro | `index.html` → sezione `#home` mobile |
 | Testo hero desktop | `index.html` → `.hero-sinistra` |
 | Introduzione | `json/intro.json` |
-| Frasi taccuino | Google Sheets oppure `json/taccuino.json` |
+| Frasi taccuino | Bot Telegram (`/nuovanota`) oppure `json/taccuino.json` a mano |
 | Frasi pagina "fin" | `json/epiloghi.json` |
 | Progetti | `json/progetti.json` |
 | Layout progetto | `json/progetti.json` → campo `layoutType` |
@@ -743,7 +851,7 @@ Punto nero con anello. Cambia colore automaticamente:
 | Colori globali | `css/stile.css` → `:root` |
 | Font | `index.html` → `<head>` |
 | Contatti | `index.html` → `#chi-sono` + `js/libro.js` → `apriPagina('chi-sono-pagina')` |
-| URL Google Sheets | `js/libro.js` → `const SHEETS_URL` |
+| URL Google Sheets (integrazione disattivata) | `js/libro.js` → `const SHEETS_URL` |
 | URL diretto progetto (routing) | `js/libro.js` → `apriProgetto()` / `chiudiProgetto()` / `slugProgettoDaURL()` |
 
 ---
@@ -821,7 +929,7 @@ a questa repo è un **Worker** (deploy con `wrangler deploy`), non una
 ```
 wrangler.toml         ← config del Worker: main, assets, KV binding
 .assetsignore          ← esclude sorgenti (worker/, scripts/...) dal sito pubblico
-worker/index.js         ← Worker: /subscribe, /notify, poi fallback su ASSETS
+worker/index.js         ← Worker: /subscribe, /notify, /telegram/webhook, poi fallback su ASSETS
 service-worker.js       ← Service Worker lato browser (push, notificationclick)
 js/push.js              ← iscrizione lato client + UI
 package.json            ← dipendenza webpush-webcrypto (usata da worker/index.js)
@@ -878,7 +986,7 @@ package.json            ← dipendenza webpush-webcrypto (usata da worker/index.
 
 **Da lì in poi non serve più toccare nulla**: ogni volta che
 `json/progetti.json` o `json/taccuino.json` cambiano su `main` (a mano
-o dal workflow di sincronizza-taccuino), gli iscritti ricevono
+o dal bot Telegram, tramite `/nuovanota`), gli iscritti ricevono
 l'avviso in automatico.
 
 **Note editoriali:**
@@ -948,7 +1056,7 @@ Questi file non influenzano il sito in produzione.
 
 - Zero dipendenze esterne oltre a Google Fonts
 - Dati gestiti interamente via JSON
-- Taccuino aggiornabile da smartphone via Google Sheets
+- Taccuino aggiornabile da smartphone via bot Telegram (`/nuovanota`)
 - Lightbox con navigazione frecce, swipe e tastiera
 - Indice mobile generato dinamicamente
 - Compatibile con tutti i browser moderni

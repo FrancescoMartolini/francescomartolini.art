@@ -1,14 +1,16 @@
-# Tiene json/taccuino.json allineato ai fogli Google Sheets (IT/EN)
-# pubblicati, così il sito può sempre leggere il Taccuino da un file
-# locale veloce invece che dal foglio "live" ad ogni visita (vedi
-# scripts/sincronizza-taccuino.py e SHEETS_TIMEOUT_MS in js/libro.js).
-name: Sincronizza Taccuino da Google Sheets 
+# DISATTIVATO: il Taccuino ora si scrive solo tramite il bot Telegram
+# (/nuovanota) o a mano su json/taccuino.json — non più da Google Sheets.
+# Lo scheduling automatico è commentato qui sotto; il resto del workflow
+# resta intatto e lanciabile a mano ("Run workflow") per chi volesse
+# riattivare l'integrazione con i fogli Google in futuro. Per riattivare
+# del tutto, togli il commento dal blocco "schedule" qui sotto.
+name: Sincronizza Taccuino da Google Sheets
 
 on:
   schedule:
     # Ogni giorno alle 6:00 UTC. Se scrivi una voce e vuoi vederla subito
     # sul sito senza aspettare, usa "Run workflow" qui sotto.
-    - cron: '0 6 * * *'
+    # cron: '0 6 * * *'
   workflow_dispatch:
 
 permissions:
