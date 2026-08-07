@@ -327,6 +327,171 @@ async function inviaCaptionProgetto(chatId, project, env) {
   await sendTelegramMessage(chatId, messaggioAI, env);
 }
 
+/* ══════════════════════════════════════════════
+   TACCUINO — comando /nuovanota
+   Flusso conversazionale a stati: il bot chiede i campi uno alla volta,
+   li salva temporaneamente su KV (PUSH_SUBS), mostra un riepilogo e,
+   solo dopo conferma esplicita, scrive la nuova nota su GitHub tramite
+   le API Contents — che genera un commit vero e proprio e fa ripartire
+   la build automatica del sito.
+   ══════════════════════════════════════════════ */
+
+var CAMPI_NOTA = [
+  { chiave: 'testo_it', domanda: 'Testo della nota, in italiano:' },
+  { chiave: 'testo_en', domanda: 'Stesso testo, in inglese:' },
+  { chiave: 'data', domanda: 'Data (formato AAAA-MM-GG, es. 2026-08-07). Scrivi "-" per usare la data di oggi:' },
+  { chiave: 'foto', domanda: 'URL della foto (o "-" se non c\'è):' },
+  { chiave: 'video', domanda: 'URL del video (o "-" se non c\'è):' },
+  { chiave: 'camera', domanda: 'Camera/fotocamera usata (o "-" se non specificata):' }
+];
+
+async function salvaNotaState(chatId, stato, env) {
+  await env.PUSH_SUBS.put('telegram_nota_state:' + chatId, JSON.stringify(stato), { expirationTtl: 1800 });
+}
+
+async function getNotaState(chatId, env) {
+  return await env.PUSH_SUBS.get('telegram_nota_state:' + chatId, 'json');
+}
+
+async function cancellaNotaState(chatId, env) {
+  await env.PUSH_SUBS.delete('telegram_nota_state:' + chatId);
+}
+
+function costruisciRiepilogoNota(d) {
+  return '<b>Riepilogo nuova nota</b>\n\n' +
+    '<b>IT</b>: ' + d.testo_it + '\n' +
+    '<b>EN</b>: ' + d.testo_en + '\n' +
+    '<b>Data</b>: ' + d.data + '\n' +
+    '<b>Foto</b>: ' + (d.foto || '—') + '\n' +
+    '<b>Video</b>: ' + (d.video || '—') + '\n' +
+    '<b>Camera</b>: ' + (d.camera || '—') + '\n\n' +
+    'Scrivi <b>CONFERMA</b> per pubblicare, oppure <b>ANNULLA</b> per annullare.';
+}
+
+async function gestisciPassoNuovaNota(chatId, text, stato, env) {
+  if (stato.step === 'conferma') {
+    var risposta = text.trim().toUpperCase();
+
+    if (risposta === 'CONFERMA') {
+      try {
+        await pubblicaNotaTaccuino(stato.data, env);
+        await cancellaNotaState(chatId, env);
+        await sendTelegramMessage(chatId,
+          '✅ Nota pubblicata. Il sito si aggiornerà a breve (build automatica).', env);
+      } catch (e) {
+        console.error('Errore pubblicazione nota:', e);
+        await sendTelegramMessage(chatId,
+          '⚠️ Errore nel salvataggio: ' + e.message +
+          '\n\nI dati inseriti non sono andati persi: scrivi di nuovo CONFERMA per riprovare, oppure ANNULLA.', env);
+      }
+      return;
+    }
+
+    if (risposta === 'ANNULLA') {
+      await cancellaNotaState(chatId, env);
+      await sendTelegramMessage(chatId, 'Annullato. Nessuna nota è stata salvata.', env);
+      return;
+    }
+
+    await sendTelegramMessage(chatId, 'Scrivi CONFERMA per pubblicare, oppure ANNULLA per annullare.', env);
+    return;
+  }
+
+  var indiceCorrente = CAMPI_NOTA.findIndex(function (c) { return c.chiave === stato.step; });
+  var valore = text.trim();
+
+  if ((stato.step === 'foto' || stato.step === 'video' || stato.step === 'camera') && valore === '-') {
+    valore = null;
+  }
+  if (stato.step === 'data' && valore === '-') {
+    valore = new Date().toISOString().slice(0, 10);
+  }
+
+  stato.data[stato.step] = valore;
+
+  var prossimo = CAMPI_NOTA[indiceCorrente + 1];
+  if (prossimo) {
+    stato.step = prossimo.chiave;
+    await salvaNotaState(chatId, stato, env);
+    await sendTelegramMessage(chatId, prossimo.domanda, env);
+  } else {
+    stato.step = 'conferma';
+    await salvaNotaState(chatId, stato, env);
+    await sendTelegramMessage(chatId, costruisciRiepilogoNota(stato.data), env);
+  }
+}
+
+// Le API GitHub Contents vogliono/restituiscono il contenuto file in
+// base64. atob/btoa nativi non gestiscono bene l'UTF-8 (servono per gli
+// accenti nei testi italiani), quindi passiamo dai byte espliciti.
+function encodeBase64Utf8(str) {
+  var bytes = new TextEncoder().encode(str);
+  var binaria = '';
+  for (var i = 0; i < bytes.length; i++) binaria += String.fromCharCode(bytes[i]);
+  return btoa(binaria);
+}
+
+function decodeBase64Utf8(b64) {
+  var binaria = atob(b64.replace(/\n/g, ''));
+  var bytes = new Uint8Array(binaria.length);
+  for (var i = 0; i < binaria.length; i++) bytes[i] = binaria.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+
+async function pubblicaNotaTaccuino(dati, env) {
+  var repo = env.GITHUB_REPO || 'FrancescoMartolini/francescomartolini.art';
+  var branch = env.GITHUB_BRANCH || 'main';
+  var path = 'json/taccuino.json';
+
+  var headersBase = {
+    'Authorization': 'Bearer ' + env.GITHUB_TOKEN,
+    'Accept': 'application/vnd.github+json',
+    'User-Agent': 'francescomartolini-art-bot',
+    'X-GitHub-Api-Version': '2022-11-28'
+  };
+
+  var getResp = await fetch(
+    'https://api.github.com/repos/' + repo + '/contents/' + path + '?ref=' + branch,
+    { headers: headersBase }
+  );
+  if (!getResp.ok) {
+    throw new Error('Impossibile leggere taccuino.json da GitHub: HTTP ' + getResp.status);
+  }
+  var fileInfo = await getResp.json();
+  var contenutoAttuale = JSON.parse(decodeBase64Utf8(fileInfo.content));
+
+  var idMassimo = contenutoAttuale.reduce(function (max, nota) {
+    return (typeof nota.id === 'number' && nota.id > max) ? nota.id : max;
+  }, 0);
+
+  var nuovaNota = {
+    id: idMassimo + 1,
+    testo: { it: dati.testo_it, en: dati.testo_en },
+    data: dati.data,
+    foto: dati.foto || null,
+    video: dati.video || null,
+    camera: dati.camera || null
+  };
+
+  contenutoAttuale.push(nuovaNota);
+
+  var putResp = await fetch('https://api.github.com/repos/' + repo + '/contents/' + path, {
+    method: 'PUT',
+    headers: Object.assign({}, headersBase, { 'Content-Type': 'application/json' }),
+    body: JSON.stringify({
+      message: 'Nuova nota taccuino: ' + dati.testo_it.substring(0, 60),
+      content: encodeBase64Utf8(JSON.stringify(contenutoAttuale, null, 2)),
+      sha: fileInfo.sha,
+      branch: branch
+    })
+  });
+
+  if (!putResp.ok) {
+    var corpoErrore = await putResp.text();
+    throw new Error('GitHub ha rifiutato il salvataggio: HTTP ' + putResp.status + ' — ' + corpoErrore.substring(0, 200));
+  }
+}
+
 async function handleTelegramUpdate(update, env) {
   var message = update.message;
   if (!message || !message.text) return;
@@ -340,13 +505,37 @@ async function handleTelegramUpdate(update, env) {
   var text = message.text.trim();
   var chatId = message.chat.id;
 
+  // Se c'è un flusso /nuovanota in corso per questa chat, il testo che
+  // arriva è la risposta al campo attuale, non un comando — a meno che
+  // non sia /annulla.
+  var statoNota = await getNotaState(chatId, env);
+  if (statoNota) {
+    if (text === '/annulla') {
+      await cancellaNotaState(chatId, env);
+      await sendTelegramMessage(chatId, 'Annullato. Nessuna nota è stata salvata.', env);
+      return;
+    }
+    await gestisciPassoNuovaNota(chatId, text, statoNota, env);
+    return;
+  }
+
   if (text === '/start') {
     await sendTelegramMessage(chatId,
       '👋 Ciao! Sono il bot di francescomartolini.art\n\n' +
       'Comandi disponibili:\n' +
       '/lista — Vedi tutti i progetti\n' +
       '/post <ID> — Genera caption Instagram IT+EN con AI\n' +
-      '/rigenera <ID> — Rigenera caption per un progetto', env);
+      '/rigenera <ID> — Rigenera caption per un progetto\n' +
+      '/nuovanota — Scrivi una nuova nota per il taccuino', env);
+    return;
+  }
+
+  if (text === '/nuovanota') {
+    var nuovoStato = { step: CAMPI_NOTA[0].chiave, data: {} };
+    await salvaNotaState(chatId, nuovoStato, env);
+    await sendTelegramMessage(chatId,
+      'Creiamo una nuova nota per il taccuino. Scrivi /annulla in qualsiasi momento per interrompere.\n\n' +
+      CAMPI_NOTA[0].domanda, env);
     return;
   }
 
