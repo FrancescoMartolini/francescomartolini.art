@@ -142,7 +142,7 @@
       "it": "Streetphotograpy in formato 65:24",
       "en": "Street photography in 65:24 format"
     },
-    "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778414649/cover_bpfi9g.jpg",
+    "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778414649/cover_bpfi9g.jpg",
     "contenuto":[
       {
         "tipo": "testo",
@@ -152,11 +152,11 @@
       },
       {
         "tipo": "immagine",
-        "valore": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1785864393/OlafulEliasson-neltuotempo-1_mrnuuy.jpg"
+        "valore": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1785864393/OlafulEliasson-neltuotempo-1_mrnuuy.jpg"
       },
       {
         "tipo": "immagine",
-        "valore": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1785864393/OlafulEliasson-neltuotempo-2_nvwf9i.jpg"
+        "valore": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1785864393/OlafulEliasson-neltuotempo-2_nvwf9i.jpg"
       },
       {
         "tipo": "testo",

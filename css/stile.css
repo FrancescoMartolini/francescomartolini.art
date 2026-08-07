@@ -956,7 +956,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 
 #pagina-taccuino-archivio.aperta { transform: translateY(0); }
 
-.taccuino-archivio-interno { max-width: 680px; margin: 0 auto; padding: clamp(60px, 10vh, 100px) clamp(24px, 5vw, 60px) 80px; }
+.taccuino-archivio-interno { max-width: 800px; margin: 0 auto; padding: clamp(60px, 10vh, 100px) clamp(24px, 5vw, 60px) 80px; }
 .taccuino-archivio-interno h1 { font-family: var(--font-titolo); font-size: clamp(28px, 5vw, 52px); font-weight: 400; margin-bottom: 56px; }
 
 .taccuino-cerca-wrap { display: flex; align-items: center; gap: 16px; margin-bottom: 48px; border-bottom: 1px solid var(--nero); padding-bottom: 12px; }
