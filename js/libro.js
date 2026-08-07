@@ -8,8 +8,8 @@
 
 'use strict';
 
-const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?gid=1174325309&single=true&output=csv';
-const SHEETS_URL_EN = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?gid=1079818483&single=true&output=csv';
+//const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?gid=1174325309&single=true&output=csv';
+//const SHEETS_URL_EN = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7qekYp4bYEPTBnLGVJGjgSLSQotLHODKib2CnRsn8g-S3tvM4ROywdbKqlmFc4A/pub?gid=1079818483&single=true&output=csv';
 
 // ── Segnalibro: ricorda a che pagina il lettore era arrivato ──
 const SEGNALIBRO_KEY = 'libro-pagina';
