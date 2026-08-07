@@ -196,16 +196,5 @@
     "foto": null,
     "video": null,
     "camera": null
-  },
-  {
-    "id": 19,
-    "testo": {
-      "it": "Questa è una prova di scrittura da Telegram",
-      "en": "Test"
-    },
-    "data": "2026-08-07",
-    "foto": null,
-    "video": null,
-    "camera": null
   }
 ]
