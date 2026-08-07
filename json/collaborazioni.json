@@ -6,7 +6,8 @@
         "anno": "2025",
         "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1780510369/Lucy_pi3d0c.jpg",
         "galleria": [
-            "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784576308/1_icggc3.jpg","https://res.cloudinary.com/dgo7tnyv6/image/upload/v1784576379/ig-5_awwcxt.jpg"
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784576308/1_icggc3.jpg",
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1784576379/ig-5_awwcxt.jpg"
         ]
     },
     {
@@ -16,12 +17,12 @@
         "anno": "2025",
         "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778782138/MilanoLoveSeoul-25_u2fnp3.jpg",
         "galleria": [
-            "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1786112934/MilanoLoveSeoul18-59_tgzvmc.jpg",
-            "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1786112905/MilanoLoveSeoul18-28_jpktpt.jpg",
-            "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1786112892/MilanoLoveSeoul-42_szatxq.jpg",
-            "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1786112890/MilanoLoveSeoul-11_uiztgp.jpg",
-            "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1786112885/MilanoLoveSeoul-41_w67u3a.jpg",
-            "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778782143/MilanoLoveSeoul18-18_gkc4wi.jpg"
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1786112934/MilanoLoveSeoul18-59_tgzvmc.jpg",
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1786112905/MilanoLoveSeoul18-28_jpktpt.jpg",
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1786112892/MilanoLoveSeoul-42_szatxq.jpg",
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1786112890/MilanoLoveSeoul-11_uiztgp.jpg",
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1786112885/MilanoLoveSeoul-41_w67u3a.jpg",
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778782143/MilanoLoveSeoul18-18_gkc4wi.jpg"
         ]
     },
     {
@@ -30,7 +31,10 @@
         "descrizione": "",
         "anno": "2025",
         "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1780662396/ProdottoIMoro-8_hnw3hm.jpg",
-        "galleria": ["https://res.cloudinary.com/dgo7tnyv6/image/upload/v1786113282/IMOROBARBERIA-13_bour9w.jpg","https://res.cloudinary.com/dgo7tnyv6/image/upload/v1786113281/IMOROBARBERIA-6_anpfbj.jpg"]
+        "galleria": [
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1786113282/IMOROBARBERIA-13_bour9w.jpg",
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1786113281/IMOROBARBERIA-6_anpfbj.jpg"
+        ]
     },
     {
         "id": "Cliente4",
@@ -38,7 +42,10 @@
         "descrizione": "",
         "anno": "2025",
         "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778782127/BarCampiglia04102024-83_ygo0b0.jpg",
-        "galleria": ["https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778782126/BarCampiglia04102024-50_qg4zgo.jpg","https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778782127/BarCampiglia04102024-61_ryabum.jpg"]
+        "galleria": [
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778782126/BarCampiglia04102024-50_qg4zgo.jpg",
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778782127/BarCampiglia04102024-61_ryabum.jpg"
+        ]
     },
     {
         "id": "Cliente5",
@@ -47,8 +54,8 @@
         "anno": "2025",
         "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778782127/EliaMarmugiBarber-46_nbcapd.jpg",
         "galleria": [
-            "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778782127/EliaMarmugiBarber-72_zhd4eg.jpg",
-            "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1778782127/EliaMarmugiBarber-154_y2dm7k.jpg"
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778782127/EliaMarmugiBarber-72_zhd4eg.jpg",
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778782127/EliaMarmugiBarber-154_y2dm7k.jpg"
         ]
     },
     {
@@ -57,7 +64,10 @@
         "descrizione": "",
         "anno": "2024",
         "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778782128/ilPoggio-Piatti-16_ieyoai.jpg",
-        "galleria": ["https://res.cloudinary.com/dgo7tnyv6/image/upload/v1786113697/ilPoggio-Piatti-24_gjch3c.jpg","https://res.cloudinary.com/dgo7tnyv6/image/upload/v1786113695/ilPoggio-Piatti-29_kqdzin.jpg"]
+        "galleria": [
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1786113697/ilPoggio-Piatti-24_gjch3c.jpg",
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1786113695/ilPoggio-Piatti-29_kqdzin.jpg"
+        ]
     },
     {
         "id": "Cliente7",
@@ -65,6 +75,10 @@
         "descrizione": "",
         "anno": "2024",
         "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1778782127/Sonhora-11_fnhcpr.jpg",
-        "galleria": ["https://res.cloudinary.com/dgo7tnyv6/image/upload/v1786112658/Sonhora-25_k3ovju.jpg", "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1786112654/Sonhora-14_ubpitz.jpg","https://res.cloudinary.com/dgo7tnyv6/image/upload/v1786112640/Sonhora-7_kpdgmk.jpg"]
+        "galleria": [
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1786112658/Sonhora-25_k3ovju.jpg",
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1786112654/Sonhora-14_ubpitz.jpg",
+            "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1786112640/Sonhora-7_kpdgmk.jpg"
+        ]
     }
 ]
