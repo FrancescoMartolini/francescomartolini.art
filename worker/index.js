@@ -195,10 +195,27 @@ async function getProjectsCache(env) {
   var cached = await env.PUSH_SUBS.get(CACHE_KEY, 'json');
   if (cached) return cached;
 
-  var resp = await fetch('https://francescomartolini.art/json/progetti.json');
+  // Legge il file direttamente dagli asset statici del Worker (env.ASSETS),
+  // non con un fetch HTTP pubblico verso il proprio dominio: evita che WAF,
+  // Bot Fight Mode o altre regole di sicurezza sulla zona blocchino questa
+  // richiesta interna restituendo una pagina di sfida HTML invece del JSON.
+  var resp = await env.ASSETS.fetch(new Request('https://francescomartolini.art/json/progetti.json'));
+  if (!resp.ok) {
+    throw new Error('Impossibile leggere json/progetti.json dagli asset: HTTP ' + resp.status);
+  }
   var projects = await resp.json();
   await env.PUSH_SUBS.put(CACHE_KEY, JSON.stringify(projects), { expirationTtl: 3600 });
   return projects;
+}
+
+// I campi titolo/anno nel JSON a volte sono stringhe semplici, a volte
+// oggetti bilingue { it, en }. Questa funzione normalizza sempre a una
+// stringa, evitando che finisca "[object Object]" nei messaggi o nei
+// prompt per l'AI.
+function testoCampo(valore, lang) {
+  if (valore == null) return '';
+  if (typeof valore === 'object') return valore[lang] || valore.it || valore.en || '';
+  return String(valore);
 }
 
 async function generateCaption(project, env) {
@@ -227,8 +244,8 @@ async function generateCaption(project, env) {
     'che fa parte di un libro fotografico digitale, non di un portfolio commerciale.\n' +
     'Il tema di fondo di tutta la ricerca è il tempo: tracce, memoria, trasformazione,\n' +
     'assenza, percezione.\n\n' +
-    'Titolo: ' + project.titolo + '\n' +
-    'Anno: ' + (project.anno || 'non specificato') + '\n' +
+    'Titolo: ' + testoCampo(project.titolo, 'it') + '\n' +
+    'Anno: ' + (testoCampo(project.anno, 'it') || 'non specificato') + '\n' +
     'Testo originale (IT): ' + testoIt.substring(0, 800) + '\n' +
     'Testo originale (EN), se disponibile: ' + testoEn.substring(0, 800) + '\n\n' +
     'Regole di voce, da rispettare rigorosamente:\n' +
@@ -297,7 +314,7 @@ async function inviaCaptionProgetto(chatId, project, env) {
     var it = testoOriginaleFallback(project, 'it');
     var en = testoOriginaleFallback(project, 'en');
     var messaggio =
-      '<b>' + project.titolo + '</b> (' + (project.anno || '') + ')\n\n' +
+      '<b>' + testoCampo(project.titolo, 'it') + '</b> (' + testoCampo(project.anno, 'it') + ')\n\n' +
       '<b>IT</b>\n' + it + link +
       (en ? '\n\n<b>EN</b>\n' + en + link : '');
     await sendTelegramMessage(chatId, messaggio, env);
@@ -334,41 +351,56 @@ async function handleTelegramUpdate(update, env) {
   }
 
   if (text === '/lista') {
-    var projects = await getProjectsCache(env);
-    var lines = projects.map(function (p) { return '• <code>' + p.id + '</code> — ' + p.titolo; });
-    await sendTelegramMessage(chatId,
-      '<b>Progetti disponibili:</b>\n\n' + lines.join('\n'), env);
+    try {
+      var projects = await getProjectsCache(env);
+      var lines = projects.map(function (p) { return '• <code>' + p.id + '</code> — ' + testoCampo(p.titolo, 'it'); });
+      await sendTelegramMessage(chatId,
+        '<b>Progetti disponibili:</b>\n\n' + lines.join('\n'), env);
+    } catch (e) {
+      console.error('Errore /lista:', e);
+      await sendTelegramMessage(chatId, '⚠️ Errore nel leggere i progetti: ' + e.message, env);
+    }
     return;
   }
 
   if (text.indexOf('/post ') === 0) {
     var postId = text.replace('/post ', '').trim();
-    var postProjects = await getProjectsCache(env);
-    var postProject = postProjects.find(function (p) { return p.id === postId; });
+    try {
+      var postProjects = await getProjectsCache(env);
+      var postProject = postProjects.find(function (p) { return p.id === postId; });
 
-    if (!postProject) {
-      await sendTelegramMessage(chatId,
-        '❌ Progetto "' + postId + '" non trovato.\nUsa /lista per vedere gli ID.', env);
-      return;
+      if (!postProject) {
+        await sendTelegramMessage(chatId,
+          '❌ Progetto "' + postId + '" non trovato.\nUsa /lista per vedere gli ID.', env);
+        return;
+      }
+
+      await sendTelegramMessage(chatId, '⏳ Sto generando la caption con AI...', env);
+      await inviaCaptionProgetto(chatId, postProject, env);
+    } catch (e) {
+      console.error('Errore /post:', e);
+      await sendTelegramMessage(chatId, '⚠️ Errore nella generazione: ' + e.message, env);
     }
-
-    await sendTelegramMessage(chatId, '⏳ Sto generando la caption con AI...', env);
-    await inviaCaptionProgetto(chatId, postProject, env);
     return;
   }
 
   if (text.indexOf('/rigenera ') === 0) {
     var regenId = text.replace('/rigenera ', '').trim();
-    var regenProjects = await getProjectsCache(env);
-    var regenProject = regenProjects.find(function (p) { return p.id === regenId; });
+    try {
+      var regenProjects = await getProjectsCache(env);
+      var regenProject = regenProjects.find(function (p) { return p.id === regenId; });
 
-    if (!regenProject) {
-      await sendTelegramMessage(chatId, '❌ Progetto "' + regenId + '" non trovato.', env);
-      return;
+      if (!regenProject) {
+        await sendTelegramMessage(chatId, '❌ Progetto "' + regenId + '" non trovato.', env);
+        return;
+      }
+
+      await sendTelegramMessage(chatId, '🔄 Rigenerazione caption in corso...', env);
+      await inviaCaptionProgetto(chatId, regenProject, env);
+    } catch (e) {
+      console.error('Errore /rigenera:', e);
+      await sendTelegramMessage(chatId, '⚠️ Errore nella rigenerazione: ' + e.message, env);
     }
-
-    await sendTelegramMessage(chatId, '🔄 Rigenerazione caption in corso...', env);
-    await inviaCaptionProgetto(chatId, regenProject, env);
     return;
   }
 
