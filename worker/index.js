@@ -261,7 +261,22 @@ async function generateCaption(project, env) {
 
     var raw = (response.response || '').trim();
     var cleaned = raw.replace(/```json|```/g, '').trim();
-    var parsed = JSON.parse(cleaned);
+    
+    // Il modello a volte scrive un a-capo letterale dentro il testo della
+    // caption invece di "\n" escapato — non è JSON valido e rompe il
+    // parse ("Bad control character"). Sostituiamo qualunque carattere
+    // di controllo con la sua forma escapata, come farebbe
+    // JSON.stringify: sicuro qui perché la struttura attesa è un
+    // semplice oggetto piatto { it, en } senza a-capo strutturali fuori
+    // dalle stringhe.
+    var sanificato = cleaned.replace(/[\u0000-\u001F]/g, function (ch) {
+      if (ch === '\n') return '\\n';
+      if (ch === '\r') return '\\r';
+      if (ch === '\t') return '\\t';
+      return '\\u' + ch.charCodeAt(0).toString(16).padStart(4, '0');
+    });
+
+    var parsed = JSON.parse(sanificato);
 
     if (!parsed.it && !parsed.en) return null;
     return { it: parsed.it || '', en: parsed.en || '' };
@@ -299,6 +314,7 @@ async function inviaCaptionProgetto(chatId, project, env) {
     var it = testoOriginaleFallback(project, 'it');
     var en = testoOriginaleFallback(project, 'en');
     var messaggio =
+      '⚠️ <i>L\'AI non è riuscita a generare la caption, questo è il testo originale del progetto senza rielaborazione:</i>\n\n'
       '<b>' + testoCampo(project.titolo, 'it') + '</b> (' + testoCampo(project.anno, 'it') + ')\n\n' +
       '<b>IT</b>\n' + it + link +
       (en ? '\n\n<b>EN</b>\n' + en + link : '');
