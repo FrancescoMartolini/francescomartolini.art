@@ -262,6 +262,15 @@ async function generateCaption(project, env) {
     var raw = (response.response || '').trim();
     var cleaned = raw.replace(/```json|```/g, '').trim();
     
+    // Il modello a volte aggiunge testo prima o dopo l'oggetto JSON
+    // nonostante le istruzioni di rispondere solo con JSON puro.
+    // Isoliamo solo la porzione tra la prima { e l'ultima } trovate.
+    var indiceInizio = cleaned.indexOf('{');
+    var indiceFine = cleaned.lastIndexOf('}');
+    if (indiceInizio !== -1 && indiceFine !== -1 && indiceFine > indiceInizio) {
+      cleaned = cleaned.substring(indiceInizio, indiceFine + 1);
+    }
+
     // Il modello a volte scrive un a-capo letterale dentro il testo della
     // caption invece di "\n" escapato — non è JSON valido e rompe il
     // parse ("Bad control character"). Sostituiamo qualunque carattere
@@ -276,7 +285,20 @@ async function generateCaption(project, env) {
       return '\\u' + ch.charCodeAt(0).toString(16).padStart(4, '0');
     });
 
-    var parsed = JSON.parse(sanificato);
+    // Virgola finale prima di } o ] (es. { "it": "...", }) — non valida
+    // in JSON standard, ma un errore comune nei modelli.
+    sanificato = sanificato.replace(/,(\s*[}\]])/g, '$1');
+
+    var parsed;
+    try {
+      parsed = JSON.parse(sanificato);
+    } catch (erroreParse) {
+      // Logghiamo il testo esatto (troncato) che ha fatto fallire il
+      // parse, così un eventuale prossimo errore si diagnostica subito
+      // invece di dover indovinare cosa ha prodotto il modello.
+      console.error('JSON non valido dal modello, testo ricevuto:', sanificato.substring(0, 500));
+      throw erroreParse;
+    }
 
     if (!parsed.it && !parsed.en) return null;
     return { it: parsed.it || '', en: parsed.en || '' };
