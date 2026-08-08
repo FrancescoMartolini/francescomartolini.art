@@ -259,45 +259,78 @@ async function generateCaption(project, env) {
       temperature: 0.7
     });
 
-    var raw = (response.response || '').trim();
-    var cleaned = raw.replace(/```json|```/g, '').trim();
-    
-    // Il modello a volte aggiunge testo prima o dopo l'oggetto JSON
-    // nonostante le istruzioni di rispondere solo con JSON puro.
-    // Isoliamo solo la porzione tra la prima { e l'ultima } trovate.
-    var indiceInizio = cleaned.indexOf('{');
-    var indiceFine = cleaned.lastIndexOf('}');
-    if (indiceInizio !== -1 && indiceFine !== -1 && indiceFine > indiceInizio) {
-      cleaned = cleaned.substring(indiceInizio, indiceFine + 1);
-    }
-
-    // Il modello a volte scrive un a-capo letterale dentro il testo della
-    // caption invece di "\n" escapato — non è JSON valido e rompe il
-    // parse ("Bad control character"). Sostituiamo qualunque carattere
-    // di controllo con la sua forma escapata, come farebbe
-    // JSON.stringify: sicuro qui perché la struttura attesa è un
-    // semplice oggetto piatto { it, en } senza a-capo strutturali fuori
-    // dalle stringhe.
-    var sanificato = cleaned.replace(/[\u0000-\u001F]/g, function (ch) {
-      if (ch === '\n') return '\\n';
-      if (ch === '\r') return '\\r';
-      if (ch === '\t') return '\\t';
-      return '\\u' + ch.charCodeAt(0).toString(16).padStart(4, '0');
-    });
-
-    // Virgola finale prima di } o ] (es. { "it": "...", }) — non valida
-    // in JSON standard, ma un errore comune nei modelli.
-    sanificato = sanificato.replace(/,(\s*[}\]])/g, '$1');
+    var sanificato = sanificaJsonModello(raw);
 
     var parsed;
     try {
       parsed = JSON.parse(sanificato);
     } catch (erroreParse) {
-      // Logghiamo il testo esatto (troncato) che ha fatto fallire il
-      // parse, così un eventuale prossimo errore si diagnostica subito
-      // invece di dover indovinare cosa ha prodotto il modello.
       console.error('JSON non valido dal modello, testo ricevuto:', sanificato.substring(0, 500));
       throw erroreParse;
+    }
+    
+    // Il modello a volte restituisce quasi-JSON invece di JSON valido:
+    // - a-capo o testo prima/dopo l'oggetto, nonostante le istruzioni
+    // - a-capo letterali DENTRO le stringhe (non validi lì) invece di "\n"
+    // - virgole finali di troppo prima di } o ]
+    // Questa funzione ripulisce tutto questo. La parte delicata è che un
+    // a-capo FUORI da una stringa è formattazione legittima (JSON la
+    // permette) e va lasciata stare — solo dentro una stringa va escapata.
+    // Per saperlo bisogna scorrere il testo carattere per carattere tenendo
+    // traccia se ci si trova dentro una stringa, gestendo correttamente gli
+    // escape già presenti (es. \" dentro una stringa non la chiude).
+    function sanificaJsonModello(testoGrezzo) {
+      var testo = testoGrezzo.replace(/```json|```/g, '').trim();
+
+    var indiceInizio = testo.indexOf('{');
+      var indiceFine = testo.lastIndexOf('}');
+      if (indiceInizio !== -1 && indiceFine !== -1 && indiceFine > indiceInizio) {
+        testo = testo.substring(indiceInizio, indiceFine + 1);
+      }
+
+      var risultato = '';
+      var dentroStringa = false;
+      var precedenteEscape = false;
+
+      for (var i = 0; i < testo.length; i++) {
+        var ch = testo[i];
+        var codice = testo.charCodeAt(i);
+        if (dentroStringa) {
+          if (precedenteEscape) {
+            risultato += ch;
+            precedenteEscape = false;
+            continue;
+          }
+          if (ch === '\\') {
+            risultato += ch;
+            precedenteEscape = true;
+            continue;
+          }
+          if (ch === '"') {
+            dentroStringa = false;
+            risultato += ch;
+            continue;
+          }
+          if (codice <= 0x1F) {
+            if (ch === '\n') risultato += '\\n';
+            else if (ch === '\r') risultato += '\\r';
+            else if (ch === '\t') risultato += '\\t';
+            else risultato += '\\u' + codice.toString(16).padStart(4, '0');
+            continue;
+          }
+          risultato += ch;
+        } else {
+          if (ch === '"') dentroStringa = true;
+          // Fuori da una stringa i caratteri di controllo sono solo
+          // formattazione (spazi, a-capo tra le proprietà) e vanno lasciati
+          // esattamente come sono: JSON li permette lì.
+          risultato += ch;
+        }
+      }
+
+      // Virgola finale prima di } o ] — non valida in JSON standard, ma un
+      // errore comune nei modelli.
+      return risultato.replace(/,(\s*[}\]])/g, '$1');
     }
 
     if (!parsed.it && !parsed.en) return null;
