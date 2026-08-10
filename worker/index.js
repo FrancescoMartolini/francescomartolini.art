@@ -546,6 +546,119 @@ async function pubblicaNotaTaccuino(dati, env) {
   }
 }
 
+/* ══════════════════════════════════════════════
+   TACCUINO — bozze rapide (/nota, /bozze, /pubblica, /elimina, /stato)
+
+   Cattura veloce di frammenti grezzi, alternativa leggera al flusso
+   conversazionale completo di /nuovanota. Le bozze vivono SOLO su KV
+   (PUSH_SUBS, prefisso "bozza:") finché non vengono pubblicate: a
+   differenza di /nuovanota, salvare o eliminare una bozza NON genera
+   commit né deploy — solo /pubblica scrive su GitHub, esattamente come
+   pubblicaNotaTaccuino già fa per /nuovanota.
+
+   Una bozza pubblicata da qui ha solo il testo italiano: js/libro.js
+   (funzione t()) fa già fallback su .it quando .en è vuoto, quindi non
+   rompe la versione inglese del sito — semplicemente mostra l'italiano
+   finché non traduci la nota a mano su GitHub.
+   ══════════════════════════════════════════════ */
+
+function chiaveBozza(id) {
+  return 'bozza:' + id;
+}
+
+async function aggiungiBozza(testo, env) {
+  var id = Date.now().toString(36);
+  var bozza = {
+    id: id,
+    testo: testo,
+    data: dataOggiRoma(),
+    creato: Date.now()
+  };
+  // Nessuna scadenza (a differenza dello stato di /nuovanota): una bozza
+  // resta finché non viene pubblicata o eliminata esplicitamente.
+  await env.PUSH_SUBS.put(chiaveBozza(id), JSON.stringify(bozza));
+  return id;
+}
+
+async function elencaBozze(env) {
+  var elenco = await env.PUSH_SUBS.list({ prefix: 'bozza:' });
+  var bozze = await Promise.all(
+    elenco.keys.map(function (voce) {
+      return env.PUSH_SUBS.get(voce.name, 'json');
+    })
+  );
+  bozze = bozze.filter(function (b) { return b; });
+  bozze.sort(function (a, b) { return a.creato - b.creato; });
+  return bozze;
+}
+
+async function ottieniBozza(id, env) {
+  return await env.PUSH_SUBS.get(chiaveBozza(id), 'json');
+}
+
+async function rimuoviBozza(id, env) {
+  await env.PUSH_SUBS.delete(chiaveBozza(id));
+}
+
+function costruisciElencoBozze(bozze) {
+  if (bozze.length === 0) return 'Nessuna bozza in sospeso.';
+  return bozze.map(function (b) {
+    var anteprima = b.testo.length > 60 ? b.testo.substring(0, 60) + '…' : b.testo;
+    return '<code>' + b.id + '</code> (' + b.data + ')\n' + anteprima;
+  }).join('\n\n');
+}
+
+// Legge l'ultima nota pubblicata direttamente dagli asset statici (stesso
+// approccio già usato in getProjectsCache), senza bisogno di chiamare
+// GitHub: /stato non ha bisogno del sha del file, solo di leggerlo.
+// Traduzione automatica IT → EN per /pubblica, con lo stesso modello e
+// registro editoriale già usato per le caption Instagram (generateCaption):
+// sobrio, letterario, mai promozionale. Se fallisce restituisce null — la
+// nota resta pubblicabile comunque, solo senza EN (t() in js/libro.js fa
+// fallback su .it in quel caso).
+async function traduciTesto(testoIt, env) {
+  var prompt =
+    'Traduci il seguente testo dall\'italiano all\'inglese, per il taccuino di un libro ' +
+    'fotografico digitale sul tema del tempo (tracce, memoria, trasformazione, assenza, percezione).\n\n' +
+    'Regole:\n' +
+    '- Non è una traduzione letterale parola per parola, ma una riscrittura naturale nello ' +
+    'stesso registro: sobrio, letterario, mai promozionale\n' +
+    '- Mantieni invariati eventuali tag HTML presenti nel testo (es. <br>), nella stessa posizione\n' +
+    '- Rispondi SOLO con il testo tradotto, senza virgolette, senza markdown, senza commenti prima o dopo\n\n' +
+    'Testo originale:\n' + testoIt;
+
+  try {
+    var response = await env.AI.run('@cf/meta/llama-3.3-70b-instruct-fp8-fast', {
+      messages: [
+        { role: 'system', content: 'Traduttore editoriale italiano-inglese per un libro fotografico digitale. Voce sobria, letteraria, mai da social media manager. Rispondi sempre e solo col testo tradotto, nient\'altro.' },
+        { role: 'user', content: prompt }
+      ],
+      max_tokens: 500,
+      temperature: 0.5
+    });
+
+    var tradotto = (response.response || '').trim();
+    // Il modello a volte avvolge la risposta tra virgolette: le tolgo.
+    tradotto = tradotto.replace(/^["“]|["”]$/g, '').trim();
+    return tradotto || null;
+  } catch (e) {
+    console.error('Errore traduzione AI:', e);
+    return null;
+  }
+}
+
+async function ultimaNotaTaccuino(env) {
+  var resp = await env.ASSETS.fetch(new Request('https://francescomartolini.art/json/taccuino.json'));
+  if (!resp.ok) {
+    throw new Error('Impossibile leggere json/taccuino.json dagli asset: HTTP ' + resp.status);
+  }
+  var note = await resp.json();
+  if (note.length === 0) return null;
+  return note.reduce(function (piuRecente, nota) {
+    return (!piuRecente || nota.id > piuRecente.id) ? nota : piuRecente;
+  }, null);
+}
+
 async function handleTelegramUpdate(update, env) {
   var message = update.message;
   if (!message || !message.text) return;
@@ -580,7 +693,13 @@ async function handleTelegramUpdate(update, env) {
       '/lista — Vedi tutti i progetti\n' +
       '/post <ID> — Genera caption Instagram IT+EN con AI\n' +
       '/rigenera <ID> — Rigenera caption per un progetto\n' +
-      '/nuovanota — Scrivi una nuova nota per il taccuino', env);
+      '/nuovanota — Scrivi una nuova nota completa (bilingue, con foto/video/camera)\n\n' +
+      'Bozze rapide (solo testo italiano, per scrivere di getto):\n' +
+      '/nota <testo> — Salva una bozza\n' +
+      '/bozze — Elenco bozze in sospeso\n' +
+      '/pubblica <id> — Pubblica una bozza nel taccuino (EN tradotto automaticamente)\n' +
+      '/elimina <id> — Elimina una bozza\n' +
+      '/stato — Ultima nota pubblicata', env);
     return;
   }
 
@@ -643,6 +762,123 @@ async function handleTelegramUpdate(update, env) {
     } catch (e) {
       console.error('Errore /rigenera:', e);
       await sendTelegramMessage(chatId, '⚠️ Errore nella rigenerazione: ' + e.message, env);
+    }
+    return;
+  }
+
+  if (text.indexOf('/nota ') === 0) {
+    var testoBozza = text.replace('/nota ', '').trim();
+    if (!testoBozza) {
+      await sendTelegramMessage(chatId, 'Uso: /nota <testo>', env);
+      return;
+    }
+    try {
+      var idBozza = await aggiungiBozza(testoBozza, env);
+      await sendTelegramMessage(chatId,
+        '📝 Bozza salvata: <code>' + idBozza + '</code>\n\n' +
+        'Usa /pubblica ' + idBozza + ' per pubblicarla nel taccuino, o /bozze per vederle tutte.', env);
+    } catch (e) {
+      console.error('Errore /nota:', e);
+      await sendTelegramMessage(chatId, '⚠️ Errore nel salvare la bozza: ' + e.message, env);
+    }
+    return;
+  }
+
+  if (text === '/nota') {
+    await sendTelegramMessage(chatId,
+      'Uso: /nota <testo>\n\n' +
+      'Per una nota completa (bilingue, con foto/video/camera) usa /nuovanota.', env);
+    return;
+  }
+
+  if (text === '/bozze') {
+    try {
+      var elencoBozze = await elencaBozze(env);
+      await sendTelegramMessage(chatId, '<b>Bozze in sospeso</b>\n\n' + costruisciElencoBozze(elencoBozze), env);
+    } catch (e) {
+      console.error('Errore /bozze:', e);
+      await sendTelegramMessage(chatId, '⚠️ Errore nel leggere le bozze: ' + e.message, env);
+    }
+    return;
+  }
+
+  if (text.indexOf('/pubblica ') === 0) {
+    var idPubblica = text.replace('/pubblica ', '').trim();
+    try {
+      var bozzaDaPubblicare = await ottieniBozza(idPubblica, env);
+      if (!bozzaDaPubblicare) {
+        await sendTelegramMessage(chatId,
+          '❌ Nessuna bozza con id ' + idPubblica + '. Usa /bozze per vedere quelle disponibili.', env);
+        return;
+      }
+      await sendTelegramMessage(chatId, '⏳ Traduzione in corso...', env);
+      var testoEnTradotto = await traduciTesto(bozzaDaPubblicare.testo, env);
+
+      await pubblicaNotaTaccuino({
+        testo_it: bozzaDaPubblicare.testo,
+        testo_en: testoEnTradotto,
+        foto: null,
+        video: null,
+        camera: null,
+        data: bozzaDaPubblicare.data
+      }, env);
+      await rimuoviBozza(idPubblica, env);
+
+      if (testoEnTradotto) {
+        await sendTelegramMessage(chatId,
+          '✅ Bozza pubblicata nel taccuino (tradotta automaticamente). Il sito si aggiornerà a breve.\n\n' +
+          '<b>EN</b>\n' + testoEnTradotto, env);
+      } else {
+        await sendTelegramMessage(chatId,
+          '✅ Bozza pubblicata, ma la traduzione automatica non è riuscita: è stato pubblicato solo il testo italiano.\n' +
+          'Puoi aggiungere l\'inglese a mano su GitHub.', env);
+      }
+    } catch (e) {
+      console.error('Errore /pubblica:', e);
+      await sendTelegramMessage(chatId,
+        '⚠️ Errore nella pubblicazione: ' + e.message +
+        '\n\nLa bozza non è andata persa: riprova con /pubblica ' + idPubblica, env);
+    }
+    return;
+  }
+
+  if (text === '/pubblica') {
+    await sendTelegramMessage(chatId, 'Uso: /pubblica <id>\n\nUsa /bozze per vedere gli id disponibili.', env);
+    return;
+  }
+
+  if (text.indexOf('/elimina ') === 0) {
+    var idElimina = text.replace('/elimina ', '').trim();
+    var bozzaDaEliminare = await ottieniBozza(idElimina, env);
+    if (!bozzaDaEliminare) {
+      await sendTelegramMessage(chatId, '❌ Nessuna bozza con id ' + idElimina + '.', env);
+      return;
+    }
+    await rimuoviBozza(idElimina, env);
+    await sendTelegramMessage(chatId, '🗑️ Bozza ' + idElimina + ' eliminata.', env);
+    return;
+  }
+
+  if (text === '/elimina') {
+    await sendTelegramMessage(chatId, 'Uso: /elimina <id>\n\nUsa /bozze per vedere gli id disponibili.', env);
+    return;
+  }
+
+  if (text === '/stato') {
+    try {
+      var ultima = await ultimaNotaTaccuino(env);
+      if (!ultima) {
+        await sendTelegramMessage(chatId, 'Nessuna nota pubblicata ancora.', env);
+        return;
+      }
+      var testoUltima = testoCampo(ultima.testo, 'it');
+      var anteprimaUltima = testoUltima.length > 150 ? testoUltima.substring(0, 150) + '…' : testoUltima;
+      await sendTelegramMessage(chatId,
+        '<b>Ultima nota pubblicata</b>\n\n' +
+        '<code>#' + ultima.id + '</code> — ' + ultima.data + '\n' + anteprimaUltima, env);
+    } catch (e) {
+      console.error('Errore /stato:', e);
+      await sendTelegramMessage(chatId, '⚠️ Errore nel leggere lo stato: ' + e.message, env);
     }
     return;
   }

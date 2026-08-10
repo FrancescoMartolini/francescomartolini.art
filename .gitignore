@@ -10,6 +10,11 @@
 /playlist/
 feed.xml
 
+node_modules/
+__pycache__/
+*.pyc
+TEMPLATE/
+
 # Generati a ogni deploy (minificazione one-shot via terser/clean-css,
 # vedi README sezione "Script da inserire nel builder di Cloudflare") —
 # non vanno committati, si ricreano da soli. Il sorgente leggibile
