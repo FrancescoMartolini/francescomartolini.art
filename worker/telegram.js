@@ -242,19 +242,23 @@ async function inviaCaptionProgetto(chatId, project, env) {
 }
 
 /* ══════════════════════════════════════════════
-   TACCUINO — comando /nuovanota
-   Flusso conversazionale a stati: il bot chiede i campi uno alla volta,
-   li salva temporaneamente su KV (PUSH_SUBS), mostra un riepilogo e,
-   solo dopo conferma esplicita, scrive la nuova nota su GitHub tramite
-   le API Contents — che genera un commit vero e proprio e fa ripartire
-   la build automatica del sito.
+   TACCUINO — flusso guidato dopo /nota <testo>
+
+   /nuovanota è stato rimosso: faceva sostanzialmente la stessa cosa di
+   /nota ma con più attrito (5 domande invece di 1 comando + 3 domande,
+   e pubblicava subito invece di passare da una bozza rivedibile). Ora
+   /nota <testo> salva la bozza subito, poi chiede Foto → Video →
+   Camera una alla volta; ogni risposta viene scritta subito nella
+   bozza su KV (PUSH_SUBS) — niente stato "in sospeso" da perdere se ti
+   fermi a metà. Non si chiede più il testo inglese: viene tradotto
+   automaticamente al momento di /pubblica (vedi traduciTesto). La
+   pubblicazione vera e propria (commit su GitHub via API Contents, con
+   build automatica del sito) resta un passo separato ed esplicito.
    ══════════════════════════════════════════════ */
 
-var CAMPI_NOTA = [
-  { chiave: 'testo_it', domanda: 'Testo della nota, in italiano:' },
-  { chiave: 'testo_en', domanda: 'Stesso testo, in inglese:' },
-  { chiave: 'foto', domanda: 'URL della foto (o "-" se non c\'è):' },
-  { chiave: 'video', domanda: 'URL del video (o "-" se non c\'è):' },
+var CAMPI_BOZZA = [
+  { chiave: 'foto', domanda: 'Foto: URL della foto (o "-" se non c\'è):' },
+  { chiave: 'video', domanda: 'Video: URL del video (o "-" se non c\'è):' },
   { chiave: 'camera', domanda: 'Camera/fotocamera usata (o "-" se non specificata):' }
 ];
 
@@ -277,64 +281,38 @@ async function cancellaNotaState(chatId, env) {
   await env.PUSH_SUBS.delete('telegram_nota_state:' + chatId);
 }
 
-function costruisciRiepilogoNota(d) {
-  return '<b>Riepilogo nuova nota</b>\n\n' +
-    '<b>IT</b>: ' + d.testo_it + '\n' +
-    '<b>EN</b>: ' + d.testo_en + '\n' +
-    '<b>Data</b>: ' + d.data + '\n' +
-    '<b>Foto</b>: ' + (d.foto || '—') + '\n' +
-    '<b>Video</b>: ' + (d.video || '—') + '\n' +
-    '<b>Camera</b>: ' + (d.camera || '—') + '\n\n' +
-    'Scrivi <b>CONFERMA</b> per pubblicare, oppure <b>ANNULLA</b> per annullare.';
-}
-
-async function gestisciPassoNuovaNota(chatId, text, stato, env) {
-  if (stato.step === 'conferma') {
-    var risposta = text.trim().toUpperCase();
-
-    if (risposta === 'CONFERMA') {
-      try {
-        await pubblicaNotaTaccuino(stato.data, env);
-        await cancellaNotaState(chatId, env);
-        await sendTelegramMessage(chatId,
-          '✅ Nota pubblicata. Il sito si aggiornerà a breve (build automatica).', env);
-      } catch (e) {
-        console.error('Errore pubblicazione nota:', e);
-        await sendTelegramMessage(chatId,
-          '⚠️ Errore nel salvataggio: ' + e.message +
-          '\n\nI dati inseriti non sono andati persi: scrivi di nuovo CONFERMA per riprovare, oppure ANNULLA.', env);
-      }
-      return;
-    }
-
-    if (risposta === 'ANNULLA') {
-      await cancellaNotaState(chatId, env);
-      await sendTelegramMessage(chatId, 'Annullato. Nessuna nota è stata salvata.', env);
-      return;
-    }
-
-    await sendTelegramMessage(chatId, 'Scrivi CONFERMA per pubblicare, oppure ANNULLA per annullare.', env);
+// Guida l'utente attraverso Foto → Video → Camera dopo /nota <testo>.
+// A differenza del vecchio /nuovanota, ogni risposta viene scritta
+// SUBITO nella bozza già salvata (non tenuta in memoria fino a un
+// CONFERMA finale): se il flusso si interrompe a metà — batteria,
+// distrazione, /annulla — quello che hai già risposto non va perso,
+// resta nella bozza così com'è.
+async function gestisciPassoBozza(chatId, text, stato, env) {
+  var bozza = await ottieniBozza(stato.idBozza, env);
+  if (!bozza) {
+    await cancellaNotaState(chatId, env);
+    await sendTelegramMessage(chatId, '⚠️ La bozza a cui si riferiva questa domanda non esiste più.', env);
     return;
   }
 
-  var indiceCorrente = CAMPI_NOTA.findIndex(function (c) { return c.chiave === stato.step; });
   var valore = text.trim();
+  if (valore === '-') valore = null;
+  bozza[stato.step] = valore;
+  await env.PUSH_SUBS.put(chiaveBozza(stato.idBozza), JSON.stringify(bozza));
 
-  if ((stato.step === 'foto' || stato.step === 'video' || stato.step === 'camera') && valore === '-') {
-    valore = null;
-  }
+  var indiceCorrente = CAMPI_BOZZA.findIndex(function (c) { return c.chiave === stato.step; });
+  var prossimo = CAMPI_BOZZA[indiceCorrente + 1];
 
-  stato.data[stato.step] = valore;
-
-  var prossimo = CAMPI_NOTA[indiceCorrente + 1];
   if (prossimo) {
     stato.step = prossimo.chiave;
     await salvaNotaState(chatId, stato, env);
     await sendTelegramMessage(chatId, prossimo.domanda, env);
   } else {
-    stato.step = 'conferma';
-    await salvaNotaState(chatId, stato, env);
-    await sendTelegramMessage(chatId, costruisciRiepilogoNota(stato.data), env);
+    await cancellaNotaState(chatId, env);
+    await sendTelegramMessage(chatId,
+      '📝 Bozza <code>' + stato.idBozza + '</code> pronta.\n\n' +
+      'Usa /pubblica ' + stato.idBozza + ' per pubblicarla (con traduzione automatica in inglese), ' +
+      'o /bozze per rivederla.', env);
   }
 }
 
@@ -410,19 +388,18 @@ async function pubblicaNotaTaccuino(dati, env) {
 }
 
 /* ══════════════════════════════════════════════
-   TACCUINO — bozze rapide (/nota, /bozze, /modifica, /pubblica, /elimina, /stato)
+   TACCUINO — bozze (/nota, /bozze, /modifica, /pubblica, /elimina, /stato)
 
-   Cattura veloce di frammenti grezzi, alternativa leggera al flusso
-   conversazionale completo di /nuovanota. Le bozze vivono SOLO su KV
-   (PUSH_SUBS, prefisso "bozza:") finché non vengono pubblicate: a
-   differenza di /nuovanota, salvare, modificare o eliminare una bozza
-   NON genera commit né deploy — solo /pubblica scrive su GitHub,
-   esattamente come pubblicaNotaTaccuino già fa per /nuovanota.
+   Le bozze vivono SOLO su KV (PUSH_SUBS, prefisso "bozza:") finché non
+   vengono pubblicate: crearle, arricchirle con foto/video/camera,
+   modificarle o eliminarle NON genera commit né deploy — solo
+   /pubblica scrive su GitHub (vedi pubblicaNotaTaccuino), ed è quello
+   il momento in cui parte la build automatica del sito.
 
-   Una bozza pubblicata da qui viene tradotta automaticamente in inglese
-   (vedi traduciTesto). Se la traduzione fallisce, js/libro.js (funzione
-   t()) fa comunque fallback su .it quando .en è vuoto, quindi non rompe
-   la versione inglese del sito.
+   Una bozza pubblicata da qui viene tradotta automaticamente in
+   inglese (vedi traduciTesto). Se la traduzione fallisce, js/libro.js
+   (funzione t()) fa comunque fallback su .it quando .en è vuoto,
+   quindi non rompe la versione inglese del sito.
    ══════════════════════════════════════════════ */
 
 function chiaveBozza(id) {
@@ -535,17 +512,22 @@ export async function handleTelegramUpdate(update, env) {
   var text = message.text.trim();
   var chatId = message.chat.id;
 
-  // Se c'è un flusso /nuovanota in corso per questa chat, il testo che
-  // arriva è la risposta al campo attuale, non un comando — a meno che
-  // non sia /annulla.
-  var statoNota = await getNotaState(chatId, env);
-  if (statoNota) {
+  // Se c'è un flusso guidato /nota in corso per questa chat (sta
+  // aspettando foto, video o camera), il testo che arriva è la
+  // risposta al campo attuale, non un comando — a meno che non sia
+  // /annulla. La bozza, con quello che hai già risposto, resta comunque
+  // salvata: /annulla ferma solo le domande successive.
+  var statoBozza = await getNotaState(chatId, env);
+  if (statoBozza) {
     if (text === '/annulla') {
       await cancellaNotaState(chatId, env);
-      await sendTelegramMessage(chatId, 'Annullato. Nessuna nota è stata salvata.', env);
+      await sendTelegramMessage(chatId,
+        'Va bene, mi fermo qui. Quello che avevi già risposto resta nella bozza ' +
+        '<code>' + statoBozza.idBozza + '</code>. Usa /pubblica ' + statoBozza.idBozza +
+        ' quando sei pronto, o /bozze per rivederla.', env);
       return;
     }
-    await gestisciPassoNuovaNota(chatId, text, statoNota, env);
+    await gestisciPassoBozza(chatId, text, statoBozza, env);
     return;
   }
 
