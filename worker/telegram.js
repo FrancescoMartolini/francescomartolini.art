@@ -315,28 +315,28 @@ export async function handleTelegramUpdate(update, env) {
     }
   }
 
-  if (text === '/start') {
-    await sendTelegramMessage(chatId,
-      '👋 Ciao! Sono il bot di francescomartolini.art\n\n' +
-      '<b>Creazione contenuti:</b>\n' +
-      '/nuovanota — Nuova nota del taccuino\n' +
-      '/nuovoprogetto — Nuovo progetto fotografico\n' +
-      '/nuovointervallo — Nuovo intervallo\n' +
-      '/nuovapubblicazione — Nuova pubblicazione\n' +
-      '/nuovacollaborazione — Nuova collaborazione\n\n' +
-      '<b>Gestione bozze:</b>\n' +
-      '/bozza — Elenco tutte le bozze\n' +
-      '/modifica <id> — Modifica una bozza\n' +
-      '/pubblica <id> — Pubblica una bozza\n' +
-      '/elimina <id> — Elimina una bozza\n\n' +
-      '<b>Progetti esistenti:</b>\n' +
-      '/lista — Vedi tutti i progetti\n' +
-      '/post <id> — Genera caption Instagram IT+EN\n' +
-      '/rigenera <id> — Rigenera caption\n\n' +
-      '<b>Comandi generali:</b>\n' +
-      '/annulla — Annulla operazione in corso', env);
-    return;
-  }
+if (text === '/start') {
+  await sendTelegramMessage(chatId,
+    '👋 Ciao! Sono il bot di francescomartolini.art\n\n' +
+    '<b>Creazione contenuti:</b>\n' +
+    '/nuovanota — Nuova nota del taccuino\n' +
+    '/nuovoprogetto — Nuovo progetto fotografico\n' +
+    '/nuovointervallo — Nuovo intervallo\n' +
+    '/nuovapubblicazione — Nuova pubblicazione\n' +
+    '/nuovacollaborazione — Nuova collaborazione\n\n' +
+    '<b>Gestione bozze:</b>\n' +
+    '/bozza — Elenco tutte le bozze\n' +
+    '/modifica &lt;id&gt; — Modifica una bozza\n' +
+    '/pubblica &lt;id&gt; — Pubblica una bozza\n' +
+    '/elimina &lt;id&gt; — Elimina una bozza\n\n' +
+    '<b>Progetti esistenti:</b>\n' +
+    '/lista — Vedi tutti i progetti\n' +
+    '/post &lt;id&gt; — Genera caption Instagram IT+EN\n' +
+    '/rigenera &lt;id&gt; — Rigenera caption\n\n' +
+    '<b>Comandi generali:</b>\n' +
+    '/annulla — Annulla operazione in corso', env);
+  return;
+}
 
   if (text === '/nuovanota') {
     await handleNuovaNota(chatId, env);
