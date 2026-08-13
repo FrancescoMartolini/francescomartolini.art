@@ -384,16 +384,23 @@ function creaMediaTaccuino(v, wrapClass) {
 }
 
 // ── Voce taccuino mobile ──
+// Guscio subito, contenuto (foto/video/testo) idratato quando serve:
+// il Taccuino è pensato per crescere continuamente nel tempo, quindi
+// è il punto dove il costo di costruzione eager si sente di più.
 function creaPaginaTaccuinoMobile(v) {
   const pt = creaPaginaMobile('T', 'Taccuino');
-  const { mpc, pc } = creaMobilePageContent();
-  const tw = crea('div'); tw.className = 'taccuino-wrap';
-    tw.style.overflowY = 'auto';
-    tw.style.maxHeight = '80vh'; 
-  const media = creaMediaTaccuino(v, 'taccuino-foto');
-  if (media) tw.appendChild(media);
-  tw.innerHTML += `<p class="taccuino-frase">${t(v.testo)}</p>${v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p><p class="taccuino-data">${formatData(v.data)}</p>` : ''}`;
-  pc.appendChild(tw); pt.appendChild(mpc);
+
+  registraIdratazione(pt, () => {
+    const { mpc, pc } = creaMobilePageContent();
+    const tw = crea('div'); tw.className = 'taccuino-wrap';
+      tw.style.overflowY = 'auto';
+      tw.style.maxHeight = '80vh';
+    const media = creaMediaTaccuino(v, 'taccuino-foto');
+    if (media) tw.appendChild(media);
+    tw.innerHTML += `<p class="taccuino-frase">${t(v.testo)}</p>${v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p><p class="taccuino-data">${formatData(v.data)}</p>` : ''}`;
+    pc.appendChild(tw); pt.appendChild(mpc);
+  });
+
   return pt;
 }
 
@@ -404,6 +411,73 @@ function inserisciTaccuinoSeDisponibile(container, tIdx) {
     return tIdx + 1;
   }
   return tIdx;
+}
+
+// ════════════════════════════════
+// IDRATAZIONE PROGRESSIVA DELLE PAGINE MOBILE
+// ════════════════════════════════
+// Problema: costruisciMobile() creava subito nel DOM il contenuto
+// completo (immagini, testo, bottoni, listener) di ogni pagina del
+// libro. Corretto finché i "capitoli" sono pochi, ma il lavoro JS
+// cresce linearmente con ogni nuovo progetto/intervallo/voce di
+// taccuino aggiunta — con 30+ capitoli diventerebbe un caricamento
+// pesante fin dal primo avvio, anche se il lettore sfoglia solo le
+// prime pagine.
+//
+// Soluzione: separare GUSCIO da CONTENUTO.
+// - Il guscio (creaPaginaMobile: div.page con favicon/titolo in
+//   dataset) resta sempre sincrono e completo per TUTTE le pagine,
+//   nell'ordine giusto — perché indicatore, scrub, conteggio totale
+//   pagine e i salti diretti dall'indice/segnalibro dipendono da un
+//   DOM con l'esatto numero di pagine, in ordine, fin da subito.
+// - Il contenuto pesante (immagini, testo, bottoni) viene costruito
+//   da una funzione "idratante" registrata qui, ed eseguita solo:
+//     1) subito per le prime pagine del libro (lettura istantanea);
+//     2) in background, un po' alla volta, nei momenti di inattività
+//        del browser (requestIdleCallback), per tutte le altre;
+//     3) immediatamente, appena richiesto, se il lettore salta con
+//        lo swipe/frecce/scrub/indice/segnalibro su una pagina non
+//        ancora idratata — così non si vede mai una pagina vuota.
+const _idratazione = new Map(); // elemento pagina → funzione che ne costruisce il contenuto
+
+// Registra una pagina-guscio con la sua funzione di idratazione.
+function registraIdratazione(pagina, costruisciContenuto) {
+  _idratazione.set(pagina, costruisciContenuto);
+}
+
+// Costruisce il contenuto di una pagina, se non l'ha già fatto.
+function idrata(pagina) {
+  if (!pagina || pagina.dataset.idratata === '1') return;
+  const fn = _idratazione.get(pagina);
+  if (fn) fn();
+  pagina.dataset.idratata = '1';
+  _idratazione.delete(pagina);
+}
+
+const _richiediInattivita = window.requestIdleCallback
+  ? window.requestIdleCallback.bind(window)
+  : (cb) => setTimeout(() => cb({ timeRemaining: () => 8, didTimeout: true }), 80);
+
+// Idrata in background le pagine rimaste, poche alla volta, senza
+// bloccare mai il thread principale (e quindi lo scroll/lo swipe).
+function idrataInBackground() {
+  if (_idratazione.size === 0) return;
+  _richiediInattivita((deadline) => {
+    for (const [pagina] of _idratazione) {
+      if (!deadline.didTimeout && deadline.timeRemaining() <= 0) break;
+      idrata(pagina);
+    }
+    if (_idratazione.size > 0) idrataInBackground();
+  });
+}
+
+// Idrata subito le prime N pagine (apertura del libro) + un margine
+// di sicurezza attorno a un indice dato, così le prime sfogliate
+// sono sempre pronte senza dover attendere l'inattività del browser.
+function idrataSubito(pagine, daIdx = 0, margine = 2) {
+  const fine = Math.min(pagine.length, daIdx + margine + 1);
+  const inizio = Math.max(0, daIdx - margine);
+  for (let i = inizio; i < fine; i++) idrata(pagine[i]);
 }
 
 // ════════════════════════════════
@@ -1571,60 +1645,73 @@ function costruisciMobile() {
   let tIdx = 0;
   const containerProgetti = $('mobile-progetti-container');
 
+  // Pagina progetto: guscio subito (favicon/titolo → indicatore, ORA
+  // corrente, titolo scheda funzionano da subito), contenuto (foto,
+  // testo, bottone, listener) idratato quando serve — vedi sopra.
   progettiVisualizzati().forEach(pr => {
     const inLavorazione = pr.pubblicato === false;
     const isPlaylist = pr.id === ID_CARD_PLAYLIST;
     const p = creaPaginaMobile(t(pr.titolo).charAt(0).toUpperCase(), t(pr.titolo));
-    p.appendChild(creaHeader());
 
-    const wrap = crea('div'); wrap.className = 'progetto-mobile-wrap';
-    const imgDiv = crea('div');
-    imgDiv.className = 'progetto-mobile-img' + (inLavorazione ? ' in-lavorazione' : '');
-    imgDiv.appendChild(creaImg(pr.immagine_copertina, t(pr.titolo)));
+    registraIdratazione(p, () => {
+      p.appendChild(creaHeader());
 
-    const testo = crea('div'); testo.className = 'progetto-mobile-testo';
-    const linkEsterno = pr.link_esterno
-      ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">${t(pr.label_link) || tu('common.vediOnline')}</a>` : '';
-    const bottoneEntrata = isPlaylist
-      ? `<button class="link-progetto" style="pointer-events:all;">Entra nell'Archivio</button>`
-      : inLavorazione
-        ? `<p class="progetto-in-lavorazione">${tu('overlay.inLavorazione')}</p>`
-        : `<button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">${tu('progetti_extra.entraNelProgetto')}</button>`;
-    testo.innerHTML = `
-      <p class="progetto-anno">${t(pr.anno)}</p>
-      <h2 class="progetto-titolo">${t(pr.titolo)}</h2>
-      <p class="progetto-anno">${t(pr.descrizione)}</p>
-      ${bottoneEntrata}
-      <!-- ${linkEsterno} -->
-    `;
-    if (isPlaylist) {
-      testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(ID_CARD_PLAYLIST));
-      imgDiv.style.cursor = 'pointer';
-      imgDiv.addEventListener('click', () => apriProgetto(ID_CARD_PLAYLIST));
-    } else if (!inLavorazione) {
-      testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(pr.id));
-      imgDiv.style.cursor = 'pointer';
-      imgDiv.addEventListener('click', () => apriProgetto(pr.id));
-    }
+      const wrap = crea('div'); wrap.className = 'progetto-mobile-wrap';
+      const imgDiv = crea('div');
+      imgDiv.className = 'progetto-mobile-img' + (inLavorazione ? ' in-lavorazione' : '');
+      imgDiv.appendChild(creaImg(pr.immagine_copertina, t(pr.titolo)));
 
-    wrap.appendChild(imgDiv); wrap.appendChild(testo); p.appendChild(wrap);
+      const testo = crea('div'); testo.className = 'progetto-mobile-testo';
+      const linkEsterno = pr.link_esterno
+        ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener" style="pointer-events:all;">${t(pr.label_link) || tu('common.vediOnline')}</a>` : '';
+      const bottoneEntrata = isPlaylist
+        ? `<button class="link-progetto" style="pointer-events:all;">Entra nell'Archivio</button>`
+        : inLavorazione
+          ? `<p class="progetto-in-lavorazione">${tu('overlay.inLavorazione')}</p>`
+          : `<button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">${tu('progetti_extra.entraNelProgetto')}</button>`;
+      testo.innerHTML = `
+        <p class="progetto-anno">${t(pr.anno)}</p>
+        <h2 class="progetto-titolo">${t(pr.titolo)}</h2>
+        <p class="progetto-anno">${t(pr.descrizione)}</p>
+        ${bottoneEntrata}
+        <!-- ${linkEsterno} -->
+      `;
+      if (isPlaylist) {
+        testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(ID_CARD_PLAYLIST));
+        imgDiv.style.cursor = 'pointer';
+        imgDiv.addEventListener('click', () => apriProgetto(ID_CARD_PLAYLIST));
+      } else if (!inLavorazione) {
+        testo.querySelector('.link-progetto').addEventListener('click', () => apriProgetto(pr.id));
+        imgDiv.style.cursor = 'pointer';
+        imgDiv.addEventListener('click', () => apriProgetto(pr.id));
+      }
+
+      wrap.appendChild(imgDiv); wrap.appendChild(testo); p.appendChild(wrap);
+    });
+
     containerProgetti.appendChild(p);
     tIdx = inserisciTaccuinoSeDisponibile(containerProgetti, tIdx);
   });
 
   const containerIntervalli = $('mobile-intervalli-container');
+  // Idem per gli intervalli: la griglia di immagini è idratata solo
+  // quando la pagina viene raggiunta (o all'avvio in background).
   stato.intervalli.forEach(iv => {
     const p = creaPaginaMobile('I', t(iv.titolo));
-    const { mpc, pc } = creaMobilePageContent();
-    const wrap = crea('div'); wrap.className = 'intervallo-mobile-wrap';
-    wrap.innerHTML = `<p class="capitolo-label">${tu('menu.intervalli')}</p><h2 class="capitolo-titolo">${t(iv.titolo)}</h2><p class="capitolo-descrizione">${t(iv.descrizione)}</p>`;
-    const gr = crea('div'); gr.className = 'intervallo-mobile-griglia';
-    iv.immagini.forEach((src, i) => {
-      const cell = crea('div'); cell.className = 'intervallo-mobile-cella';
-      cell.appendChild(creaImg(src, `${t(iv.titolo)} ${i + 1}`));
-      gr.appendChild(cell);
+
+    registraIdratazione(p, () => {
+      const { mpc, pc } = creaMobilePageContent();
+      const wrap = crea('div'); wrap.className = 'intervallo-mobile-wrap';
+      wrap.innerHTML = `<p class="capitolo-label">${tu('menu.intervalli')}</p><h2 class="capitolo-titolo">${t(iv.titolo)}</h2><p class="capitolo-descrizione">${t(iv.descrizione)}</p>`;
+      const gr = crea('div'); gr.className = 'intervallo-mobile-griglia';
+      iv.immagini.forEach((src, i) => {
+        const cell = crea('div'); cell.className = 'intervallo-mobile-cella';
+        cell.appendChild(creaImg(src, `${t(iv.titolo)} ${i + 1}`));
+        gr.appendChild(cell);
+      });
+      wrap.appendChild(gr); pc.appendChild(wrap); p.appendChild(mpc);
     });
-    wrap.appendChild(gr); pc.appendChild(wrap); p.appendChild(mpc);
+
     containerIntervalli.appendChild(p);
     tIdx = inserisciTaccuinoSeDisponibile(containerIntervalli, tIdx);
   });
@@ -1811,6 +1898,15 @@ function costruisciMobile() {
   }
 
   raccogliPagine();
+
+  // Idrata subito le prime pagine (lettura istantanea dal frontespizio)
+  // o quella salvata dal segnalibro se il lettore riprende da lì; il
+  // resto del libro si idrata da solo nei momenti di inattività.
+  const paginaIniziale = (() => {
+    try { return parseInt(localStorage.getItem(SEGNALIBRO_KEY), 10) || 0; } catch (e) { return 0; }
+  })();
+  idrataSubito([...document.querySelectorAll('.page, .pagina-progetto-mobile')], paginaIniziale);
+  idrataInBackground();
 }
 
 function raccogliPagine() {
@@ -1842,6 +1938,7 @@ function costruisciIndicatore(tot) {
   function scrubA(idx) {
     if (idx < 0 || idx >= stato.totPagine || idx === stato.paginaCorrente) return;
     const pagine = document.querySelectorAll('.page, .pagina-progetto-mobile');
+    idrata(pagine[idx]); // lo scrub può saltare direttamente su una pagina non ancora costruita
     pagine[stato.paginaCorrente]?.classList.remove('attiva');
     stato.paginaCorrente = idx;
     pagine[idx]?.classList.add('attiva');
@@ -1888,6 +1985,11 @@ function navigaA(idx) {
   if (stato.inTransizione || idx < 0 || idx >= stato.totPagine || idx === stato.paginaCorrente) return;
   stato.inTransizione = true;
   const pagine = document.querySelectorAll('.page, .pagina-progetto-mobile');
+  // Idrata la pagina di destinazione (garanzia, se lo swipe/salto arriva
+  // prima che l'idratazione in background l'abbia già coperta) e la
+  // successiva, per uno sfogliare in avanti sempre fluido.
+  idrata(pagine[idx]);
+  idrata(pagine[idx + 1]);
   pagine[stato.paginaCorrente].classList.remove('attiva');
   pagine[stato.paginaCorrente].classList.add('uscita-sinistra');
   setTimeout(() => pagine[stato.paginaCorrente]?.classList.remove('uscita-sinistra'), 450);
