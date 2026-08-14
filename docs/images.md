@@ -18,7 +18,9 @@ Le fotografie dei contenuti **non vivono nel repository**: si caricano su **Clou
 - Tutte le immagini create da `libro.js` passano da `creaImg()`: `loading="lazy"` tranne hero e cover progetto (`eager`), `draggable=false`, fallback testuale se l'URL fallisce (`img-wrap--vuota`).
 - Le immagini nei blocchi progetto usano `loading="lazy"`.
 - `pointer-events: none` sulle immagini + protezione click destro/drag (vedi README, logica in `libro.js`): le immagini restano cliccabili solo tramite i wrapper che aprono il lightbox.
-- Niente `srcset`/responsive images native: la responsività è delegata alle trasformazioni Cloudinary (scegliere la larghezza giusta per contesto).
+- `creaImg()` genera anche uno **`srcset` responsive** a partire dall'URL Cloudinary già incollato nel JSON: riscrive `w_NNN` nella trasformazione esistente per le larghezze `400/700/1000/1400/2000` (con `c_limit` per non fare upscaling), lasciando invariati `q_auto`/`f_auto`. Non serve incollare più URL diversi: basta l'unico URL già presente (`w_600` o `w_1400`), il browser sceglie da solo il file giusto in base a viewport e densità dello schermo — così un iPhone e un monitor esterno non scaricano più lo stesso peso.
+- `sizes` di default è `100vw` (immagine a pagina intera, il caso più comune nel libro mobile). Nei punti dove l'immagine occupa una frazione della larghezza in una griglia desktop (es. `studi-griglia`, `tutti-card-img`, `collab-griglia`, `pl-volume-cover`) `creaImg()` riceve un quarto argomento `sizes` esplicito, per non far scaricare al browser una variante più pesante del necessario.
+- Se l'URL non è Cloudinary (es. `images/chi-sono-img.jpg`) `creaImg()` non genera `srcset` e si comporta come prima.
 
 ## Video (Cloudinary)
 
@@ -39,4 +41,4 @@ Le fotografie dei contenuti **non vivono nel repository**: si caricano su **Clou
 
 ## Naming (suggerito)
 
-Non essendoci convenzioni rigide nel codice, si propone: kebab-case, prefisso per progetto (es. `playlist01-cover.jpg`, `playlist01-01.jpg`), versione per larghezza gestita solo via trasformazioni (mai duplicati `nome-600.jpg`/`nome-1400.jpg`).
+Non essendoci convenzioni rigide nel codice, si propone: kebab-case, prefisso per progetto (es. `playlist01-cover.jpg`, `playlist01-01.jpg`), versione per larghezza gestita solo via trasformazioni (mai duplicati `nome-600.jpg`/`nome-1400.jpg`).

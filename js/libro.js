@@ -310,14 +310,39 @@ function avviaOrologioSticky() {
   obs.observe(hero);
 }
 
+// ── Cloudinary: srcset responsive a partire dall'URL già trasformato ──
+// Le immagini nei JSON arrivano con una larghezza fissa incollata
+// (es. ".../upload/w_1400,q_auto,f_auto/..."): un iPhone e un monitor
+// esterno scaricano lo stesso peso. Qui si genera un srcset con più
+// varianti di larghezza riusando la stessa trasformazione (q_auto,
+// f_auto restano invariati), così il browser sceglie da solo il file
+// giusto per il proprio viewport/densità.
+const CLD_WIDTHS = [400, 700, 1000, 1400, 2000];
+function cldSrcset(src) {
+  const m = /^(https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\/)([^/]+)\/(.+)$/.exec(src);
+  if (!m) return null; // non è un URL Cloudinary trasformato (es. asset locale) → niente srcset
+  const [, base, transform, resto] = m;
+  if (!/\bw_\d+\b/.test(transform)) return null;
+  // c_limit evita l'upscaling oltre l'originale per le varianti più larghe
+  const conLimit = /\bc_(limit|fit|scale|fill|thumb|crop)\b/.test(transform) ? transform : `c_limit,${transform}`;
+  return CLD_WIDTHS
+    .map(w => `${base}${conLimit.replace(/w_\d+/, `w_${w}`)}/${resto} ${w}w`)
+    .join(', ');
+}
+
 // ── Immagine protetta ──
-function creaImg(src, alt, eager) {
+// `sizes` = quanto spazio occupa l'immagine nel layout (default: pagina intera).
+// Passarlo esplicitamente nelle griglie desktop (es. "33vw" per una griglia a 3
+// colonne) riduce ulteriormente il peso scaricato rispetto al default.
+function creaImg(src, alt, eager, sizes) {
   const wrap = crea('div');
   wrap.className = 'img-wrap';
   if (src) {
     const img = crea('img');
     img.src = src; img.alt = alt || ''; img.draggable = false;
     img.loading = eager ? 'eager' : 'lazy';
+    const srcset = cldSrcset(src);
+    if (srcset) { img.srcset = srcset; img.sizes = sizes || '100vw'; }
     const overlay = crea('div'); overlay.className = 'img-overlay';
     wrap.appendChild(img); wrap.appendChild(overlay);
     img.onerror = () => {
@@ -563,7 +588,7 @@ function popolaDesktop() {
   if (studiGriglia) {
     stato.intervalli.flatMap(iv => iv.immagini).slice(0, 5).forEach((src, i) => {
       const cell = crea('div'); cell.className = 'studio-img';
-      cell.appendChild(creaImg(src, `Studio ${i + 1}`));
+      cell.appendChild(creaImg(src, `Studio ${i + 1}`, false, '20vw'));
       studiGriglia.appendChild(cell);
     });
   }
@@ -666,7 +691,7 @@ function apriPagina(tipo) {
           <p class="tutti-card-desc">${t(pr.descrizione)}</p>
           ${inLavorazione ? `<p class="tutti-card-wip">${tu('overlay.inLavorazione')}</p>` : ''}
         `;
-        card.querySelector('.tutti-card-img').appendChild(creaImg(pr.immagine_copertina, t(pr.titolo)));
+        card.querySelector('.tutti-card-img').appendChild(creaImg(pr.immagine_copertina, t(pr.titolo), false, '(max-width:900px) 50vw, 33vw'));
         if (pr.id === ID_CARD_PLAYLIST) {
           card.addEventListener('click', () => apriProgetto(ID_CARD_PLAYLIST));
         } else if (!inLavorazione) {
@@ -694,7 +719,7 @@ function apriPagina(tipo) {
           const fine = Math.min(i + BLOCCO, immagini.length);
           for (; i < fine; i++) {
             const cell = crea('div'); cell.className = 'tutti-studio-img';
-            cell.appendChild(creaImg(immagini[i], `Studio ${i + 1}`));
+            cell.appendChild(creaImg(immagini[i], `Studio ${i + 1}`, false, '20vw'));
             grid.appendChild(cell);
           }
           if (i < immagini.length) requestAnimationFrame(step);
@@ -782,7 +807,7 @@ function apriPagina(tipo) {
               <p class="collab-cliente">${v.titolo}</p>
               <p class="collab-anno">${v.anno}</p>
             `;
-            item.querySelector('.collab-img').appendChild(creaImg(v.foto, v.titolo));
+            item.querySelector('.collab-img').appendChild(creaImg(v.foto, v.titolo, false, '33vw'));
             grid.appendChild(item);
 
             // Foto della collaborazione: la sezione si apre solo se la galleria è popolata
@@ -798,7 +823,7 @@ function apriPagina(tipo) {
               const striscia = crea('div'); striscia.className = 'collab-espansione-striscia';
               fotoCollab.forEach(src => {
                 const cell = crea('div'); cell.className = 'collab-espansione-cella';
-                cell.appendChild(creaImg(src, v.titolo));
+                cell.appendChild(creaImg(src, v.titolo, false, '50vw'));
                 striscia.appendChild(cell);
               });
               inner.appendChild(striscia);
@@ -1035,7 +1060,7 @@ function popolaGrigliaVolumiPlaylist(root) {
       <p class="pl-volume-titolo">${t(pr.sottotitolo) || t(pr.titolo)}</p>
       ${inLavorazione ? `<p class="pl-volume-wip">${tu('overlay.inLavorazione')}</p>` : ''}
     `;
-    card.querySelector('.pl-volume-cover').appendChild(creaImg(pr.immagine_copertina, t(pr.titolo)));
+    card.querySelector('.pl-volume-cover').appendChild(creaImg(pr.immagine_copertina, t(pr.titolo), false, '(max-width:600px) 50vw, 25vw'));
     if (!inLavorazione) card.addEventListener('click', () => apriProgetto(pr.id));
     grid.appendChild(card);
   });
@@ -1706,7 +1731,7 @@ function costruisciMobile() {
       const gr = crea('div'); gr.className = 'intervallo-mobile-griglia';
       iv.immagini.forEach((src, i) => {
         const cell = crea('div'); cell.className = 'intervallo-mobile-cella';
-        cell.appendChild(creaImg(src, `${t(iv.titolo)} ${i + 1}`));
+        cell.appendChild(creaImg(src, `${t(iv.titolo)} ${i + 1}`, false, '50vw'));
         gr.appendChild(cell);
       });
       wrap.appendChild(gr); pc.appendChild(wrap); p.appendChild(mpc);
@@ -1794,7 +1819,7 @@ function costruisciMobile() {
         const striscia = crea('div'); striscia.className = 'collab-mobile-espansione-striscia';
         fotoCollab.forEach(src => {
           const cell = crea('div'); cell.className = 'collab-mobile-espansione-cella';
-          cell.appendChild(creaImg(src, cl.titolo));
+          cell.appendChild(creaImg(src, cl.titolo, false, '80vw'));
           striscia.appendChild(cell);
         });
         wrapStriscia.appendChild(striscia);
