@@ -218,5 +218,16 @@
     "foto": null,
     "video": null,
     "camera": null
+  },
+  {
+    "id": 21,
+    "testo": {
+      "it": "Ho provato in questa settimana a Follonica a lavorare sul progetto 3.3 ma senza successo… la macchina fotografica che avevo intenzione di usare non voleva collaborare scattava una foto e poi non salvava altro all’interno della memoria oppure riguardavo le foto e mi diceva memoria non riconosciuta.\nQuindi per ora rimane fermo",
+      "en": "I attempted to work on project 3.3 in Follonica this week, but to no avail. The camera I had intended to use was uncooperative, taking one photo before failing to save any further images to its memory, or alternatively, when I tried to review the photos, it would inform me that the memory was not recognized. As a result, the project remains stalled for the time being."
+    },
+    "data": "2026-08-23",
+    "foto": null,
+    "video": null,
+    "camera": null
   }
 ]
