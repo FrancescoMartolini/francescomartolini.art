@@ -15,6 +15,7 @@
 | Cambiare il testo dell'introduzione | `json/intro.json` | [content.md](content.md) |
 | Cambiare testi di menu/bottoni/footer/popup | `json/ui.json` | [i18n.md](i18n.md) |
 | Cambiare il titolo/hero della home | `index.html` → `#home` (mobile) e `.desktop-hero` | [architecture.md](architecture.md) |
+| Inserire i video dell'intro cinematografica della Home | `js/intro-video.js` → `INTRO_VIDEO_LANDSCAPE`/`INTRO_VIDEO_PORTRAIT` | [intro-video.md](intro-video.md) |
 | Cambiare i contatti | `index.html` → `#chi-sono` e `apriPagina('chi-sono-pagina')` in `js/libro.js` | — |
 | Cambiare colori globali | `css/stile.css` → `:root` | [typography.md](typography.md) |
 | Cambiare un font | `index.html` → `<head>` + variabili in `css/stile.css` | [typography.md](typography.md) |

@@ -6,6 +6,9 @@
     "taccuino": { "it": "Taccuino", "en": "Notebook" }
   },
   "oraCorrente": { "it": "ORA CORRENTE", "en": "CURRENT TIME" },
+  "intro": {
+    "salta": { "it": "Salta", "en": "Skip" }
+  },
   "home": {
     "sottotitolo": { "it": "Fotografia come indagine.<br>Progetti come mappe del tempo.", "en": "Photography as inquiry.<br>Projects as maps of time." },
     "cta": { "it": "Scopri i progetti", "en": "Discover the projects" }

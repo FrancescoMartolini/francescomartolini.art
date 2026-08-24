@@ -16,6 +16,12 @@
 - **Notifiche push**: infrastruttura completata, poi messa in pausa.
 - **Foglio di stampa**: `css/stampa.css` ("stampare il capitolo aperto").
 
+## 2026-08-14 — Intro cinematografica della Home
+- Video a schermo intero (due varianti Cloudinary, landscape/portrait scelte dal viewport) che precede l'apertura della Home, con dissolvenza verso il frontespizio esistente. Una sola volta per sessione, saltata su link profondi, `prefers-reduced-motion`, autoplay bloccato o video non disponibile.
+- File toccati: `index.html`, `css/stile.css`, `css/stampa.css`, `js/libro.js` (guardie navigazione libro mobile), `json/ui.json`.
+- File aggiunti: `js/intro-video.js`, `docs/intro-video.md`.
+- Da fare prima del deploy: incollare i due URL Cloudinary in `js/intro-video.js` (vedi [intro-video.md](intro-video.md)).
+
 ## Template per le voci future
 
 ```markdown

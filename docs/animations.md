@@ -21,6 +21,7 @@
 | Lightbox | `#lightbox.aperto`, keyframes `lightbox-fadein` | click immagine | fade 0.3s; cambio img con classe `caricando` (0.2s) |
 | Nota evidenziata (link diretto) | `.taccuino-voce.evidenziata` | apertura `/taccuino/<id>` | keyframes sfondo 2.4s — **disattivata con `prefers-reduced-motion`** |
 | Cookie banner | `#cookie-banner.visibile` | prima visita | `translateY`, 0.5s |
+| Intro cinematografica Home | `#intro-cinematica`; logica in `js/intro-video.js` | apertura sessione (vedi [intro-video.md](intro-video.md)) | fade video 1.1s, fade frontespizio 1s, fade uscita 0.9s, stesso easing del sito — **disattivata con `prefers-reduced-motion`** |
 
 ## Come modificare un'animazione
 

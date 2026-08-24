@@ -2147,6 +2147,7 @@ function protezioneImmagini() {
 // ── Input ──
 function gestisciTastiera(e) {
   if (!isMobile()) return;
+  if ($('intro-cinematica')) return; // intro video ancora attiva (js/intro-video.js)
   if ($('pagina-progetto').classList.contains('aperta')) { if (e.key === 'Escape') chiudiProgetto(); return; }
   if ($('pagina-taccuino-archivio').classList.contains('aperta')) { if (e.key === 'Escape') chiudiTaccuino(); return; }
   if ($('overlay-pagina').classList.contains('aperta')) { if (e.key === 'Escape') chiudiPagina(); return; }
@@ -2159,6 +2160,7 @@ let tx = 0, ty = 0;
 function gestisciTouchStart(e) { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }
 function gestisciTouchEnd(e) {
   if (!isMobile()) return;
+  if ($('intro-cinematica')) return; // intro video ancora attiva (js/intro-video.js)
   if ($('pagina-progetto').classList.contains('aperta')) return;
   if ($('pagina-taccuino-archivio').classList.contains('aperta')) return;
 
@@ -2183,6 +2185,7 @@ function gestisciTouchEnd(e) {
 
 function gestisciTap(e) {
   if (!isMobile()) return;
+  if ($('intro-cinematica')) return; // intro video ancora attiva (js/intro-video.js)
   if ($('pagina-progetto').classList.contains('aperta')) return;
   if ($('pagina-taccuino-archivio').classList.contains('aperta')) return;
   if (e.target.closest('button, a, input')) return;

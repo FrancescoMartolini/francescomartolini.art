@@ -2306,3 +2306,101 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .pl-volume-nav { flex-wrap: wrap; }
   .pl-volume-nav-indice { order: -1; flex: 0 0 100%; text-align: center; margin-bottom: 8px; }
 }
+
+/* ════════════════════════════════
+   INTRO CINEMATOGRAFICA HOME
+   Apertura a schermo intero, sempre nera indipendentemente dal tema
+   (chiaro/scuro) attivo: per questo usa colori propri e non --nero/--bianco,
+   che si invertono con body.tema-scuro. Vedi js/intro-video.js per la logica.
+   ════════════════════════════════ */
+#intro-cinematica {
+  --intro-bg: #0a0a0a;
+  --intro-fg: #f5f4f0;
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  background: var(--intro-bg);
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 1;
+}
+#intro-cinematica.attiva { display: flex; }
+
+#intro-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+#intro-cinematica.attiva #intro-video { opacity: 1; }
+#intro-cinematica.intro-cinematica--fine #intro-video { opacity: 0; }
+
+.intro-frontespizio {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: var(--intro-fg);
+  opacity: 0;
+  padding: 0 24px;
+  transition: opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+#intro-cinematica.intro-cinematica--fine .intro-frontespizio { opacity: 1; }
+
+.intro-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(245, 244, 240, 0.6);
+  margin-bottom: 18px;
+}
+
+.intro-titolo {
+  font-family: var(--font-titolo);
+  font-weight: 400;
+  font-size: clamp(28px, 6vw, 52px);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.intro-titolo em { font-style: italic; color: rgba(245, 244, 240, 0.75); }
+
+#intro-cinematica.intro-cinematica--esci {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.intro-salta {
+  position: absolute;
+  right: max(24px, env(safe-area-inset-right));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  z-index: 3;
+  padding: 8px 4px;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(245, 244, 240, 0.65);
+  opacity: 0;
+  transition: opacity 0.6s ease 1.1s, color var(--transizione);
+}
+#intro-cinematica.attiva .intro-salta { opacity: 1; }
+.intro-salta:hover, .intro-salta:focus-visible { color: var(--intro-fg); }
+.intro-salta:focus-visible { outline: 1px solid rgba(245, 244, 240, 0.6); outline-offset: 4px; }
+
+/* Blocca lo scroll/sfoglio sotto l'intro mentre è attiva */
+body.intro-attiva { overflow: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  #intro-cinematica,
+  #intro-video,
+  .intro-frontespizio,
+  #intro-cinematica.intro-cinematica--esci,
+  .intro-salta {
+    transition: none !important;
+  }
+}
