@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <script>
+    // 1) Fissa la base per i percorsi relativi (css/, js/, images/, json/)
+    // PRIMA che il browser li incontri più sotto nel documento. Senza
+    // questo, aprire un URL profondo come /francescomartolini.art/progetti/alberi
+    // farebbe risolvere "css/stile.css" relativo a ".../progetti/", non
+    // alla cartella reale del sito — rompendo stile, script e dati.
+    // document.write qui è corretto e sicuro: gira in modo sincrono
+    // durante il parsing dell'head, prima di qualsiasi tag successivo.
     (function () {
       var base = location.hostname.endsWith('github.io')
         ? '/' + (location.pathname.split('/').filter(Boolean)[0] || '')
@@ -11,6 +18,11 @@
     })();
   </script>
   <script>
+    // 2) Ripristina il vero URL dopo il redirect da 404.html (vedi 404.html
+    // per il contesto): sostituisce subito l'URL nella barra degli indirizzi
+    // senza ricaricare la pagina, così l'utente non vede mai ?redirect=.
+    // Questo non tocca la risoluzione dei percorsi relativi: se ne occupa
+    // già il <base> impostato sopra.
     (function () {
       var params = new URLSearchParams(location.search);
       var redirect = params.get('redirect');
@@ -24,10 +36,10 @@
   <meta name="theme-color" content="#0a0a0a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="FM.art">
-  <meta property="og:title" content="francocomartolini.art">
+  <meta property="og:title" content="francescomartolini.art">
   <meta property="og:description" content="Il tempo lascia tracce. Io le cerco.">
   <meta property="og:type" content="website">
-  <title>francocomartolini.art</title>
+  <title>francescomartolini.art</title>
   <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="images/icon.jpg">
   <link rel="manifest" href="images/manifest.json">
@@ -44,38 +56,76 @@
 </head>
 <body>
 
-  <!-- ═ HEADER REDESIGN 2026 ═ -->
+  <!-- ══ HEADER desktop ══ -->
   <header id="site-header">
     <a class="header-logo" href="#home">
-      FRANCESCO MARTOLINI
+      <span class="logo-sinistra"><span>Francesco</span><span>Martolini</span></span>
+      <span class="logo-destra">.art</span>
     </a>
     <nav>
       <ul class="menu-voci">
         <li><a class="section-link" onclick="apriPagina('tutti-progetti')" data-i18n="menu.progetti">Progetti</a></li>
         <li><a class="section-link" onclick="apriPagina('tutti-studi')" data-i18n="menu.intervalli">Intervalli</a></li>
-        <li><a class="section-link" onclick="apriTaccuino()" data-i18n="menu.taccuino">Taccuino</a></li>
         <li><a class="section-link" onclick="apriPagina('chi-sono-pagina')" data-i18n="menu.chiSono">Chi sono</a></li>
-        <li class="menu-lang">
-          <span class="lang-option active" data-lang="it" onclick="cambiaLingua('it')">IT</span>
-          <span class="lang-sep">—</span>
-          <span class="lang-option" data-lang="en" onclick="cambiaLingua('en')">EN</span>
+        <!--<li><a class="section-link" onclick="apriPagina('collaborazioni-pagina')">Collaborazioni</a></li> -->
+        <li><a class="section-link" onclick="apriTaccuino()" data-i18n="menu.taccuino">Taccuino</a></li>
+        <li><div class="menu-dot"></div></li>
+        <li>
+          <button id="tema-toggle" class="tema-toggle-btn" aria-label="Tema chiaro/scuro" data-i18n-attr="aria-label:nav.temaChiaroScuro">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </button>
         </li>
+        <li>
+          <div class="lang-toggle" aria-label="Cambia lingua">
+            <span class="lang-option" data-lang="it">IT</span>
+            <span class="lang-sep">—</span>
+            <span class="lang-option" data-lang="en">EN</span>
+          </div>
+        </li>
+        <!--li>
+          <button id="btn-libro" onclick="apriLibro()" aria-label="Visualizza come libro" data-i18n-attr="aria-label:nav.visualizzaComeLibro">
+            <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="12" y2="15"/></svg>
+            Libro
+          </button>
+        </li-->
       </ul>
     </nav>
+    
   </header>
 
   <!-- ══ MAIN ══ -->
   <main id="main-content">
 
-    <!-- HERO SECTION REDESIGN 2026 -->
-    <section class="page hero-section" id="home" data-favicon="H" data-titolo="Home">
-      <div class="hero-container">
-        <div class="hero-image-wrap">
-          <img src="./images/hero-tracce.jpg" alt="Dettaglio fotografico: texture e tracce del tempo" class="hero-image" loading="eager" />
+    <!-- HOME -->
+    <section class="page" id="home" data-favicon="H" data-titolo="Home">
+      <div class="mobile-page-content">
+        <div class="pagina-header">
+          <div class="data-ora"><div class="data-live"></div><div class="ora-live"></div><div class="ora-label" data-i18n="oraCorrente">ORA CORRENTE</div></div>
+          <button class="tema-toggle-btn tema-toggle-mobile" aria-label="Tema chiaro/scuro" data-i18n-attr="aria-label:nav.temaChiaroScuro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
         </div>
-        <div class="hero-text">
-          <p class="hero-capitolo" data-i18n="home.capitolo">Capitolo 01</p>
-          <h1 class="hero-titolo" data-i18n-html="home.titolo">Il tempo<br>lascia tracce.<br><em>Io le cerco.</em></h1>
+        <div class="lang-toggle-mobile" aria-label="Cambia lingua">
+          <span class="lang-option" data-lang="it">IT</span>
+          <span class="lang-sep">—</span>
+          <span class="lang-option" data-lang="en">EN</span>
+        </div>
+        <div class="pagina-corpo"><div><p class="capitolo-label">FrancescoMartolini.art</p>
+          <h1 class="titolo-principale">Il tempo<br>lascia tracce.<br><em>Io le cerco.</em></h1>
+          <!--h1 class="hero-titolo">Il tempo lascia tracce.<br>Io lavoro nel punto esatto<br><em>in cui iniziano a scomparire.</em></h1-->
+        </div></div>
+      </div>
+      <div class="desktop-hero">
+        <div class="hero-sinistra">
+          <h1 class="hero-titolo">Il tempo<br>lascia tracce.<br><em>Io le cerco.</em></h1>
+          <!--h1 class="hero-titolo">Il tempo lascia tracce.<br>Io lavoro nel punto esatto<br><em>in cui iniziano a scomparire.</em></h1-->
+          <div class="hero-separatore"></div>
+          <p class="hero-sottotitolo" data-i18n-html="home.sottotitolo">Fotografia come indagine.<br>Progetti come mappe del tempo.</p>
+          <a href="#progetti" class="hero-cta"><span data-i18n="home.cta">Scopri i progetti</span> <svg viewBox="0 0 24 24" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19,12 12,19 5,12"/></svg></a>
+        </div>
+        <div class="hero-destra"><div class="hero-immagine" id="hero-img"></div></div>
+        <div class="hero-margine-dx">
+          <span class="data-live"></span>
+          <div class="margine-separatore"></div>
+          <span class="ora-live"></span>
         </div>
       </div>
     </section>
@@ -118,6 +168,10 @@
     <div id="mobile-progetti-container"></div>
 
     <!-- TACCUINO -->
+    <!-- Niente pagina di copertina sul mobile: il Taccuino è distribuito
+         tra le altre pagine del libro (vedi inserisciTaccuinoSeDisponibile
+         in js/libro.js), non un capitolo a sé. Questa sezione resta solo
+         per l'anteprima desktop. -->
     <section id="taccuino-section" data-favicon="T" data-titolo="Taccuino">
       <div class="desktop-section desktop-taccuino">
         <div class="section-header-col">
@@ -128,6 +182,7 @@
         <div class="taccuino-colonne" id="taccuino-colonne-desktop"></div>
       </div>
     </section>
+
 
     <!-- STUDI / INTERVALLI -->
     <section class="page" id="intervalli" data-favicon="I" data-titolo="Intervalli">
@@ -206,6 +261,12 @@
       </div>
     </section>
 
+    <!-- MOBILE: collaborazioni -->
+    <div id="mobile-collaborazioni-container"></div>
+
+    <!-- MOBILE: pubblicazioni -->
+    <div id="mobile-pubblicazioni-container"></div>
+
     <!-- FIN mobile -->
     <section class="page page-fin" id="fin" data-favicon="·" data-titolo="Fine">
       <div class="mobile-page-content">
@@ -257,7 +318,7 @@
 
   <div id="indicatore"></div>
 
-  <!-- ══ PAGINE OVERLAY (tutti i progetti, studi, chi sono, collaborazioni) ═ -->
+  <!-- ══ PAGINE OVERLAY (tutti i progetti, studi, chi sono, collaborazioni) ══ -->
   <div id="overlay-pagina" class="overlay-pagina">
     <div class="overlay-inner">
       <button class="overlay-chiudi" onclick="chiudiPagina()">
@@ -349,6 +410,7 @@
   <script src="js/libro.js"></script>
   <script src="js/push.js"></script>
   <script src="js/rss-modal.js"></script>
+  <!-- ══ LOGICA OVERLAY LIBRO ══ -->
   <script>
     (function () {
       var overlay = null;
@@ -391,6 +453,7 @@
     })();
   </script>
 
+  <!-- ══ OVERLAY LIBRO MOBILE ══ -->
   <div id="overlay-libro" role="dialog" aria-modal="true" aria-label="Anteprima libro mobile" data-i18n-attr="aria-label:libro.anteprimaMobile">
     <div id="overlay-libro-bg" onclick="chiudiLibro()"></div>
     <div id="cornice-libro">
