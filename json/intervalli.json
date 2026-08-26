@@ -24,5 +24,18 @@
       "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778415660/StreetFirenze-14-04-2024-7_nnjvqr.jpg",
       "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1778415626/08-04-2024_GiardinoBardini-26_bg8wi4.jpg"
     ]
+  },
+  {
+    "id": "sequenza-03",
+    "titolo": { "it": "Sequenza 03", "en": "Sequence 03" },
+    "descrizione": { "it": "Cuore e Passione - Centenario Fiorentina ", "en": "Heart and Passion - Fiorentina Centenary" },
+    "immagini": [
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1787767783/CentenarioFiorentina-5_yflcb6.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1787767783/CentenarioFiorentina-8_evns9k.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1787767785/CentenarioFiorentina-12_mfnjto.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1787767785/CentenarioFiorentina-16_vdg1ly.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1787767785/CentenarioFiorentina-29_vzed3z.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1400,q_auto,f_auto/v1787767785/CentenarioFiorentina-28_sfeazl.jpg"
+    ]
   }
 ]
