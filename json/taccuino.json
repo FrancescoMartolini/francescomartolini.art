@@ -229,5 +229,16 @@
     "foto": null,
     "video": null,
     "camera": null
+  },
+  {
+    "id": 22,
+    "testo": {
+      "it": "Ieri sera ho partecipato al corteo per i 100 anni della Fiorentina, premetto non sono un tifoso e non mi interessa il calcio, ma li ho visto tante persone che sentono tutto questo, ho visto l’amore per la squadra e l’amore per quella città.\nPersone in festa, cori fumogeni e bandiere…",
+      "en": "Last night I took part in the procession marking the 100th anniversary of Fiorentina, and I must preface that I am not a fan and have no interest in football, but I saw the multitude of people who are passionate about it, I witnessed the love they have for the team and the love they have for that city.\nPeople celebrating, smoke bombs and flags..."
+    },
+    "data": "2026-08-26",
+    "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1787749245/100anniFiorentina_buo29h.jpg",
+    "video": null,
+    "camera": "Canon EOS R"
   }
 ]
