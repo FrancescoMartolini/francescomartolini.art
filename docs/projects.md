@@ -30,6 +30,8 @@ Tutto avviene in **`json/progetti.json`**.
 | `galleria` | immagini `w_1400`; se c'è `contenuto[]` viene aggiunta in coda ai blocchi |
 | `mappa` | `null` · `{url, label}` (embed Google Maps) · `{lat, lng, zoom, label}` (coordinate) |
 
+> Il numero di fotografie mostrato accanto all'anno (mobile e desktop) è calcolato automaticamente da `contaFotoProgetto()` in `js/libro.js`: conta gli URL univoci tra `contenuto[]` (blocchi `immagine`/`galleria`) e `galleria` di primo livello. Non richiede alcun campo aggiuntivo nel JSON.
+
 ## Checklist: aggiungere un nuovo progetto
 
 1. Caricare le immagini su **Cloudinary**; comporre gli URL con `w_600,q_auto,f_auto` (copertina) e `w_1400,q_auto,f_auto` (galleria).

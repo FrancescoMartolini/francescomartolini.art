@@ -633,7 +633,7 @@ function popolaSliderProgetti() {
       <div class="progetto-card-img"></div>
       <p class="progetto-card-num">${formatNum(i + 1)}</p>
       <p class="progetto-card-titolo">${t(pr.titolo).toUpperCase()}</p>
-      <p class="progetto-card-anno">${t(pr.anno)}</p>
+      <p class="progetto-card-anno">${t(pr.anno)} ${labelFotoProgetto(pr)}</p>
     `;
 
     card.querySelector('.progetto-card-img').appendChild(
@@ -687,7 +687,7 @@ function apriPagina(tipo) {
           <div class="tutti-card-img"></div>
           <p class="tutti-card-num">0${i + 1}</p>
           <h2 class="tutti-card-titolo">${t(pr.titolo)}</h2>
-          <p class="tutti-card-anno">${t(pr.anno)}</p>
+          <p class="tutti-card-anno">${t(pr.anno)} ${labelFotoProgetto(pr)}</p>
           <p class="tutti-card-desc">${t(pr.descrizione)}</p>
           ${inLavorazione ? `<p class="tutti-card-wip">${tu('overlay.inLavorazione')}</p>` : ''}
         `;
@@ -1123,7 +1123,7 @@ function apriProgetto(id) {
         </div>
         <div class="progetto-cover-testo">
           <h1 class="progetto-cover-titolo">${t(pr.titolo)}</h1>
-          <p class="progetto-cover-anno">${t(pr.anno)}</p>
+          <p class="progetto-cover-anno">${t(pr.anno)}${labelFotoProgetto(pr)}</p>
           <p class="progetto-cover-desc">${t(pr.descrizione)}</p>
           ${pr.link_esterno
             ? `<p style="margin-top:32px;"><a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">${t(pr.label_link) || tu('common.vediOnline')}</a></p>`
@@ -1133,7 +1133,7 @@ function apriProgetto(id) {
       <div class="progetto-interno-header">
         <div>
           <h1 class="progetto-interno-titolo">${t(pr.titolo)}</h1>
-          <p class="progetto-interno-anno">${t(pr.anno)}</p>
+          <p class="progetto-interno-anno">${t(pr.anno)}${labelFotoProgetto(pr)}</p>
         </div>
         ${pr.link_esterno ? `<a class="link-esterno-btn" href="${pr.link_esterno}" target="_blank" rel="noopener">${t(pr.label_link) || tu('common.vediOnline')}</a>` : ''}
       </div>`;
@@ -1280,6 +1280,35 @@ function avviaScrollArchivio(overlayEl, pr) {
 
 function generaImgHTML(src, titolo) {
   return `<div class="progetto-galleria-img"><img src="${src}" alt="${titolo}" draggable="false" loading="lazy"></div>`;
+}
+
+// Conta le fotografie uniche di un progetto (schema contenuto[] e sections[]),
+// includendo anche la galleria di primo livello. Usato per la voce "N fotografie"
+// mostrata nelle pagine progetto (mobile e desktop).
+function contaFotoProgetto(pr) {
+  const url = new Set();
+
+  (pr.contenuto || []).forEach(b => {
+    if (b.tipo === 'immagine' && b.valore) url.add(b.valore);
+    if (b.tipo === 'galleria' && Array.isArray(b.valore)) b.valore.forEach(u => u && url.add(u));
+  });
+  (pr.sections || []).forEach(s => {
+    if (s.type === 'image' && s.src) url.add(s.src);
+    if (s.type === 'imageText' && s.image) url.add(s.image);
+    if (s.type === 'gallery' && Array.isArray(s.images)) s.images.forEach(u => u && url.add(u));
+  });
+  (pr.galleria || []).forEach(u => u && url.add(u));
+
+  return url.size;
+}
+
+// Restituisce " · N fotografie" (singolare/plurale, i18n) da affiancare all'anno.
+// Stringa vuota se il progetto non ha ancora fotografie (es. in lavorazione).
+function labelFotoProgetto(pr) {
+  const n = contaFotoProgetto(pr);
+  if (!n) return '';
+  const parola = n === 1 ? tu('progetti_extra.fotoSing') : tu('progetti_extra.fotoPlur');
+  return ` · ${n} ${parola}`;
 }
 
 function generaContenutoProgetto(pr) {
@@ -1695,7 +1724,7 @@ function costruisciMobile() {
           ? `<p class="progetto-in-lavorazione">${tu('overlay.inLavorazione')}</p>`
           : `<button class="link-progetto" data-id="${pr.id}" style="pointer-events:all;">${tu('progetti_extra.entraNelProgetto')}</button>`;
       testo.innerHTML = `
-        <p class="progetto-anno">${t(pr.anno)}</p>
+        <p class="progetto-anno">${t(pr.anno)}${inLavorazione ? '' : labelFotoProgetto(pr)}</p>
         <h2 class="progetto-titolo">${t(pr.titolo)}</h2>
         <p class="progetto-anno">${t(pr.descrizione)}</p>
         ${bottoneEntrata}

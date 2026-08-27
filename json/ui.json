@@ -71,7 +71,9 @@
     "perCollaborazioni": { "it": "Per collaborazioni e commissioni:", "en": "For collaborations and commissions:" }
   },
   "progetti_extra": {
-    "entraNelProgetto": { "it": "Entra nel progetto", "en": "Enter the project" }
+    "entraNelProgetto": { "it": "Entra nel progetto", "en": "Enter the project" },
+    "fotoSing": { "it": "fotografia", "en": "photograph" },
+    "fotoPlur": { "it": "fotografie", "en": "photographs" }
   },
   "pubblicazioni": {
     "descrizione": { "it": "Libri, cataloghi e testi pubblicati.", "en": "Books, catalogues and published texts." }
