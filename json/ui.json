@@ -75,6 +75,17 @@
     "fotoSing": { "it": "fotografia", "en": "photograph" },
     "fotoPlur": { "it": "fotografie", "en": "photographs" }
   },
+  "playlist": {
+    "laSerie": { "it": "La serie", "en": "The series" },
+    "volumeSing": { "it": "volume", "en": "volume" },
+    "volumiPlur": { "it": "volumi", "en": "volumes" },
+    "acquista": { "it": "Acquista", "en": "Buy" },
+    "acquistaEyebrow": { "it": "Il volume", "en": "The volume" },
+    "prossimamente": { "it": "Prossimamente", "en": "Coming soon" },
+    "volumePrecedente": { "it": "Volume precedente", "en": "Previous volume" },
+    "volumeSuccessivo": { "it": "Volume successivo", "en": "Next volume" },
+    "indice": { "it": "Indice", "en": "Index" }
+  },
   "pubblicazioni": {
     "descrizione": { "it": "Libri, cataloghi e testi pubblicati.", "en": "Books, catalogues and published texts." }
   },

@@ -129,6 +129,16 @@ function numeroVolume(id) {
   return m ? formatNum(m[1]) : '';
 }
 
+// Restituisce " · N volumi" (singolare/plurale, i18n) — quanti capitoli/volumi
+// compongono la collana PLAYLIST. Usato accanto al kicker "Collana editoriale"
+// e nell'intestazione "La serie" dentro l'archivio.
+function labelVolumiPlaylist() {
+  const n = volumiPlaylist().length;
+  if (!n) return '';
+  const parola = n === 1 ? tu('playlist.volumeSing') : tu('playlist.volumiPlur');
+  return ` · ${n} ${parola}`;
+}
+
 // Identificatore riservato della card "PLAYLIST" dentro la lista Progetti
 const ID_CARD_PLAYLIST = '__playlist__';
 
@@ -141,10 +151,17 @@ function cardPlaylist() {
     it: (hero.sottotitolo && hero.sottotitolo.it || '').replace(/\n/g, ' '),
     en: (hero.sottotitolo && hero.sottotitolo.en || '').replace(/\n/g, ' ')
   };
+  const kicker = hero.kicker || { it: 'Collana', en: 'Series' };
+  const kickerIt = typeof kicker === 'string' ? kicker : (kicker.it || 'Collana');
+  const kickerEn = typeof kicker === 'string' ? kicker : (kicker.en || kicker.it || 'Series');
+  const conta = labelVolumiPlaylist();
   return {
     id: ID_CARD_PLAYLIST,
     titolo: hero.titolo || 'PLAYLIST',
-    anno: hero.kicker || { it: 'Collana', en: 'Series' },
+    anno: {
+      it: `${kickerIt}${conta}`,
+      en: `${kickerEn}${conta}`
+    },
     descrizione,
     immagine_copertina: (primoVolume && primoVolume.immagine_copertina) || '',
     pubblicato: true
@@ -604,7 +621,7 @@ function popolaDesktop() {
         ${pub.immagine ? '<div class="pub-desktop-img"></div>' : ''}
         <div class="pub-desktop-info">
           <p class="pub-desktop-titolo">${pub.titolo}</p>
-          <p class="pub-desktop-anno">${pub.anno}</p>
+          <p class="pub-desktop-anno">${pub.anno} ${labelFotoProgetto(pub)}</p>
           ${pub.link ? `<a class="pub-desktop-link" href="${pub.link}" target="_blank" rel="noopener">Vedi →</a>` : ''}
         </div>
       `;
@@ -1023,7 +1040,7 @@ function generaHTMLArchivioPlaylist() {
     </div>
 
     <div class="pl-sezione pl-serie">
-      <p class="pl-eyebrow">${tu('playlist.laSerie')}</p>
+      <p class="pl-eyebrow">${tu('playlist.laSerie')}${labelVolumiPlaylist()}</p>
       <div class="pl-volumi" id="pl-volumi-grid"></div>
     </div>
 
@@ -1056,7 +1073,7 @@ function popolaGrigliaVolumiPlaylist(root) {
     const card = crea('div'); card.className = 'pl-volume' + (inLavorazione ? ' in-lavorazione' : '');
     card.innerHTML = `
       <div class="pl-volume-cover"></div>
-      <p class="pl-volume-num">PLAYLIST.${numeroVolume(pr.id)}</p>
+      <p class="pl-volume-num">PLAYLIST.${numeroVolume(pr.id)} </p>
       <p class="pl-volume-titolo">${t(pr.sottotitolo) || t(pr.titolo)}</p>
       ${inLavorazione ? `<p class="pl-volume-wip">${tu('overlay.inLavorazione')}</p>` : ''}
     `;
