@@ -10,10 +10,12 @@
    Questo file è SOLO routing: la logica vera vive in
    - push.js      → notifiche push (POST /subscribe, POST /notify)
    - telegram.js  → bot Telegram (POST /telegram/webhook)
+   - visite.js    → notifica Telegram di nuova visita (POST /visita)
    ══════════════════════════════════════════════ */
 
 import { gestisciSubscribe, gestisciNotify } from './push.js';
 import { handleTelegramUpdate } from './telegram.js';
+import { gestisciVisita } from './visite.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -42,6 +44,10 @@ export default {
 
     if (request.method === 'POST' && url.pathname === '/notify') {
       return gestisciNotify(request, env);
+    }
+
+    if (request.method === 'POST' && url.pathname === '/visita') {
+      return gestisciVisita(request, env, ctx);
     }
 
     if (url.pathname === '/telegram/webhook') {

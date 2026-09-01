@@ -15,6 +15,7 @@ Bot ospitato nello stesso Worker Cloudflare del sito (`worker/`), per gestire i 
 | `worker/telegram-collaborations.js` | `/nuovacollaborazione` |
 | `worker/telegram-drafts.js` | `/bozza`, `/modifica`, `/pubblica`, `/elimina` |
 | `worker/guida-reset-bot-telegram.md` | Procedura di reset / ripartenza pulita |
+| `worker/visite.js` | `POST /visita`, notifica di nuova visita al sito (vedi sezione dedicata) |
 
 ## Comandi
 
@@ -82,6 +83,18 @@ Al termine mostra "Bozza completata" con tastiera **[Pubblica / Salva in bozza]*
 | `collaboration` | `collaboratore`, `anno` |
 
 Se manca un campo obbligatorio, `/pubblica` rifiuta e suggerisce `/modifica <id>`.
+
+## Notifica di nuova visita
+
+`js/visite.js`, caricato in `index.html`, chiama `POST /visita` una sola volta per sessione di navigazione (`sessionStorage`), indipendentemente da quante pagine del libro vengono sfogliate. Fallisce sempre in silenzio: nessun impatto sull'esperienza di lettura se la rete manca o il worker non risponde.
+
+`worker/visite.js` (`gestisciVisita()`):
+
+- Legge il paese (e, se disponibile, la città) da `request.cf` — dato fornito nativamente da Cloudflare, nessun servizio esterno di geolocalizzazione.
+- Manda un messaggio al chat_id in `TELEGRAM_ALLOWED_CHAT_ID` con `sendTelegramMessage()` (la stessa funzione usata dal bot), es. "📖 Una nuova visita da Italia (Firenze)".
+- **Rate limit**: al massimo una notifica ogni 30 minuti per lo stesso IP (chiave `visita:<ip>` in KV `PUSH_SUBS`, `expirationTtl`), per non trasformare ogni reload o crawler in spam.
+
+Non servono nuovi secret: usa `TELEGRAM_BOT_TOKEN` e `TELEGRAM_ALLOWED_CHAT_ID`, già configurati per il bot.
 
 ## Sicurezza
 
