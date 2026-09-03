@@ -251,5 +251,16 @@
     "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1788176836/AnatomiadiAlberi_ap5ytm.jpg",
     "video": null,
     "camera": "Scattato con CANON EOS R"
+  },
+  {
+    "id": 24,
+    "testo": {
+      "it": "Durante le ferie sono passato dal Giardino dei tarocchi qua in Toscana… \nparco molto strano e particolare con un atmosfera molto colorata… tra maschere, specchi e mattonelle colorate…",
+      "en": "During my holiday I stopped by the Tarot Garden here in Tuscany, a rather unusual and distinctive park with a very colorful atmosphere, featuring masks, mirrors, and vibrant tiles."
+    },
+    "data": "2026-09-03",
+    "foto": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1788423807/GiardinoDeiTarocchi_brxabf.jpg",
+    "video": null,
+    "camera": "Scattato con Canon EOS R"
   }
 ]
