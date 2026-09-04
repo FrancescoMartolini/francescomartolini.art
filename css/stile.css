@@ -958,15 +958,15 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 
 #pagina-taccuino-archivio.aperta { transform: translateY(0); }
 
-.taccuino-archivio-interno { max-width: 800px; margin: 0 auto; padding: clamp(60px, 10vh, 100px) clamp(24px, 5vw, 60px) 80px; }
-.taccuino-archivio-interno h1 { font-family: var(--font-titolo); font-size: clamp(28px, 5vw, 52px); font-weight: 400; margin-bottom: 56px; }
+.taccuino-archivio-interno { max-width: 920px; margin: 0 auto; padding: clamp(60px, 10vh, 100px) clamp(24px, 5vw, 60px) 80px; }
+.taccuino-archivio-interno h1 { font-family: var(--font-titolo); font-style: italic; font-size: clamp(28px, 5vw, 52px); font-weight: 400; margin-bottom: 40px; }
 
 .taccuino-cerca-wrap { display: flex; align-items: center; gap: 16px; margin-bottom: 48px; border-bottom: 1px solid var(--nero); padding-bottom: 12px; }
 .taccuino-cerca { flex: 1; background: none; border: none; outline: none; font-family: var(--font-testo); font-size: 15px; font-weight: 300; color: var(--nero); letter-spacing: 0.04em; padding: 4px 0; }
 .taccuino-cerca::placeholder { color: var(--grigio-medio); font-style: italic; }
 .taccuino-risultati { font-size: 11px; font-weight: 300; letter-spacing: 0.15em; color: var(--grigio-medio); white-space: nowrap; text-transform: uppercase; }
 
-.taccuino-voce { border-top: 1px solid var(--grigio-chiaro); padding: 28px 0; text-align: center}
+.taccuino-voce { display: grid; grid-template-columns: 160px 1fr; column-gap: 32px; border-top: 1px solid var(--grigio-chiaro); padding: 36px 0; text-align: left; }
 /* Nota raggiunta tramite link diretto (es. da una caption Instagram): un
    richiamo visivo breve e silenzioso, non un'animazione vistosa. */
 .taccuino-voce.evidenziata { animation: taccuino-evidenzia 2.4s ease; }
@@ -978,11 +978,18 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .taccuino-voce.evidenziata { animation: none; }
 }
 .taccuino-voce:last-child { border-bottom: 1px solid var(--grigio-chiaro); }
-.taccuino-voce-frase { font-family: var(--font-taccuino); font-size: clamp(20px, 2.8vw, 30px); line-height: 1.4; margin-bottom: 10px; }
-.taccuino-voce-foto { width: 100%; aspect-ratio: 3/2; overflow: hidden; margin-bottom: 16px; background: var(--grigio-chiaro); }
+.taccuino-voce-meta { border-right: 1px solid var(--grigio-chiaro); padding-right: 32px; display: flex; flex-direction: column; gap: 8px; }
+.taccuino-voce-contenuto { display: flex; flex-direction: column; min-width: 0; }
+.taccuino-voce-frase { font-family: var(--font-taccuino); font-size: clamp(18px, 2.2vw, 26px); line-height: 1.4; margin-bottom: 16px; }
+.taccuino-voce-foto { width: 100%; aspect-ratio: 3/2; overflow: hidden; background: var(--grigio-chiaro); }
 .taccuino-voce-foto img,
 .taccuino-voce-foto video { width: 100%; height: 100%; object-fit: cover;; }
-.taccuino-voce-data { font-size: 11px; font-weight: 300; letter-spacing: 0.2em; color: var(--grigio-medio); margin-top: 10px; }
+.taccuino-voce-data { font-size: 11px; font-weight: 300; letter-spacing: 0.2em; color: var(--grigio-medio); margin-top: 0; }
+
+@media (max-width: 768px) {
+  .taccuino-voce { grid-template-columns: 1fr; }
+  .taccuino-voce-meta { flex-direction: row; align-items: baseline; gap: 16px; border-right: none; border-bottom: 1px solid var(--grigio-chiaro); padding-right: 0; padding-bottom: 12px; margin-bottom: 16px; }
+}
 
 /* ── CONTATTO BTN (shared) ── */
 .contatto-btn { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 400; color: var(--grigio-testo); padding: 14px 0; border-bottom: 1px solid var(--grigio-chiaro); transition: color var(--transizione); text-decoration: none; }

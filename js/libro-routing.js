@@ -746,7 +746,16 @@ function apriTaccuino(idVoce) {
         ? `<div class="taccuino-voce-foto"><video src="${v.video}" controls playsinline preload="metadata"${posterAttr}></video></div>`
         : (v.foto ? `<div class="taccuino-voce-foto"><img src="${v.foto}" alt="" draggable="false" loading="lazy"></div>` : '');
       const cam = v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p>` : '';
-      return `<div class="taccuino-voce" data-id="${v.id}" data-testo="${t(v.testo).toLowerCase()}">${media}<p class="taccuino-voce-frase">${t(v.testo)}</p>${cam}<p class="taccuino-voce-data">${formatData(v.data)}</p></div>`;
+      return `<div class="taccuino-voce" data-id="${v.id}" data-testo="${t(v.testo).toLowerCase()}">
+        <div class="taccuino-voce-meta">
+          <p class="taccuino-voce-data">${formatData(v.data)}</p>
+          ${cam}
+        </div>
+        <div class="taccuino-voce-contenuto">
+          <p class="taccuino-voce-frase">${t(v.testo)}</p>
+          ${media}
+        </div>
+      </div>`;
     }).join('');
     _cacheTaccuino = `
       <button class="taccuino-torna" onclick="chiudiTaccuino()">${tu('overlay.chiudi')}</button>
