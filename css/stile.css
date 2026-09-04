@@ -2285,35 +2285,38 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .pl-acquista-btn:hover { background: var(--nero); color: var(--bianco); }
 .pl-acquista-presto { font-size: 11px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grigio-medio); }
 
-.pl-volume-nav {
+/* -- Navigazione di fine capitolo (Indice / Precedente / Successivo) --
+   Componente generico: chiude ogni progetto (sia i volumi PLAYLIST che i
+   progetti principali) rinforzando la logica "capitolo" del libro. */
+.progetto-nav {
   max-width: 1100px; margin: 80px auto 0; padding: 32px clamp(24px, 6vw, 80px) 64px;
   border-top: 1px solid var(--grigio-chiaro);
   display: flex; align-items: center; justify-content: space-between; gap: 24px;
 }
-.pl-volume-nav-link {
+.progetto-nav-link {
   display: flex; flex-direction: column; gap: 6px; text-align: left;
   color: var(--pr-text, var(--nero)); cursor: pointer; flex: 1 1 0; min-width: 0;
 }
-.pl-volume-nav-link--dx { align-items: flex-end; text-align: right; }
-.pl-volume-nav-link--vuoto { flex: 1 1 0; }
-.pl-volume-nav-link span {
+.progetto-nav-link--dx { align-items: flex-end; text-align: right; }
+.progetto-nav-link--vuoto { flex: 1 1 0; }
+.progetto-nav-link span {
   font-size: 10px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase;
   color: var(--grigio-medio); transition: color var(--transizione);
 }
-.pl-volume-nav-link strong {
-  font-family: var(--font-titolo); font-weight: 400; font-size: 16px; letter-spacing: 0.02em;
+.progetto-nav-link strong {
+  font-family: var(--font-titolo); font-weight: 400; font-style: italic; font-size: 16px; letter-spacing: 0.02em;
 }
-.pl-volume-nav-link:hover span { color: var(--pr-text, var(--nero)); }
-.pl-volume-nav-indice {
+.progetto-nav-link:hover span { color: var(--pr-text, var(--nero)); }
+.progetto-nav-indice {
   flex: 0 0 auto; font-size: 10px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase;
   color: var(--grigio-medio); cursor: pointer; transition: color var(--transizione);
 }
-.pl-volume-nav-indice:hover { color: var(--pr-text, var(--nero)); }
+.progetto-nav-indice:hover { color: var(--pr-text, var(--nero)); }
 
 @media (max-width: 768px) {
   .pl-acquista-riga { flex-direction: column; align-items: flex-start; }
-  .pl-volume-nav { flex-wrap: wrap; }
-  .pl-volume-nav-indice { order: -1; flex: 0 0 100%; text-align: center; margin-bottom: 8px; }
+  .progetto-nav { flex-wrap: wrap; }
+  .progetto-nav-indice { order: -1; flex: 0 0 100%; text-align: center; margin-bottom: 8px; }
 }
 
 /* ════════════════════════════════

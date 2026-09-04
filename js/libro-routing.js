@@ -321,14 +321,42 @@ function generaBloccoVolumePlaylist(pr) {
       </div>
     </div>
 
-    <div class="pl-volume-nav">
+    <div class="progetto-nav">
       ${prec
-        ? `<button class="pl-volume-nav-link" onclick="apriProgetto('${prec.id}')"><span>${tu('playlist.volumePrecedente')}</span><strong>PLAYLIST.${numeroVolume(prec.id)}</strong></button>`
-        : `<span class="pl-volume-nav-link pl-volume-nav-link--vuoto" aria-hidden="true"></span>`}
-      <button class="pl-volume-nav-indice" onclick="apriProgetto('${ID_CARD_PLAYLIST}')">${tu('playlist.indice')}</button>
+        ? `<button class="progetto-nav-link" onclick="apriProgetto('${prec.id}')"><span>${tu('playlist.volumePrecedente')}</span><strong>PLAYLIST.${numeroVolume(prec.id)}</strong></button>`
+        : `<span class="progetto-nav-link progetto-nav-link--vuoto" aria-hidden="true"></span>`}
+      <button class="progetto-nav-indice" onclick="apriProgetto('${ID_CARD_PLAYLIST}')">${tu('playlist.indice')}</button>
       ${succ
-        ? `<button class="pl-volume-nav-link pl-volume-nav-link--dx" onclick="apriProgetto('${succ.id}')"><span>${tu('playlist.volumeSuccessivo')}</span><strong>PLAYLIST.${numeroVolume(succ.id)}</strong></button>`
-        : `<span class="pl-volume-nav-link pl-volume-nav-link--vuoto" aria-hidden="true"></span>`}
+        ? `<button class="progetto-nav-link progetto-nav-link--dx" onclick="apriProgetto('${succ.id}')"><span>${tu('playlist.volumeSuccessivo')}</span><strong>PLAYLIST.${numeroVolume(succ.id)}</strong></button>`
+        : `<span class="progetto-nav-link progetto-nav-link--vuoto" aria-hidden="true"></span>`}
+    </div>`;
+}
+
+// Navigazione di fine capitolo per i progetti principali (non-PLAYLIST):
+// stesso pattern "Precedente / Indice / Successivo" dei volumi PLAYLIST,
+// ma scorre l'elenco così com'è mostrato in Progetti (progettiVisualizzati,
+// che include anche la card PLAYLIST nella sua posizione).
+function generaBloccoNavigazioneProgetto(pr) {
+  const elenco = progettiVisualizzati().filter(p => progettoPubblicato(p));
+  const idx = elenco.findIndex(p => p.id === pr.id);
+  if (idx === -1) return '';
+  const prec = idx > 0 ? elenco[idx - 1] : null;
+  const succ = idx < elenco.length - 1 ? elenco[idx + 1] : null;
+
+  const linkHTML = (voce, extraClass) => {
+    if (!voce) return `<span class="progetto-nav-link progetto-nav-link--vuoto" aria-hidden="true"></span>`;
+    const titolo = voce.id === ID_CARD_PLAYLIST ? 'PLAYLIST' : t(voce.titolo);
+    const label = extraClass ? tu('progetti_extra.progettoSuccessivo') : tu('progetti_extra.progettoPrecedente');
+    return `<button class="progetto-nav-link${extraClass ? ' progetto-nav-link--dx' : ''}" onclick="apriProgetto('${voce.id}')">
+      <span>${label}</span><strong>${titolo}</strong>
+    </button>`;
+  };
+
+  return `
+    <div class="progetto-nav">
+      ${linkHTML(prec, false)}
+      <button class="progetto-nav-indice" onclick="chiudiProgetto()">${tu('indice.titolo')}</button>
+      ${linkHTML(succ, true)}
     </div>`;
 }
 
@@ -491,7 +519,7 @@ function apriProgetto(id) {
           ${generaContenutoProgetto(pr)}
         </div>
       </div>
-      ${isVolumePlaylist(pr) ? generaBloccoVolumePlaylist(pr) : ''}`;
+      ${isVolumePlaylist(pr) ? generaBloccoVolumePlaylist(pr) : generaBloccoNavigazioneProgetto(pr)}`;
   }
 
   interno.innerHTML = _cacheProgetti[id];
@@ -500,7 +528,8 @@ function apriProgetto(id) {
 
   // Scroll reveal
   avviaReveal(el);
-  if (isVolumePlaylist(pr)) rivelaAlloScroll(el, '.pl-acquista, .pl-volume-nav');
+  if (isVolumePlaylist(pr)) rivelaAlloScroll(el, '.pl-acquista, .progetto-nav');
+  else rivelaAlloScroll(el, '.progetto-nav');
 
   // Immagine sticky per layout archivio
   if ((pr.layoutType || '') === 'archivio') {

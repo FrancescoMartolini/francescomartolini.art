@@ -73,7 +73,9 @@
   "progetti_extra": {
     "entraNelProgetto": { "it": "Entra nel progetto", "en": "Enter the project" },
     "fotoSing": { "it": "fotografia", "en": "photograph" },
-    "fotoPlur": { "it": "fotografie", "en": "photographs" }
+    "fotoPlur": { "it": "fotografie", "en": "photographs" },
+    "progettoPrecedente": { "it": "Precedente", "en": "Previous" },
+    "progettoSuccessivo": { "it": "Successivo", "en": "Next" }
   },
   "playlist": {
     "laSerie": { "it": "La serie", "en": "The series" },
