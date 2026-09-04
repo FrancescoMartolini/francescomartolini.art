@@ -69,7 +69,7 @@ body.tema-scuro {
     border-radius: 50%;
     background: var(--nero);
     pointer-events: none;
-    z-index: 2147483647;
+    z-index: 20002;
     transform: translate(-50%, -50%);
     transition: background 0.15s ease, width 0.2s ease, height 0.2s ease;
   }
@@ -83,7 +83,7 @@ body.tema-scuro {
     border-radius: 50%;
     border: 1px solid rgba(10, 10, 10, 0.25);
     pointer-events: none;
-    z-index: 2147483646;
+    z-index: 20001;
     transform: translate(-50%, -50%);
     transition: border-color 0.15s ease;
   }
@@ -1156,7 +1156,9 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
               transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
   .pagina.pagina-progetto-mobile:has(.progetto-mobile-wrap) .pagina-header,
-  .pagina-progetto-mobile:has(.progetto-mobile-wrap) .pagina-header { position: absolute; top: 16px; left: 0; right: 0; justify-content: center; margin-bottom: 0;}
+  .pagina-progetto-mobile:has(.progetto-mobile-wrap) .pagina-header,
+  .pagina.pagina-progetto-mobile:has(.taccuino-mobile-wrap) .pagina-header,
+  .pagina-progetto-mobile:has(.taccuino-mobile-wrap) .pagina-header { position: absolute; top: 16px; left: 0; right: 0; justify-content: center; margin-bottom: 0;}
 
   .pagina-progetto-mobile.attiva { opacity: 1; pointer-events: all; transform: translateX(0); z-index: 2; }
   .pagina-progetto-mobile.uscita-sinistra { opacity: 0; transform: translateX(-60px); z-index: 1; }
@@ -1207,12 +1209,21 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .link-progetto { display: inline-flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--nero); border-bottom: 1px solid var(--nero); padding-bottom: 4px; width: fit-content; transition: gap var(--transizione); background: none; border-top: none; border-left: none; border-right: none; }
   .link-progetto::after { content: '→'; }
 
-  .taccuino-wrap { display: flex; flex-direction: column; align-items: center; max-width: 680px; width: 100%; gap: 20px; }
+  /* Pagina taccuino mobile: la foto occupa un'area fissa (~2/3 di schermo,
+     immagine intera senza tagli) e il testo scorre indipendentemente sotto,
+     così la foto resta sempre visibile mentre si legge. */
+  .taccuino-mobile-wrap { position: absolute; left: 0; right: 0; top: 52px; bottom: 0; display: flex; flex-direction: column; }
+
+  .taccuino-mobile-foto { flex: 0 0 auto; height: 62%; width: 100%; overflow: hidden; background: var(--grigio-chiaro); display: flex; align-items: center; justify-content: center; }
+  .taccuino-mobile-foto img,
+  .taccuino-mobile-foto video { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+
+  .taccuino-wrap { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 680px; margin: 0 auto; gap: 16px; padding: 20px 20px 24px; }
+  /* Nessuna foto in questa voce: il testo prende tutta l'altezza disponibile */
+  .taccuino-mobile-wrap:not(:has(.taccuino-mobile-foto)) .taccuino-wrap { padding-top: 15vh; }
+
   .taccuino-frase { font-family: var(--font-taccuino); font-size: clamp(22px, 7vw, 40px); max-width: 350px; line-height: 1.3; color: var(--nero); text-align: center; }
   .taccuino-data { font-size: 11px; font-weight: 300; letter-spacing: 0.2em; color: var(--grigio-medio); text-align: center; }
-  .taccuino-foto { width: 100%; max-width: 360px; overflow: hidden; background: var(--grigio-chiaro); }
-  .taccuino-foto img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-  .taccuino-foto video { width: 100%; height: 100%; object-fit: cover; }
 
   .chi-sono-wrap { display: flex; flex-direction: column; gap: 20px; max-width: 100%; width: 100%; overflow-y: auto; max-height: 100%;}
   .chi-sono-testo h2 { font-family: var(--font-titolo); font-size: clamp(18px, 5vw, 26px); font-weight: 400; line-height: 1.25; margin-bottom: 14px; }
