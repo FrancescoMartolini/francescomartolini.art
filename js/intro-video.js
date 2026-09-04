@@ -19,8 +19,8 @@
   //   'https://res.cloudinary.com/dgo7tnyv6/video/upload/f_auto,q_auto/intro-desktop.mp4'
   // Finché restano vuoti, l'intro non viene mostrata (la Home si apre
   // normalmente, senza schermata nera): nessun URL è stato inventato qui.
-  var INTRO_VIDEO_LANDSCAPE = ''; // ← video orizzontale (desktop / landscape)
-  var INTRO_VIDEO_PORTRAIT  = ''; // ← video verticale (mobile / portrait)
+  var INTRO_VIDEO_LANDSCAPE = '';//'https://res.cloudinary.com/dgo7tnyv6/video/upload/v1786719918/TESTVideoSitoOrizzontale_yo56yf.mp4'; // ← video orizzontale (desktop / landscape)
+  var INTRO_VIDEO_PORTRAIT  = '';//'https://res.cloudinary.com/dgo7tnyv6/video/upload/v1786719917/TESTVideoSitoVerticale_j9bi5w.mp4'; // ← video verticale (mobile / portrait)
 
   // Mostra l'intro una sola volta per sessione di navigazione (sessionStorage,
   // non localStorage): un portfolio fotografico si presta a un'apertura che

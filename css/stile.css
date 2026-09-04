@@ -69,7 +69,7 @@ body.tema-scuro {
     border-radius: 50%;
     background: var(--nero);
     pointer-events: none;
-    z-index: 10002;
+    z-index: 2147483647;
     transform: translate(-50%, -50%);
     transition: background 0.15s ease, width 0.2s ease, height 0.2s ease;
   }
@@ -83,7 +83,7 @@ body.tema-scuro {
     border-radius: 50%;
     border: 1px solid rgba(10, 10, 10, 0.25);
     pointer-events: none;
-    z-index: 10001;
+    z-index: 2147483646;
     transform: translate(-50%, -50%);
     transition: border-color 0.15s ease;
   }
