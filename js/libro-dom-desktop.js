@@ -47,7 +47,7 @@ function popolaDesktop() {
       col.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); apriTaccuino(v.id); } });
       col.innerHTML = `
         <p class="taccuino-col-data">${formatData(v.data)}</p>
-        <p class="taccuino-col-frase">${t(v.testo)}</p>
+        <p class="section-desc">${t(v.testo)}</p>
         ${v.foto ? `<div class="taccuino-col-foto"><img src="${v.foto}" alt="" loading="lazy" draggable="false"></div>` : ''}
         ${v.camera ? `<p class="taccuino-col-camera">${v.camera}</p>` : ''}
       `;
