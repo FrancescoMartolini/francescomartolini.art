@@ -170,7 +170,7 @@
     <!-- TACCUINO -->
     <!-- Niente pagina di copertina sul mobile: il Taccuino è distribuito
          tra le altre pagine del libro (vedi inserisciTaccuinoSeDisponibile
-         in js/libro.js), non un capitolo a sé. Questa sezione resta solo
+         in js/libro-dom-mobile.js), non un capitolo a sé. Questa sezione resta solo
          per l'anteprima desktop. -->
     <section id="taccuino-section" data-favicon="T" data-titolo="Taccuino">
       <div class="desktop-section desktop-taccuino">
@@ -407,7 +407,12 @@
   </div>
 
   <script src="js/i18n.js"></script>
-  <script src="js/libro.js"></script>
+  <script src="js/libro-nucleo.js"></script>
+  <script src="js/libro-dom-mobile.js"></script>
+  <script src="js/libro-dom-desktop.js"></script>
+  <script src="js/libro-routing.js"></script>
+  <script src="js/libro-interazioni.js"></script>
+  <script src="js/libro-app.js"></script>
   <script src="js/push.js"></script>
   <script src="js/rss-modal.js"></script>
   <script src="js/visite.js"></script>

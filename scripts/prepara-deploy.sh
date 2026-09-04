@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Prepara il sito per il deploy: rigenera sitemap, feed RSS e le pagine
 # statiche per progetti/sezioni (vedi genera-*.py), poi minifica JS e CSS
-# sovrascrivendo js/libro.js e css/stile.css IN PLACE, con lo stesso nome
+# sovrascrivendo js/libro-*.js e css/stile.css IN PLACE, con gli stessi nomi
 # che index.html carica sia in locale che in produzione — così non c'è
 # nessuna differenza da gestire tra i due ambienti (vedi README, sezione
 # "Script da inserire nel builder di Cloudflare").
 #
-# IMPORTANTE: questo script sovrascrive i sorgenti (js/libro.js,
+# IMPORTANTE: questo script sovrascrive i sorgenti (js/libro-*.js,
 # css/stile.css) con la versione minificata. Va eseguito SOLO sul builder
 # Cloudflare, che gira su un checkout temporaneo creato e scartato a ogni
 # deploy — MAI a mano dalla propria cartella locale: sovrascriverebbe i
@@ -24,8 +24,13 @@ python3 scripts/genera-route-statiche.py
 # Minifica su un file temporaneo, poi lo sposta sopra il sorgente:
 # terser/clean-css non scrivono in modo affidabile sullo stesso file
 # che stanno leggendo, quindi serve il passaggio intermedio + mv.
-npx --yes terser js/libro.js -c -m -o js/libro.js.min
-mv js/libro.js.min js/libro.js
+# libro.js è diviso in più file caricati in sequenza da index.html
+# (vedi docs/architecture.md); ognuno va minificato singolarmente,
+# SENZA unirli, per mantenere lo stesso ordine di caricamento.
+for f in js/libro-nucleo.js js/libro-dom-mobile.js js/libro-dom-desktop.js js/libro-routing.js js/libro-interazioni.js js/libro-app.js; do
+  npx --yes terser "$f" -c -m -o "$f.min"
+  mv "$f.min" "$f"
+done
 
 npx --yes clean-css-cli -o css/stile.css.min css/stile.css
 mv css/stile.css.min css/stile.css

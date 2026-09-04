@@ -6,7 +6,27 @@
    ══════════════════════════════════════════════ */
 (function () {
   var LANG_KEY = 'lang';
-  var lang = localStorage.getItem(LANG_KEY) || 'it';
+  var SUPPORTED_LANGS = ['it', 'en'];
+
+  // Rileva la lingua del browser (navigator.languages ha priorità,
+  // navigator.language come fallback). Se la lingua rilevata non è
+  // supportata (né it né en), il default è l'inglese.
+  function detectBrowserLang() {
+    var candidates = (navigator.languages && navigator.languages.length)
+      ? navigator.languages
+      : [navigator.language || navigator.userLanguage || 'it'];
+
+    for (var i = 0; i < candidates.length; i++) {
+      var code = (candidates[i] || '').toLowerCase().slice(0, 2);
+      if (SUPPORTED_LANGS.indexOf(code) !== -1) return code;
+    }
+    // Lingua del browser non supportata (né it né en): default inglese.
+    return 'en';
+  }
+
+  // Priorità: preferenza salvata dall'utente > lingua del browser
+  // (italiano se it, inglese in ogni altro caso).
+  var lang = localStorage.getItem(LANG_KEY) || detectBrowserLang();
   var ui = null;
 
   function getField(path, dict) {

@@ -20,12 +20,17 @@ francescomartolini.art/
 │
 ├── images/                    ← SOLO asset di branding: manifest + script favicon
 │   ├── manifest.json          ← PWA manifest
-│   ├── favicon-generate.js    ← documentazione: le favicon sono generate dinamicamente da libro.js
+│   ├── favicon-generate.js    ← documentazione: le favicon sono generate dinamicamente da libro-dom-mobile.js
 │   └── stile.css              ← ⚠️ copia orfana/legacy di stile.css: non referenziata, candidata alla rimozione
 │
 ├── js/
 │   ├── i18n.js                ← traduzione interfaccia (json/ui.json)
-│   ├── libro.js               ← IL MOTORE del sito
+│   ├── libro-nucleo.js        ← IL MOTORE del sito, diviso in 6 file caricati in sequenza
+│   ├── libro-dom-mobile.js       (stesso comportamento del vecchio libro.js unico, solo
+│   ├── libro-dom-desktop.js       organizzato per responsabilità — nessun bundler, nessuno
+│   ├── libro-routing.js           step di build aggiuntivo: sono <script> classici che
+│   ├── libro-interazioni.js       condividono lo stesso scope globale. Vedi architecture.md)
+│   ├── libro-app.js           ← orchestratore: init() + API window.*, va caricato per ultimo
 │   ├── push.js                ← opt-in push lato client (in pausa: var ATTIVO = false)
 │   └── rss-modal.js           ← popup "Feed RSS"
 │
@@ -78,7 +83,7 @@ francescomartolini.art/
 | File | Perché |
 |---|---|
 | `index.html` (head) | `<base>` dinamico + redirect: ordine e sincronia sono essenziali |
-| `js/libro.js` | contiene routing, cache HTML, generazione contenuti |
+| `js/libro-*.js` | contengono routing, cache HTML, generazione contenuti, DOM mobile/desktop, gesture — vedi architecture.md per la mappa dei 6 file e l'ordine di caricamento (fisso, non riordinabile) |
 | `scripts/prepara-deploy.sh` | ordine degli step di build; minificazione distruttiva su copia |
 | `wrangler.toml` | `name`, `[[routes]]`, KV: errori qui rompono il deploy o il dominio |
 | `.assetsignore` | espone/non espone file al pubblico |
