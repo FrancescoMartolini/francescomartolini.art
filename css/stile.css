@@ -380,11 +380,13 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .section-header-col { flex-shrink: 0; width: 200px; display: flex; flex-direction: column; gap: 16px; }
 .taccuino-colonne { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
 
-.taccuino-col-voce { padding: 24px 28px; border-left: 1px solid var(--grigio-chiaro); display: flex; flex-direction: column; gap: 14px; }
+.taccuino-col-voce { padding: 24px 28px; border-left: 1px solid var(--grigio-chiaro); display: flex; flex-direction: column; gap: 14px; cursor: pointer; }
 .taccuino-col-data { font-size: 11px; font-weight: 300; letter-spacing: 0.15em; color: var(--grigio-medio); }
-.taccuino-col-frase { font-size: 14px; font-weight: 300; line-height: 1.75; color: var(--grigio-testo); flex: 1; }
-.taccuino-col-expand { font-size: 18px; color: var(--grigio-chiaro); cursor: pointer; width: fit-content; transition: color var(--transizione); background: none; border: none; }
-.taccuino-col-expand:hover { color: var(--nero); }
+.taccuino-col-frase { font-family: var(--font-taccuino); font-size: clamp(15px, 1.4vw, 19px); font-weight: 400; line-height: 1.5; color: var(--grigio-testo); }
+.taccuino-col-foto { width: 100%; aspect-ratio: 3/2; overflow: hidden; background: var(--grigio-chiaro); margin-top: auto; }
+.taccuino-col-foto img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 1.2s var(--transizione, ease); }
+.taccuino-col-voce:hover .taccuino-col-foto img { transform: scale(1.03); }
+.taccuino-col-camera { font-size: 11px; font-weight: 300; letter-spacing: 0.05em; color: var(--grigio-medio); }
 .taccuino-voce-camera { font-size: 0.75rem; color: #999; margin-top: 2px;}
 
 /* STUDI */

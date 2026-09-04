@@ -41,10 +41,15 @@ function popolaDesktop() {
   if (colonne) {
     stato.taccuino.slice(0, 3).forEach(v => {
       const col = crea('div'); col.className = 'taccuino-col-voce';
+      col.setAttribute('role', 'button');
+      col.setAttribute('tabindex', '0');
+      col.addEventListener('click', () => apriTaccuino(v.id));
+      col.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); apriTaccuino(v.id); } });
       col.innerHTML = `
         <p class="taccuino-col-data">${formatData(v.data)}</p>
         <p class="taccuino-col-frase">${t(v.testo)}</p>
-        <button class="taccuino-col-expand" onclick="apriTaccuino()">+</button>
+        ${v.foto ? `<div class="taccuino-col-foto"><img src="${v.foto}" alt="" loading="lazy" draggable="false"></div>` : ''}
+        ${v.camera ? `<p class="taccuino-col-camera">${v.camera}</p>` : ''}
       `;
       colonne.appendChild(col);
     });
