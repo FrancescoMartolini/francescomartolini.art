@@ -223,7 +223,7 @@ const lightbox = (() => {
     '.progetto-galleria',
     '.progetto-galleria-gruppo',
     '.studi-griglia',
-    '.tutti-studi-griglia',
+    '.studio-gruppo-griglia',
     '.intervallo-mobile-griglia',
     '.collab-griglia',
     '.collab-mobile-corpo',
