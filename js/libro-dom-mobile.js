@@ -76,14 +76,21 @@ function creaPaginaTaccuinoMobile(v) {
   const pt = creaPaginaMobile('T', 'Taccuino');
 
   registraIdratazione(pt, () => {
-    const { mpc, pc } = creaMobilePageContent();
+    pt.appendChild(creaHeader());
+
+    const wrap = crea('div'); wrap.className = 'taccuino-mobile-wrap';
+
+    // Area foto/video: altezza fissa (~2/3 schermo), immagine intera
+    // senza tagli (object-fit: contain) — resta visibile mentre si legge.
+    const media = creaMediaTaccuino(v, 'taccuino-mobile-foto');
+    if (media) wrap.appendChild(media);
+
+    // Area testo: scorre indipendentemente sotto la foto.
     const tw = crea('div'); tw.className = 'taccuino-wrap';
-      tw.style.overflowY = 'auto';
-      tw.style.maxHeight = '80vh';
-    const media = creaMediaTaccuino(v, 'taccuino-foto');
-    if (media) tw.appendChild(media);
-    tw.innerHTML += `<p class="taccuino-frase">${t(v.testo)}</p>${v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p><p class="taccuino-data">${formatData(v.data)}</p>` : ''}`;
-    pc.appendChild(tw); pt.appendChild(mpc);
+    tw.innerHTML = `<p class="taccuino-frase">${t(v.testo)}</p>${v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p><p class="taccuino-data">${formatData(v.data)}</p>` : ''}`;
+    wrap.appendChild(tw);
+
+    pt.appendChild(wrap);
   });
 
   return pt;
