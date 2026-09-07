@@ -376,11 +376,12 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   inset: auto 18px 18px 18px;
   z-index: 2;
   font-size: 12px; font-weight: 300; line-height: 1.65;
-  color: #fff;
+  color: #000000;
   opacity: 0;
   transform: translateY(8px);
   transition: opacity 0.45s ease, transform 0.45s ease;
   pointer-events: none;
+  max-width: 80%;
 }
 
 .progetto-card.progetto-card--hover .progetto-card-desc {
