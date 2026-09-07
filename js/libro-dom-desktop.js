@@ -56,10 +56,24 @@ function popolaDesktop() {
   }
 
   // Studi griglia
-  const studiGriglia = $('studi-griglia-desktop');
+  /*const studiGriglia = $('studi-griglia-desktop');
   if (studiGriglia) {
     stato.intervalli.flatMap(iv => iv.immagini).slice(0, 5).forEach((src, i) => {
       const cell = crea('div'); cell.className = 'studio-img';
+      cell.appendChild(creaImg(src, `Studio ${i + 1}`, false, '20vw'));
+      studiGriglia.appendChild(cell);
+    });
+  }*/
+
+  // Studi griglia - invertito in modo da mostrare le immagini più recenti per prime
+  const studiGriglia = $('studi-griglia-desktop');
+  if (studiGriglia) {
+  stato.intervalli
+    .flatMap(iv => iv.immagini)
+    .slice(-5)
+    .forEach((src, i) => {
+      const cell = crea('div');
+      cell.className = 'studio-img';
       cell.appendChild(creaImg(src, `Studio ${i + 1}`, false, '20vw'));
       studiGriglia.appendChild(cell);
     });
