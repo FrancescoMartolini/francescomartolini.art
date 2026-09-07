@@ -50,24 +50,37 @@ function apriPagina(tipo) {
       contenuto.innerHTML = `
         <h1 class="overlay-titolo">${tu('menu.intervalli')}</h1>
         <p class="overlay-sottotitolo">${tu('intervalli.descrizione')}</p>
-        <div class="tutti-studi-griglia" id="tutti-studi-grid"></div>
+        <div class="studi-gruppi" id="tutti-studi-grid"></div>
       `;
-      // Apri subito l'overlay, poi inserisci le immagini a blocchi
+      // Apri subito l'overlay, poi inserisci i gruppi (ogni intervallo è un
+      // capitolo: etichetta + titolo + descrizione, seguiti dalla sua griglia)
+      // uno alla volta, così la pagina resta fluida anche con molte immagini.
       overlay.classList.add('aperta');
       overlay.scrollTop = 0;
-      (function inserisciABlocchi() {
-        const immagini = stato.intervalli.flatMap(iv => iv.immagini);
-        const grid = $('tutti-studi-grid');
-        let i = 0;
-        const BLOCCO = 6; // quante immagini per frame
+      (function inserisciGruppi() {
+        const contenitore = $('tutti-studi-grid');
+        const gruppi = stato.intervalli;
+        let g = 0;
         function step() {
-          const fine = Math.min(i + BLOCCO, immagini.length);
-          for (; i < fine; i++) {
+          if (g >= gruppi.length) return;
+          const iv = gruppi[g];
+          const gruppo = crea('div'); gruppo.className = 'studio-gruppo';
+          gruppo.innerHTML = `
+            <div class="studio-gruppo-testo">
+              <h2 class="studio-gruppo-titolo">${t(iv.titolo)}</h2>
+              <p class="studio-gruppo-descrizione">${t(iv.descrizione)}</p>
+            </div>
+            <div class="studio-gruppo-griglia"></div>
+          `;
+          const grid = gruppo.querySelector('.studio-gruppo-griglia');
+          iv.immagini.forEach((src, i) => {
             const cell = crea('div'); cell.className = 'tutti-studio-img';
-            cell.appendChild(creaImg(immagini[i], `Studio ${i + 1}`, false, '20vw'));
+            cell.appendChild(creaImg(src, `${t(iv.titolo)} ${i + 1}`, false, '30vw'));
             grid.appendChild(cell);
-          }
-          if (i < immagini.length) requestAnimationFrame(step);
+          });
+          contenitore.appendChild(gruppo);
+          g++;
+          requestAnimationFrame(step);
         }
         requestAnimationFrame(step);
       })();
