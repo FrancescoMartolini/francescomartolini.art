@@ -15,6 +15,7 @@
 | Foto sincronizzata Spotify | `avviaSpotifySections()` | evento `playback_update` dell'iFrame API | fade 0.6s, ritardo logico 180ms |
 | Slider progetti desktop | `.progetti-griglia` | frecce slider | `transform`, 0.5s stesso easing |
 | Hover card/immagini | `.progetto-card`, `.studio-img`, `.pl-volume-cover`… | hover CSS | scale 1.03–1.05, 0.5–0.6s; PLAYLIST: traslazione + ombra dura |
+| Espansione card progetti desktop | `.progetto-card` (`--hover`/`--dimmed`), `.progetto-card-desc`; logica in `avviaHoverCardProgetti()` (`js/libro-dom-desktop.js`) | `mouseenter`/`mouseleave` sulla card | `width`, 0.6s `cubic-bezier(.25,.46,.45,.94)`; l'immagine si scurisce (`opacity: 0.34`) e la descrizione appare in bianco sopra di essa, fade+translateY 0.45s |
 | Cursore custom | `avviaCursore()` in `libro.js` + `#cursore/#cursore-ring` | `mousemove` (solo `hover:hover`) | dot immediato; ring lerp 0.1 via rAF; inversione colore 0.15s |
 | Epilogo "fin." e footer mobile | `.fin-epilogo.visibile`, `.fin-footer.visibile`, `.epilogo-desktop.visibile` | arrivo alla pagina / scroll | fade 1–1.4s (+ translateY 6px) |
 | Segnalibro mobile | `.segnalibro-tab`, keyframes `segnalibro-scendi` | ritorno alla pagina salvata | discesa da -100%, 0.5s, ritardo 0.3s |

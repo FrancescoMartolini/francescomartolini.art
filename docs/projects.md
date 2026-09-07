@@ -30,6 +30,8 @@ Tutto avviene in **`json/progetti.json`**.
 | `galleria` | immagini `w_1400`; se c'è `contenuto[]` viene aggiunta in coda ai blocchi |
 | `mappa` | `null` · `{url, label}` (embed Google Maps) · `{lat, lng, zoom, label}` (coordinate) |
 
+> Su desktop, `descrizione` compare anche in un piccolo overlay sotto la card quando il cursore vi sosta sopra (la card si allarga, le altre del gruppo visibile si restringono in proporzione — vedi [animations.md](animations.md)). Tenerla breve: è pensata per 2-3 righe, non per il testo completo.
+
 > Il numero di fotografie mostrato accanto all'anno (mobile e desktop) è calcolato automaticamente da `contaFotoProgetto()` in `js/libro.js`: conta gli URL univoci tra `contenuto[]` (blocchi `immagine`/`galleria`) e `galleria` di primo livello. Non richiede alcun campo aggiuntivo nel JSON.
 
 ## Checklist: aggiungere un nuovo progetto

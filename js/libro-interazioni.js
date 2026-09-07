@@ -183,7 +183,7 @@ function gestisciTouchEnd(e) {
 
   // Controlla se il touch è partito da dentro un elemento scrollabile
   const target = e.target;
-  const scrollabile = target.closest('.pagina-corpo, .chi-sono-wrap, .taccuino-wrap');
+  const scrollabile = target.closest('.pagina-corpo, .chi-sono-wrap, .taccuino-mobile-wrap');
   if (scrollabile && scrollabile.scrollHeight > scrollabile.clientHeight) return;
 
   if (Math.abs(dx) > 40) {
@@ -223,7 +223,7 @@ const lightbox = (() => {
     '.progetto-galleria',
     '.progetto-galleria-gruppo',
     '.studi-griglia',
-    '.tutti-studi-griglia',
+    '.studio-gruppo-griglia',
     '.intervallo-mobile-griglia',
     '.collab-griglia',
     '.collab-mobile-corpo',

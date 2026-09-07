@@ -102,7 +102,9 @@ function popolaSliderProgetti() {
     card.className = 'progetto-card' + (inLavorazione ? ' in-lavorazione' : '');
 
     card.innerHTML = `
-      <div class="progetto-card-img"></div>
+      <div class="progetto-card-img">
+        ${pr.descrizione ? `<p class="progetto-card-desc">${t(pr.descrizione)}</p>` : ''}
+      </div>
       <p class="progetto-card-num">${formatNum(i + 1)}</p>
       <p class="progetto-card-titolo">${t(pr.titolo).toUpperCase()}</p>
       <p class="progetto-card-anno">${t(pr.anno)} ${labelFotoProgetto(pr)}</p>
@@ -121,9 +123,12 @@ function popolaSliderProgetti() {
     griglia.appendChild(card);
   });
 
+  const visibili = 4;
+  avviaHoverCardProgetti(griglia, visibili);
+
   const sx = $('proj-sx'), dx = $('proj-dx');
   if (!sx || !dx) return;
-  const visibili = 4, tot = elenco.length;
+  const tot = elenco.length;
   if (tot <= visibili) { sx.hidden = true; dx.hidden = true; return; }
   sx.hidden = true;
 
@@ -135,6 +140,57 @@ function popolaSliderProgetti() {
   }
   sx.addEventListener('click', () => { stato.sliderIdx = Math.max(0, stato.sliderIdx - 1); aggiorna(); });
   dx.addEventListener('click', () => { stato.sliderIdx = Math.min(tot - visibili, stato.sliderIdx + 1); aggiorna(); });
+}
+
+// ── Hover card progetti: la card sotto il cursore si allarga, le altre del
+// gruppo visibile si restringono in proporzione. La somma delle larghezze
+// del gruppo resta invariata, quindi nulla intorno (frecce, sezioni) si
+// sposta — cambia solo la proporzione fra le card visibili in quel momento. ──
+function avviaHoverCardProgetti(griglia, visibili) {
+  const PESO_HOVER = 2.6; // quanto "pesa" la card sotto il cursore rispetto alle altre (peso 1)
+
+  function calcolaLarghezze(n) {
+    const percentualeBase = n * 25; // ogni card occupa normalmente il 25% della griglia
+    const pesoTotale = PESO_HOVER + (n - 1);
+    return {
+      hover: percentualeBase * PESO_HOVER / pesoTotale,
+      altre: percentualeBase / pesoTotale
+    };
+  }
+
+  function gruppoVisibile() {
+    const carte = Array.from(griglia.querySelectorAll('.progetto-card'));
+    return carte.slice(stato.sliderIdx, stato.sliderIdx + visibili);
+  }
+
+  function applica(cardHover) {
+    const gruppo = gruppoVisibile();
+    if (gruppo.length <= 1 || !gruppo.includes(cardHover)) return;
+    const { hover, altre } = calcolaLarghezze(gruppo.length);
+    gruppo.forEach(c => {
+      if (c === cardHover) {
+        c.style.width = hover + '%';
+        c.classList.add('progetto-card--hover');
+        c.classList.remove('progetto-card--dimmed');
+      } else {
+        c.style.width = altre + '%';
+        c.classList.add('progetto-card--dimmed');
+        c.classList.remove('progetto-card--hover');
+      }
+    });
+  }
+
+  function ripristina() {
+    gruppoVisibile().forEach(c => {
+      c.style.width = '';
+      c.classList.remove('progetto-card--hover', 'progetto-card--dimmed');
+    });
+  }
+
+  griglia.querySelectorAll('.progetto-card').forEach(card => {
+    card.addEventListener('mouseenter', () => applica(card));
+    card.addEventListener('mouseleave', ripristina);
+  });
 }
 
 // Scroll-reveal per le sezioni

@@ -76,14 +76,24 @@ function creaPaginaTaccuinoMobile(v) {
   const pt = creaPaginaMobile('T', 'Taccuino');
 
   registraIdratazione(pt, () => {
-    const { mpc, pc } = creaMobilePageContent();
-    const tw = crea('div'); tw.className = 'taccuino-wrap';
-      tw.style.overflowY = 'auto';
-      tw.style.maxHeight = '80vh';
-    const media = creaMediaTaccuino(v, 'taccuino-foto');
-    if (media) tw.appendChild(media);
-    tw.innerHTML += `<p class="taccuino-frase">${t(v.testo)}</p>${v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p><p class="taccuino-data">${formatData(v.data)}</p>` : ''}`;
-    pc.appendChild(tw); pt.appendChild(mpc);
+    pt.appendChild(creaHeader());
+
+    // Un unico blocco scorrevole: foto e testo scorrono insieme come
+    // una sola pagina del taccuino, senza aree separate.
+    const wrap = crea('div'); wrap.className = 'taccuino-mobile-wrap';
+
+    // Contenitore interno con margin:auto — si centra da solo quando il
+    // contenuto è più corto dello schermo (con o senza foto), ma torna ad
+    // allinearsi in alto e scorrere normalmente se il testo è lungo.
+    const inner = crea('div'); inner.className = 'taccuino-mobile-inner';
+
+    const media = creaMediaTaccuino(v, 'taccuino-mobile-foto');
+    if (media) inner.appendChild(media);
+
+    inner.innerHTML += `<p class="taccuino-frase">${t(v.testo)}</p>${v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p><p class="taccuino-data">${formatData(v.data)}</p>` : ''}`;
+
+    wrap.appendChild(inner);
+    pt.appendChild(wrap);
   });
 
   return pt;

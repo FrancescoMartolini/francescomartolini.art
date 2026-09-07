@@ -69,7 +69,7 @@ body.tema-scuro {
     border-radius: 50%;
     background: var(--nero);
     pointer-events: none;
-    z-index: 2147483647;
+    z-index: 20002;
     transform: translate(-50%, -50%);
     transition: background 0.15s ease, width 0.2s ease, height 0.2s ease;
   }
@@ -83,7 +83,7 @@ body.tema-scuro {
     border-radius: 50%;
     border: 1px solid rgba(10, 10, 10, 0.25);
     pointer-events: none;
-    z-index: 2147483646;
+    z-index: 20001;
     transform: translate(-50%, -50%);
     transition: border-color 0.15s ease;
   }
@@ -346,7 +346,12 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   display: flex; flex-direction: column; gap: 12px;
   cursor: pointer; flex-shrink: 0;
   width: calc(25% - 18px);
+  position: relative; /* ancora per il pannello descrizione, non riserva spazio */
+  transition: width 0.6s cubic-bezier(.25,.46,.45,.94), opacity 0.5s ease;
 }
+
+/* Le card non protagoniste del gruppo visibile si riducono e si spengono leggermente */
+.progetto-card.progetto-card--dimmed { opacity: 0.5; }
 
 .progetto-card-img {
   aspect-ratio: 3/4;
@@ -354,11 +359,40 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   overflow: hidden; position: relative;
 }
 
-.progetto-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; pointer-events: none; }
+.progetto-card-img img {
+  width: 100%; height: 100%; object-fit: cover; pointer-events: none;
+  transition: transform 0.6s, opacity 0.5s ease;
+}
 .progetto-card:hover .progetto-card-img img { transform: scale(1.04); }
+.progetto-card.progetto-card--hover .progetto-card-img img { opacity: 0.34; }
+
 .progetto-card-num { font-size: 10px; font-weight: 300; letter-spacing: 0.2em; color: rgba(255,255,255,0.3); }
 .progetto-card-titolo { font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.85); }
 .progetto-card-anno { font-size: 11px; font-weight: 300; color: rgba(255,255,255,0.35); letter-spacing: 0.05em; }
+
+/* Descrizione breve: overlay sopra l'immagine, visibile quando l'immagine si scurisce in hover */
+.progetto-card-desc {
+  position: absolute;
+  inset: auto 18px 18px 18px;
+  z-index: 2;
+  font-size: 12px; font-weight: 300; line-height: 1.65;
+  color: #fff;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  pointer-events: none;
+}
+
+.progetto-card.progetto-card--hover .progetto-card-desc {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progetto-card,
+  .progetto-card-img img,
+  .progetto-card-desc { transition: none; }
+}
 
 .slider-arrow {
   position: absolute; top: 35%; transform: translateY(-50%);
@@ -515,6 +549,24 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .tutti-studio-img { aspect-ratio: 2/3; background: var(--grigio-chiaro); overflow: hidden; }
 .tutti-studio-img img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; transition: transform 0.5s; }
 .tutti-studio-img:hover img { transform: scale(1.04); }
+
+/* Tutti gli studi — raggruppati per intervallo (sequenza), come capitoli */
+.studi-gruppi { display: flex; flex-direction: column; }
+
+.studio-gruppo { margin-bottom: 72px; }
+.studio-gruppo:last-child { margin-bottom: 0; }
+
+.studio-gruppo-testo { max-width: 480px; margin: 0 auto 40px; text-align: center; }
+.studio-gruppo-label { font-size: 10px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: var(--grigio-medio); margin-bottom: 14px; }
+.studio-gruppo-titolo { font-family: var(--font-titolo); font-size: clamp(22px, 2.4vw, 30px); font-weight: 400; line-height: 1.35; margin-bottom: 12px; color: var(--nero); }
+.studio-gruppo-descrizione { font-size: 13px; font-weight: 300; line-height: 1.8; color: var(--grigio-testo); }
+
+.studio-gruppo-griglia {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.studio-gruppo-griglia .tutti-studio-img { aspect-ratio: 4/5; }
 
 /* Chi sono esteso */
 .chi-sono-esteso { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
@@ -1207,12 +1259,23 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   .link-progetto { display: inline-flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--nero); border-bottom: 1px solid var(--nero); padding-bottom: 4px; width: fit-content; transition: gap var(--transizione); background: none; border-top: none; border-left: none; border-right: none; }
   .link-progetto::after { content: '→'; }
 
-  .taccuino-wrap { display: flex; flex-direction: column; align-items: center; max-width: 680px; width: 100%; gap: 20px; }
+  /* Pagina taccuino mobile: un unico blocco scorrevole (foto + testo
+     insieme), come una pagina di taccuino che si scorre tutta d'un fiato.
+     L'header (ora/tema) resta nel flusso normale, mai sovrapposto. */
+  .taccuino-mobile-wrap { flex: 1; min-height: 0; width: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; align-items: center; padding: 0 20px 24px; }
+
+  /* margin:auto centra il contenuto quando è più corto dello schermo
+     (con o senza foto); se il testo è lungo e trabocca, margin:auto
+     collassa a 0 e il blocco torna ad allinearsi in alto, scorrendo
+     normalmente dall'inizio invece di restare "tagliato" in centro. */
+  .taccuino-mobile-inner { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 680px; gap: 16px; margin: auto 0; }
+
+  .taccuino-mobile-foto { flex: 0 0 auto; width: 100%; max-height: 62vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .taccuino-mobile-foto img,
+  .taccuino-mobile-foto video { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+
   .taccuino-frase { font-family: var(--font-taccuino); font-size: clamp(22px, 7vw, 40px); max-width: 350px; line-height: 1.3; color: var(--nero); text-align: center; }
   .taccuino-data { font-size: 11px; font-weight: 300; letter-spacing: 0.2em; color: var(--grigio-medio); text-align: center; }
-  .taccuino-foto { width: 100%; max-width: 360px; overflow: hidden; background: var(--grigio-chiaro); }
-  .taccuino-foto img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-  .taccuino-foto video { width: 100%; height: 100%; object-fit: cover; }
 
   .chi-sono-wrap { display: flex; flex-direction: column; gap: 20px; max-width: 100%; width: 100%; overflow-y: auto; max-height: 100%;}
   .chi-sono-testo h2 { font-family: var(--font-titolo); font-size: clamp(18px, 5vw, 26px); font-weight: 400; line-height: 1.25; margin-bottom: 14px; }
