@@ -78,7 +78,6 @@ function creaPaginaTaccuinoMobile(v) {
   registraIdratazione(pt, () => {
     pt.appendChild(creaHeader());
 
-<<<<<<< HEAD
     // Un unico blocco scorrevole: foto e testo scorrono insieme come
     // una sola pagina del taccuino, senza aree separate.
     const wrap = crea('div'); wrap.className = 'taccuino-mobile-wrap';
@@ -94,20 +93,6 @@ function creaPaginaTaccuinoMobile(v) {
     inner.innerHTML += `<p class="taccuino-frase">${t(v.testo)}</p>${v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p><p class="taccuino-data">${formatData(v.data)}</p>` : ''}`;
 
     wrap.appendChild(inner);
-=======
-    const wrap = crea('div'); wrap.className = 'taccuino-mobile-wrap';
-
-    // Area foto/video: altezza fissa (~2/3 schermo), immagine intera
-    // senza tagli (object-fit: contain) — resta visibile mentre si legge.
-    const media = creaMediaTaccuino(v, 'taccuino-mobile-foto');
-    if (media) wrap.appendChild(media);
-
-    // Area testo: scorre indipendentemente sotto la foto.
-    const tw = crea('div'); tw.className = 'taccuino-wrap';
-    tw.innerHTML = `<p class="taccuino-frase">${t(v.testo)}</p>${v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p><p class="taccuino-data">${formatData(v.data)}</p>` : ''}`;
-    wrap.appendChild(tw);
-
->>>>>>> refs/remotes/origin/main
     pt.appendChild(wrap);
   });
 
