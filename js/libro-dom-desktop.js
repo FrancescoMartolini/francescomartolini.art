@@ -108,12 +108,13 @@ function popolaSliderProgetti() {
   const griglia = $('progetti-griglia-desktop');
   if (!griglia) return;
 
-  const elenco = progettiVisualizzati();
+  // Solo i progetti pubblicati compaiono in questa griglia: gli "in
+  // lavorazione" restano visibili come anteprima nel libro mobile e
+  // nell'overlay "Vedi tutti", ma non nella striscia curata desktop.
+  const elenco = progettiVisualizzati().filter(progettoPubblicato);
   elenco.forEach((pr, i) => {
-    const inLavorazione = pr.pubblicato === false;
-
     const card = crea('div');
-    card.className = 'progetto-card' + (inLavorazione ? ' in-lavorazione' : '');
+    card.className = 'progetto-card';
 
     card.innerHTML = `
       <div class="progetto-card-img">
@@ -130,7 +131,7 @@ function popolaSliderProgetti() {
 
     if (pr.id === ID_CARD_PLAYLIST) {
       card.addEventListener('click', () => apriProgetto(ID_CARD_PLAYLIST));
-    } else if (progettoPubblicato(pr)) {
+    } else {
       card.addEventListener('click', () => apriProgetto(pr.id));
     }
 

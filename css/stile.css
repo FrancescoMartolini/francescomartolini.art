@@ -333,6 +333,9 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 .progetti-slider-wrap {
   flex: 1;
   position: relative;
+}
+
+.progetti-slider-viewport {
   overflow: hidden;
 }
 
