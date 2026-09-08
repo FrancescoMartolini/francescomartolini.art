@@ -2,8 +2,6 @@
    FRANCESCO MARTOLINI .ART — v5
    ============================================ */
 
-/*@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500&family=Caveat+Brush&display=swap');*/
-
 @font-face {
   font-family: 'Custom_Font';
   src: url('../fonts/Francescomartolini-Regular.woff2') format('woff2');
@@ -20,7 +18,7 @@
   --grigio-testo: #5a5855;
   --font-titolo: 'Playfair Display', Georgia, serif;
   --font-testo: 'Inter', system-ui, sans-serif;
-  --font-taccuino:  'Custom_Font', cursive;  /* 'Caveat Brush ', cursive;*/
+  --font-taccuino:  'Custom_Font', cursive;
   --transizione: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --header-h: 60px;
   /* Colori inversione nella sezione progetti */
