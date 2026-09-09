@@ -48,7 +48,7 @@ function popolaDesktop() {
       col.innerHTML = `
         <p class="taccuino-col-data">${formatData(v.data)}</p>
         <p class="section-desc">${t(v.testo)}</p>
-        ${v.foto ? `<div class="taccuino-col-foto"><img src="${v.foto}" alt="" loading="lazy" draggable="false"></div>` : ''}
+        ${v.foto ? `<div class="taccuino-col-foto"><img src="${v.foto}" alt="${escapeAttr(altTaccuino(v))}" loading="lazy" draggable="false"></div>` : ''}
         ${v.camera ? `<p class="taccuino-col-camera">${v.camera}</p>` : ''}
       `;
       colonne.appendChild(col);

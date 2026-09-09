@@ -22,6 +22,18 @@
 - File aggiunti: `js/intro-video.js`, `docs/intro-video.md`.
 - Da fare prima del deploy: incollare i due URL Cloudinary in `js/intro-video.js` (vedi [intro-video.md](intro-video.md)).
 
+## 2026-09-09 — Accessibilità (menu, focus overlay, cursore) e SEO (hreflang, og:image, JSON-LD, alt)
+- Voci del menu principale: da `<a onclick>` senza `href` a `<button>` veri, raggiungibili da tastiera.
+- Focus gestito all'apertura/chiusura dei tre overlay principali (`overlay-pagina`, `pagina-progetto`, `pagina-taccuino-archivio`): si sposta dentro l'overlay all'apertura e torna su chi l'aveva aperto alla chiusura, con `aria-hidden` sincronizzato; pila per gli overlay annidati.
+- Cursore custom disattivato (torna quello di sistema) con `prefers-reduced-motion: reduce` o `forced-colors: active`, sia in CSS che nel JS che lo genera.
+- `hreflang`/canonical per lingua: `?lang=it`/`?lang=en` come varianti dichiarate, con `x-default`; iniettati e aggiornati da `js/i18n.js`.
+- `og:image`/`og:url`/`twitter:card` statici in `index.html` (mancavano del tutto) + aggiornamento dinamico per progetto/nota Taccuino via `js/i18n.js`. Nota: l'anteprima social per-progetto **reale** (quella che vedono i crawler senza JS) era già coperta da `scripts/genera-route-statiche.py`, esistente da prima — non introdotta qui, solo scoperta e documentata in [seo.md](seo.md) dopo essere passata inosservata.
+- JSON-LD: `Person`+`WebSite` statici, `CreativeWork` dinamico per progetto/nota.
+- `alt` reali ovunque risultava vuoto o assente (ritratto, foto Taccuino, carosello Spotify, fallback di `creaImg()`); nuovo schema opzionale `{src, alt}` per didascalie per-foto nelle gallerie progetto (`normalizzaImg()` in `js/libro-nucleo.js`), retrocompatibile con i semplici URL già in `progetti.json`.
+- File toccati: `index.html`, `css/stile.css`, `js/i18n.js`, `js/libro-nucleo.js`, `js/libro-routing.js`, `js/libro-dom-mobile.js`, `js/libro-dom-desktop.js`, `js/libro-interazioni.js`.
+- Documentazione aggiornata: [accessibility.md](accessibility.md), [seo.md](seo.md) (corretta anche una nota non più valida sulle anteprime social), [images.md](images.md), [projects.md](projects.md), [quick-reference.md](quick-reference.md).
+- Non fatto in questo giro (resta in [accessibility.md](accessibility.md) come apertura): skip-link, `prefers-reduced-motion` sulle transizioni di pagina/overlay, alternativa allo swipe per il libro mobile; didascalie reali delle foto esistenti (lo schema è pronto, il testo va scritto da chi conosce ogni scatto).
+
 ## Template per le voci future
 
 ```markdown

@@ -7,6 +7,7 @@
 | Cambiare layout di un progetto | campo `layoutType` in `json/progetti.json` | [projects.md](projects.md#layout) |
 | Cambiare colori di un progetto | campo `theme` in `json/progetti.json` | [projects.md](projects.md#tema) |
 | Aggiungere mappa / Spotify / video embed a un progetto | blocchi `contenuto[]` | [projects.md](projects.md#blocchi) |
+| Dare una didascalia/alt a una singola foto di galleria | oggetto `{src, alt}` invece del semplice URL, in `galleria` o `contenuto[]` | [images.md](images.md#didascalie) |
 | Aggiungere un volume della collana PLAYLIST | `json/progetti.json` con `id: "PLAYLIST.NN"` | [projects.md](projects.md#playlist) |
 | Scrivere una nota del Taccuino | bot Telegram `/nuovanota` oppure `json/taccuino.json` | [taccuino.md](taccuino.md) |
 | Aggiungere una sequenza Intervalli | `json/intervalli.json` | [content.md](content.md) |

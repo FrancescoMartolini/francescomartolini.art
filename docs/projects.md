@@ -27,7 +27,7 @@ Tutto avviene in **`json/progetti.json`**.
 | `pubblicato` | `false` → il progetto appare come "In lavorazione" ma non è apribile |
 | `link_esterno` | se `""` il bottone non appare |
 | `immagine_copertina` | trasformazione Cloudinary `w_600` (vedi [images.md](images.md)) |
-| `galleria` | immagini `w_1400`; se c'è `contenuto[]` viene aggiunta in coda ai blocchi |
+| `galleria` | immagini `w_1400`; se c'è `contenuto[]` viene aggiunta in coda ai blocchi. Ogni elemento può restare un semplice URL (nessun `alt` dedicato: usa il titolo del progetto) oppure diventare `{ "src": "…", "alt": {"it":"…","en":"…"} }` per una didascalia propria — vedi [images.md](images.md#didascalie) |
 | `mappa` | `null` · `{url, label}` (embed Google Maps) · `{lat, lng, zoom, label}` (coordinate) |
 
 > Su desktop, `descrizione` compare anche in un piccolo overlay sotto la card quando il cursore vi sosta sopra (la card si allarga, le altre del gruppo visibile si restringono in proporzione — vedi [animations.md](animations.md)). Tenerla breve: è pensata per 2-3 righe, non per il testo completo.
@@ -66,8 +66,8 @@ Il contenuto interno si costruisce con un array ordinato di blocchi:
 |---|---|---|
 | `titolo` | stringa o `{it,en}` | sottotitolo interno |
 | `testo` | stringa o `{it,en}` | `\n` → `<br>` |
-| `immagine` | URL | apre il lightbox |
-| `galleria` | array di URL | apre il lightbox con navigazione |
+| `immagine` | URL — o `{src, alt}` per una didascalia propria | apre il lightbox |
+| `galleria` | array di URL — o di `{src, alt}` | apre il lightbox con navigazione |
 | `mappa` | *(nessuno)* | i dati stanno nel campo `mappa` di primo livello; il blocco decide solo *dove* appare |
 | `separatore` | *(nessuno)* | linea orizzontale |
 | `nota` | stringa o `{it,en}` | resa col font calligrafico |

@@ -22,6 +22,25 @@ Le fotografie dei contenuti **non vivono nel repository**: si caricano su **Clou
 - `sizes` di default è `100vw` (immagine a pagina intera, il caso più comune nel libro mobile). Nei punti dove l'immagine occupa una frazione della larghezza in una griglia desktop (es. `studi-griglia`, `tutti-card-img`, `collab-griglia`, `pl-volume-cover`) `creaImg()` riceve un quarto argomento `sizes` esplicito, per non far scaricare al browser una variante più pesante del necessario.
 - Se l'URL non è Cloudinary (es. `images/chi-sono-img.jpg`) `creaImg()` non genera `srcset` e si comporta come prima.
 
+## Didascalie/alt per foto (opzionale) {#didascalie}
+
+Di norma una foto di galleria non ha una descrizione propria: l'`alt` usa il titolo del progetto, ripetuto identico su ogni immagine. Va bene per screen reader e SEO solo fino a un certo punto — non descrive *quella* foto specifica, e scriverla è un lavoro editoriale (bisogna sapere cosa c'è nello scatto), non qualcosa che si automatizza.
+
+Per una foto alla volta, quando e se serve, si può sostituire il semplice URL con un oggetto — sia in `galleria` di primo livello sia nei blocchi `contenuto[]` di tipo `immagine`/`galleria` (vedi [projects.md](projects.md#blocchi)):
+
+```json
+"galleria": [
+  "https://res.cloudinary.com/…/01.jpg",
+  { "src": "https://res.cloudinary.com/…/02.jpg",
+    "alt": { "it": "Muro scrostato, via Ghibellina", "en": "Peeling wall, via Ghibellina" } }
+]
+```
+
+- Nessun obbligo di migrazione: gli URL semplici continuano a funzionare esattamente come oggi (l'`alt` resta il titolo del progetto).
+- `normalizzaImg()` in `js/libro-nucleo.js` è il punto unico che interpreta questo formato: usato da `creaImg()` e da ogni generatore di galleria in `js/libro-routing.js`.
+- `alt` è bilingue come tutti i testi del sito (`{it,en}`): mai una stringa unica per due lingue.
+- La foto di una nota del Taccuino (`json/taccuino.json`, campo `foto`) non segue questo schema: il suo `alt` è generato automaticamente dal testo della nota stessa (`altTaccuino()` in `js/libro-nucleo.js`), niente da scrivere a mano.
+
 ## Video (Cloudinary)
 
 - L'URL video ha prefisso **`/video/upload/…`** (non `/image/upload/…`).

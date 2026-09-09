@@ -122,6 +122,7 @@ function avviaSpotifySections(overlayEl) {
           img.classList.remove('visibile');
           setTimeout(() => {
             img.src = src;
+            img.alt = 'Fotografia associata al brano in riproduzione — francescomartolini.art';
             carosello.hidden = false;
             requestAnimationFrame(() => img.classList.add('visibile'));
           }, 180);
@@ -245,11 +246,11 @@ const lightbox = (() => {
       // Tutte le img nel gruppo (anche dentro .img-wrap)
       return Array.from(contenitore.querySelectorAll('img'))
         .filter(i => !i.classList.contains('img-overlay') && i.src)
-        .map(i => ({ src: i.src, alt: i.alt || '' }));
+        .map(i => ({ src: i.src, alt: i.alt || 'Fotografia di Francesco Martolini' }));
     }
 
     // Fallback: solo l'immagine cliccata
-    return [{ src: imgCliccata.src, alt: imgCliccata.alt || '' }];
+    return [{ src: imgCliccata.src, alt: imgCliccata.alt || 'Fotografia di Francesco Martolini' }];
   }
 
   function mostraImg(i) {

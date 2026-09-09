@@ -61,7 +61,7 @@ function creaMediaTaccuino(v, wrapClass) {
   }
   if (v.foto) {
     const fw = crea('div'); fw.className = wrapClass;
-    const img = crea('img'); img.src = v.foto; img.alt = ''; img.draggable = false;
+    const img = crea('img'); img.src = v.foto; img.alt = altTaccuino(v); img.draggable = false;
     fw.appendChild(img);
     return fw;
   }

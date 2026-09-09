@@ -36,6 +36,50 @@ function tu(key) {
   return (typeof t_ui === 'function' && t_ui(key)) || '';
 }
 
+// ── alt della foto di una nota del Taccuino ──
+// La foto di una nota non ha un didascalia propria nei dati: usiamo il
+// testo della nota stessa (ripulito dal markup e troncato) come alt reale,
+// invece di lasciarlo vuoto — per un sito fotografico un alt vuoto non
+// aiuta né screen reader né SEO immagini.
+function altTaccuino(v) {
+  const testo = t(v.testo).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  if (!testo) return 'Fotografia — Taccuino, francescomartolini.art';
+  return testo.length > 120 ? testo.slice(0, 120) + '…' : testo;
+}
+
+// Per inserire altTaccuino() dentro un attributo HTML via template string
+// (nei rendering desktop/routing che usano innerHTML, non proprietà DOM).
+function escapeAttr(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+// ── alt per-foto nelle gallerie dei progetti (progetti.json) ──
+// Le foto di una galleria non hanno oggi una didascalia propria: sono solo
+// URL, quindi l'alt di ciascuna ricade sul titolo del progetto, ripetuto
+// identico su ogni immagine. Non è un bug di codice ma un limite dei dati:
+// per un alt distinto per ciascuna foto, il modo più semplice è che TU
+// (che conosci il contenuto di ogni scatto) scriva la didascalia nel JSON.
+//
+// Questa funzione è già pronta a leggerla, in modo pienamente retrocompatibile:
+// - un elemento di galleria resta un semplice URL, ESATTAMENTE come oggi
+//     "https://res.cloudinary.com/.../foto.jpg"
+//   → nessuna modifica richiesta, l'alt resta il titolo del progetto (come ora).
+// - oppure diventa un oggetto con una didascalia propria:
+//     { "src": "https://res.cloudinary.com/.../foto.jpg",
+//       "alt": { "it": "Descrizione della foto", "en": "Photo description" } }
+//   → l'alt usa questa didascalia invece del titolo, per quella sola foto.
+// Puoi convertire le foto una alla volta, quando e se vuoi: quelle che
+// restano semplici stringhe continuano a funzionare esattamente come oggi.
+function normalizzaImg(item, altFallback) {
+  if (item && typeof item === 'object') {
+    if ('src' in item) {
+      return { src: t(item.src) || '', alt: t(item.alt) || altFallback };
+    }
+    return { src: t(item) || '', alt: altFallback }; // URL bilingue {it,en} senza didascalia (schema esistente)
+  }
+  return { src: item || '', alt: altFallback };
+}
+
 const FRASE_FIN = {
   it: 'Alcune tracce richiedono anni per diventare visibili.',
   en: 'Some traces take years to become visible.'
@@ -326,7 +370,7 @@ function creaImg(src, alt, eager, sizes) {
   wrap.className = 'img-wrap';
   if (src) {
     const img = crea('img');
-    img.src = src; img.alt = alt || ''; img.draggable = false;
+    img.src = src; img.alt = alt || 'Fotografia di Francesco Martolini'; img.draggable = false;
     img.loading = eager ? 'eager' : 'lazy';
     const srcset = cldSrcset(src);
     if (srcset) { img.srcset = srcset; img.sizes = sizes || '100vw'; }

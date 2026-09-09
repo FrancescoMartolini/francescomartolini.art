@@ -606,8 +606,9 @@ function apriProgetto(id) {
   avviaSpotifySections(el);
 }
 
-function generaImgHTML(src, titolo) {
-  return `<div class="progetto-galleria-img"><img src="${src}" alt="${titolo}" draggable="false" loading="lazy"></div>`;
+function generaImgHTML(item, altFallback) {
+  const { src, alt } = normalizzaImg(item, altFallback);
+  return `<div class="progetto-galleria-img"><img src="${src}" alt="${escapeAttr(alt)}" draggable="false" loading="lazy"></div>`;
 }
 
 function generaContenutoProgetto(pr) {
@@ -626,18 +627,19 @@ function generaContenutoProgetto(pr) {
           }</div>`;
         case 'image':
           return `<div class="section-image${s.fullscreen ? ' fullscreen' : ''}" ${pr.layoutType === 'archivio' ? `data-archivio-img="${s.src}"` : ''}>
-            <img src="${t(s.src)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
+            <img src="${t(s.src)}" alt="${escapeAttr(t(s.alt) || t(pr.titolo))}" draggable="false" loading="lazy">
           </div>`;
         case 'imageText':
           return `<div class="section-imagetext ${s.position === 'right' ? 'position-right' : 'position-left'}">
-            <img src="${t(s.image)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
+            <img src="${t(s.image)}" alt="${escapeAttr(t(s.alt) || t(pr.titolo))}" draggable="false" loading="lazy">
             <div class="section-imagetext-content">${(s.content || '').replace(/\n/g, '<br>')}</div>
           </div>`;
         case 'gallery':
           return `<div class="section-gallery">${
-            (s.images || []).map(src =>
-              `<div class="gallery-img"><img src="${t(src)}" alt="${t(pr.titolo)}" draggable="false" loading="lazy"></div>`
-            ).join('')
+            (s.images || []).map(item => {
+              const { src, alt } = normalizzaImg(item, t(pr.titolo));
+              return `<div class="gallery-img"><img src="${src}" alt="${escapeAttr(alt)}" draggable="false" loading="lazy"></div>`;
+            }).join('')
           }</div>`;
         case 'quote':
           return `<blockquote class="section-quote">${t(s.content) || ''}</blockquote>`;
@@ -669,10 +671,12 @@ function generaContenutoProgetto(pr) {
       html += `<div class="archivio-colonna-testo">
         <div class="section-text"><p>${(t(pr.testo_lungo) || '').replace(/\n/g, '<br>')}</p></div>
         ${generaMappaHTML(pr)}
-        ${(pr.galleria || []).slice(1).map(src =>
-          `<div class="section-image" data-archivio-img="${src}">
-            <img src="${src}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
-          </div>`).join('')}
+        ${(pr.galleria || []).slice(1).map(item => {
+          const { src, alt } = normalizzaImg(item, t(pr.titolo));
+          return `<div class="section-image" data-archivio-img="${src}">
+            <img src="${src}" alt="${escapeAttr(alt)}" draggable="false" loading="lazy">
+          </div>`;
+        }).join('')}
       </div>
       <div class="archivio-colonna-img">
         <img id="archivio-sticky-img" class="archivio-img-principale" src="${primaImg}" alt="${t(pr.titolo)}" draggable="false">
@@ -695,10 +699,12 @@ function generaContenutoProgetto(pr) {
           colonnaHTML += `<div class="section-text">${
             t(b.valore).split('\n\n').map(p => p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : '').join('')
           }</div>`; break;
-        case 'immagine':
-          colonnaHTML += `<div class="section-image" data-archivio-img="${b.valore}">
-            <img src="${b.valore}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
+        case 'immagine': {
+          const { src, alt } = normalizzaImg(b.valore, t(pr.titolo));
+          colonnaHTML += `<div class="section-image" data-archivio-img="${src}">
+            <img src="${src}" alt="${escapeAttr(alt)}" draggable="false" loading="lazy">
           </div>`; break;
+        }
         case 'mappa':
           colonnaHTML += generaMappaHTML(pr); break;
         case 'spotify':
@@ -712,9 +718,10 @@ function generaContenutoProgetto(pr) {
       }
     });
     if (pr.galleria?.length) {
-      pr.galleria.forEach(src => {
+      pr.galleria.forEach(item => {
+        const { src, alt } = normalizzaImg(item, t(pr.titolo));
         colonnaHTML += `<div class="section-image" data-archivio-img="${src}">
-          <img src="${src}" alt="${t(pr.titolo)}" draggable="false" loading="lazy">
+          <img src="${src}" alt="${escapeAttr(alt)}" draggable="false" loading="lazy">
         </div>`;
       });
     }
@@ -732,8 +739,8 @@ function generaContenutoProgetto(pr) {
 
   // Per tutti gli altri layout: mappa blocchi al sistema section-*
   if (!pr.contenuto) {
-    const galleria = (pr.galleria || []).map(src =>
-      `<div class="gallery-img">${generaImgHTML(src, t(pr.titolo))}</div>`
+    const galleria = (pr.galleria || []).map(item =>
+      `<div class="gallery-img">${generaImgHTML(item, t(pr.titolo))}</div>`
     ).join('');
     return `
       <div class="section-text"><p>${(t(pr.testo_lungo) || '').replace(/\n/g, '<br>')}</p></div>
@@ -749,11 +756,13 @@ function generaContenutoProgetto(pr) {
         return `<div class="section-text">${
           t(b.valore).split('\n\n').map(p => p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : '').join('')
         }</div>`;
-      case 'immagine':
-        return `<div class="section-image"><img src="${b.valore}" alt="${t(pr.titolo)}" draggable="false" loading="lazy"></div>`;
+      case 'immagine': {
+        const { src, alt } = normalizzaImg(b.valore, t(pr.titolo));
+        return `<div class="section-image"><img src="${src}" alt="${escapeAttr(alt)}" draggable="false" loading="lazy"></div>`;
+      }
       case 'galleria': {
         const imgs = (Array.isArray(b.valore) ? b.valore : [b.valore])
-          .map(src => `<div class="gallery-img">${generaImgHTML(src, t(pr.titolo))}</div>`).join('');
+          .map(item => `<div class="gallery-img">${generaImgHTML(item, t(pr.titolo))}</div>`).join('');
         return `<div class="section-gallery">${imgs}</div>`;
       }
       case 'mappa': return generaMappaHTML(pr);
@@ -766,7 +775,7 @@ function generaContenutoProgetto(pr) {
   }).join('');
 
   const galleriaExtra = pr.galleria?.length
-    ? `<div class="section-gallery">${pr.galleria.map(src => `<div class="gallery-img">${generaImgHTML(src, t(pr.titolo))}</div>`).join('')}</div>`
+    ? `<div class="section-gallery">${pr.galleria.map(item => `<div class="gallery-img">${generaImgHTML(item, t(pr.titolo))}</div>`).join('')}</div>`
     : '';
 
   return blocchi + galleriaExtra;
@@ -846,7 +855,7 @@ function apriTaccuino(idVoce) {
       const posterAttr = v.foto ? ` poster="${v.foto}"` : '';
       const media = v.video
         ? `<div class="taccuino-voce-foto"><video src="${v.video}" controls playsinline preload="metadata"${posterAttr}></video></div>`
-        : (v.foto ? `<div class="taccuino-voce-foto"><img src="${v.foto}" alt="" draggable="false" loading="lazy"></div>` : '');
+        : (v.foto ? `<div class="taccuino-voce-foto"><img src="${v.foto}" alt="${escapeAttr(altTaccuino(v))}" draggable="false" loading="lazy"></div>` : '');
       const cam = v.camera ? `<p class="taccuino-voce-camera"> ${v.camera}</p>` : '';
       return `<div class="taccuino-voce" data-id="${v.id}" data-testo="${t(v.testo).toLowerCase()}">
         <div class="taccuino-voce-meta">
