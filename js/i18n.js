@@ -75,6 +75,49 @@
   }
   aggiornaTagLingua();
 
+  // ── SEO: og:image / og:url (anteprime social) ──
+  // Immagine e URL generici di default, usati per l'anteprima social del
+  // sito nel suo complesso. js/libro-routing.js (che conosce i dati dei
+  // singoli progetti) può sovrascriverli quando si apre un progetto/nota
+  // specifici, e li ripristina qui sopra alla chiusura.
+  // IMPORTANTE: questo aggiornamento è via JS e serve al rendering di
+  // Google e a eventuali funzioni di condivisione interne al sito — NON
+  // produce anteprime per-progetto su Facebook/WhatsApp/Twitter/Slack,
+  // che leggono l'HTML grezzo senza eseguire JavaScript. Per quelle
+  // servirebbe generare pagine statiche per progetto (fuori scope qui).
+  var DEFAULT_OG_IMAGE = 'https://res.cloudinary.com/dgo7tnyv6/image/upload/w_1200,h_630,c_fill,g_auto,q_auto,f_auto/v1778416462/LaPelleDellaCitta40_ppttqh.jpg';
+  var DEFAULT_OG_TITOLO = 'francescomartolini.art';
+  var DEFAULT_OG_DESCRIZIONE = 'Il tempo lascia tracce. Io le cerco.';
+
+  function impostaMeta(attr, key, value) {
+    if (!value) return;
+    var el = document.head.querySelector('meta[' + attr + '="' + key + '"]');
+    if (!el) {
+      el = document.createElement('meta');
+      el.setAttribute(attr, key);
+      document.head.appendChild(el);
+    }
+    el.setAttribute('content', value);
+  }
+
+  window.aggiornaMetaSociale = function (opts) {
+    opts = opts || {};
+    var percorso = location.pathname.replace(/\/+$/, '') || '/';
+    var url = opts.url || (location.origin + percorso);
+    var titolo = opts.titolo || DEFAULT_OG_TITOLO;
+    var descrizione = opts.descrizione || DEFAULT_OG_DESCRIZIONE;
+    var immagine = opts.immagine || DEFAULT_OG_IMAGE;
+
+    impostaMeta('property', 'og:title', titolo);
+    impostaMeta('property', 'og:description', descrizione);
+    impostaMeta('property', 'og:url', url);
+    impostaMeta('property', 'og:image', immagine);
+    impostaMeta('name', 'twitter:title', titolo);
+    impostaMeta('name', 'twitter:description', descrizione);
+    impostaMeta('name', 'twitter:image', immagine);
+  };
+  window.aggiornaMetaSociale();
+
   function getField(path, dict) {
     var parts = path.split('.');
     var node = dict;

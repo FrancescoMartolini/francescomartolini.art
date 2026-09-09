@@ -487,6 +487,10 @@ function popolaGrigliaVolumiPlaylist(root) {
 
 function apriArchivioPlaylist() {
   document.title = `PLAYLIST — francescomartolini.art`;
+  window.aggiornaMetaSociale({
+    titolo: `PLAYLIST — francescomartolini.art`,
+    url: location.origin + '/playlist'
+  });
   const el = $('pagina-progetto');
   const interno = el.querySelector('.progetto-interno');
 
@@ -519,6 +523,12 @@ function apriProgetto(id) {
   if (!pr || pr.pubblicato === false) return;
 
   document.title = `${t(pr.titolo)} — francescomartolini.art`;
+  window.aggiornaMetaSociale({
+    titolo: `${t(pr.titolo)} — francescomartolini.art`,
+    descrizione: t(pr.descrizione) || '',
+    immagine: pr.immagine_copertina,
+    url: location.origin + '/progetti/' + pr.id
+  });
   const el = $('pagina-progetto');
   const interno = el.querySelector('.progetto-interno');
 
@@ -806,6 +816,7 @@ function chiudiProgetto() {
     el._scrollHandler = null;
   }
   document.title = TITOLO_DEFAULT;
+  window.aggiornaMetaSociale();
 }
 
 // ── Taccuino archivio ──
@@ -816,6 +827,10 @@ function apriTaccuino(idVoce) {
   const interno = el.querySelector('.taccuino-archivio-interno');
 
   document.title = `${tu('menu.taccuino')} — francescomartolini.art`;
+  window.aggiornaMetaSociale({
+    titolo: `${tu('menu.taccuino')} — francescomartolini.art`,
+    url: location.origin + '/taccuino'
+  });
 
   if (!_cacheTaccuino) {
     const voci = stato.taccuino.map(v => {
@@ -870,6 +885,15 @@ function apriTaccuino(idVoce) {
     : null;
 
   if (voce) {
+    const datiVoce = stato.taccuino.find(v => String(v.id) === String(idVoce));
+    if (datiVoce) {
+      window.aggiornaMetaSociale({
+        titolo: `${tu('menu.taccuino')} — francescomartolini.art`,
+        descrizione: t(datiVoce.testo).replace(/<[^>]+>/g, ' ').trim(),
+        immagine: datiVoce.foto || undefined,
+        url: location.origin + '/taccuino/' + datiVoce.id
+      });
+    }
     setTimeout(() => {
       voce.scrollIntoView({ block: 'center' });
       voce.classList.add('evidenziata');
@@ -885,6 +909,7 @@ function chiudiTaccuino() {
   el.classList.remove('aperta');
   chiudiOverlayFocus(el);
   document.title = TITOLO_DEFAULT;
+  window.aggiornaMetaSociale();
 }
 
 // ── Nav mobile ──
