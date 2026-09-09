@@ -14,6 +14,11 @@ Dipende da libro-nucleo.js e libro-routing.js (chiude/apre overlay).
 // ════════════════════════════════
 function avviaCursore() {
   if (!window.matchMedia('(hover: hover)').matches) return;
+  // Stesse condizioni del CSS: niente cursore custom con riduzione del
+  // movimento richiesta o in forced-colors (es. Contrasto elevato di
+  // Windows) — chi usa ingranditori di schermo mantiene il cursore di sistema.
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (window.matchMedia('(forced-colors: active)').matches) return;
   const c = crea('div'); c.id = 'cursore';
   const r = crea('div'); r.id = 'cursore-ring';
   document.body.appendChild(c); document.body.appendChild(r);

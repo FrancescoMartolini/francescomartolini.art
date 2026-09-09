@@ -47,13 +47,18 @@ body.tema-scuro {
 
 /* ════════════════════════════════
    CURSORE CUSTOM — adattivo
+   Attivo solo se: dispositivo con puntatore preciso (hover: hover),
+   nessuna preferenza di riduzione del movimento, e non in forced-colors
+   (Modalità a contrasto elevato di Windows ecc). In tutti gli altri casi
+   resta il cursore di sistema — necessario per chi usa ingranditori di
+   schermo o ha comunque bisogno del cursore standard.
    ════════════════════════════════ */
 
-#cursore, #cursore-ring {
-  display: block;
-}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) and (forced-colors: none) {
+  #cursore, #cursore-ring {
+    display: block;
+  }
 
-@media (hover: hover) {
   * {
     cursor: none !important;
   }
@@ -133,13 +138,15 @@ body.tema-scuro {
   align-items: center;
 }
 
-.menu-voci a {
+.menu-voci a,
+.menu-voci button.section-link {
   font-size: 11px; font-weight: 400; letter-spacing: 0.1em;
   text-transform: uppercase; color: var(--grigio-testo);
   transition: color var(--transizione);
 }
 
-.menu-voci a:hover { color: var(--nero); }
+.menu-voci a:hover,
+.menu-voci button.section-link:hover { color: var(--nero); }
 .menu-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--nero); }
 
 .tema-toggle-btn {
@@ -1692,7 +1699,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 }
 
 /* Cursore personalizzato dentro lightbox */
-@media (hover: hover) {
+@media (hover: hover) and (prefers-reduced-motion: no-preference) and (forced-colors: none) {
   #lightbox { cursor: none !important; }
 }
 
@@ -1717,7 +1724,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   cursor: zoom-in;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (prefers-reduced-motion: no-preference) and (forced-colors: none) {
   .img-wrap img,
   .progetto-galleria-img img,
   .tutti-studio-img img,

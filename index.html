@@ -39,6 +39,13 @@
   <meta property="og:title" content="francescomartolini.art">
   <meta property="og:description" content="Il tempo lascia tracce. Io le cerco.">
   <meta property="og:type" content="website">
+  <!-- Fallback statico per crawler senza JS (radice del sito, lingua di
+       default). js/i18n.js aggiorna questi stessi tag a runtime con il
+       percorso e la lingua correnti di ogni pagina/variante. -->
+  <link rel="canonical" href="https://francescomartolini.art/?lang=it">
+  <link rel="alternate" hreflang="it" href="https://francescomartolini.art/?lang=it">
+  <link rel="alternate" hreflang="en" href="https://francescomartolini.art/?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://francescomartolini.art/">
   <title>francescomartolini.art</title>
   <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="images/icon.jpg">
@@ -75,11 +82,11 @@
     </a>
     <nav>
       <ul class="menu-voci">
-        <li><a class="section-link" onclick="apriPagina('tutti-progetti')" data-i18n="menu.progetti">Progetti</a></li>
-        <li><a class="section-link" onclick="apriPagina('tutti-studi')" data-i18n="menu.intervalli">Intervalli</a></li>
-        <li><a class="section-link" onclick="apriPagina('chi-sono-pagina')" data-i18n="menu.chiSono">Chi sono</a></li>
-        <!--<li><a class="section-link" onclick="apriPagina('collaborazioni-pagina')">Collaborazioni</a></li> -->
-        <li><a class="section-link" onclick="apriTaccuino()" data-i18n="menu.taccuino">Taccuino</a></li>
+        <li><button type="button" class="section-link" onclick="apriPagina('tutti-progetti')" data-i18n="menu.progetti">Progetti</button></li>
+        <li><button type="button" class="section-link" onclick="apriPagina('tutti-studi')" data-i18n="menu.intervalli">Intervalli</button></li>
+        <li><button type="button" class="section-link" onclick="apriPagina('chi-sono-pagina')" data-i18n="menu.chiSono">Chi sono</button></li>
+        <!--<li><button type="button" class="section-link" onclick="apriPagina('collaborazioni-pagina')">Collaborazioni</button></li> -->
+        <li><button type="button" class="section-link" onclick="apriTaccuino()" data-i18n="menu.taccuino">Taccuino</button></li>
         <li><div class="menu-dot"></div></li>
         <li>
           <button id="tema-toggle" class="tema-toggle-btn" aria-label="Tema chiaro/scuro" data-i18n-attr="aria-label:nav.temaChiaroScuro">
@@ -332,7 +339,7 @@
   <div id="indicatore"></div>
 
   <!-- ══ PAGINE OVERLAY (tutti i progetti, studi, chi sono, collaborazioni) ══ -->
-  <div id="overlay-pagina" class="overlay-pagina">
+  <div id="overlay-pagina" class="overlay-pagina" aria-hidden="true">
     <div class="overlay-inner">
       <button class="overlay-chiudi" onclick="chiudiPagina()">
         <svg viewBox="0 0 24 24" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>

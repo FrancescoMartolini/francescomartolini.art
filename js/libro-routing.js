@@ -11,6 +11,34 @@ Dipende da libro-nucleo.js.
 
 
 // ════════════════════════════════
+// FOCUS OVERLAY (accessibilità tastiera)
+// ════════════════════════════════
+// All'apertura di un overlay il focus si sposta al suo interno (di norma
+// il pulsante "chiudi/torna", il primo elemento raggiungibile); alla
+// chiusura torna esattamente su chi l'aveva aperto — così chi naviga da
+// tastiera non resta "sotto" la pagina che si è aperta sopra di lui.
+// Pila anziché singola variabile perché gli overlay possono annidarsi
+// (es. apro un progetto da dentro "tutti i progetti").
+const _pilaFocusOverlay = [];
+
+function apriOverlayFocus(overlay, elementoDaFocalizzare) {
+  _pilaFocusOverlay.push(document.activeElement);
+  overlay.setAttribute('aria-hidden', 'false');
+  const target = elementoDaFocalizzare || overlay.querySelector(
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  );
+  if (target) target.focus();
+}
+
+function chiudiOverlayFocus(overlay) {
+  overlay.setAttribute('aria-hidden', 'true');
+  const precedente = _pilaFocusOverlay.pop();
+  if (precedente && typeof precedente.focus === 'function' && document.contains(precedente)) {
+    precedente.focus();
+  }
+}
+
+// ════════════════════════════════
 // OVERLAY PAGINE
 // ════════════════════════════════
 function apriPagina(tipo) {
@@ -57,6 +85,7 @@ function apriPagina(tipo) {
       // uno alla volta, così la pagina resta fluida anche con molte immagini.
       overlay.classList.add('aperta');
       overlay.scrollTop = 0;
+      apriOverlayFocus(overlay, overlay.querySelector('.overlay-chiudi'));
       (function inserisciGruppi() {
         const contenitore = $('tutti-studi-grid');
         const gruppi = stato.intervalli;
@@ -150,6 +179,7 @@ function apriPagina(tipo) {
       `;
       overlay.classList.add('aperta');
       overlay.scrollTop = 0;
+      apriOverlayFocus(overlay, overlay.querySelector('.overlay-chiudi'));
       (function inserisciCollabABlocchi() {
         const voci = stato.collaborazioni;
         const grid = $('collab-grid');
@@ -237,10 +267,13 @@ function apriPagina(tipo) {
 
   overlay.classList.add('aperta');
   overlay.scrollTop = 0;
+  apriOverlayFocus(overlay, overlay.querySelector('.overlay-chiudi'));
 }
 
 function chiudiPagina() {
-  $('overlay-pagina').classList.remove('aperta');
+  const overlay = $('overlay-pagina');
+  overlay.classList.remove('aperta');
+  chiudiOverlayFocus(overlay);
   document.title = TITOLO_DEFAULT;
 }
 
@@ -474,6 +507,7 @@ function apriArchivioPlaylist() {
   interno.innerHTML = _cacheProgetti[ID_CARD_PLAYLIST];
   el.classList.add('aperta');
   el.scrollTop = 0;
+  apriOverlayFocus(el, el.querySelector('.progetto-torna'));
 
   popolaGrigliaVolumiPlaylist(el);
   rivelaAlloScroll(el, '.pl-sezione, .pl-step');
@@ -538,6 +572,7 @@ function apriProgetto(id) {
   interno.innerHTML = _cacheProgetti[id];
   el.classList.add('aperta');
   el.scrollTop = 0;
+  apriOverlayFocus(el, el.querySelector('.progetto-torna'));
 
   // Scroll reveal
   avviaReveal(el);
@@ -762,6 +797,7 @@ function generaSpotifyHTML(v) {
 function chiudiProgetto() {
   const el = $('pagina-progetto');
   el.classList.remove('aperta');
+  chiudiOverlayFocus(el);
   el.style.removeProperty('--pr-bg');
   el.style.removeProperty('--pr-text');
   el.style.removeProperty('--pr-accent');
@@ -823,6 +859,7 @@ function apriTaccuino(idVoce) {
     risultati.textContent = q ? `${vis} ${vis === 1 ? tu('taccuino_extra.risultatoSing') : tu('taccuino_extra.risultatiPlur')}` : '';
   });
   el.classList.add('aperta'); el.scrollTop = 0;
+  apriOverlayFocus(el, el.querySelector('.taccuino-torna'));
 
   // Link diretto a una singola nota (es. da una caption Instagram: si
   // copia/incolla il link, si tocca, si atterra sulla nota, non su un
@@ -844,7 +881,9 @@ function apriTaccuino(idVoce) {
 }
 
 function chiudiTaccuino() {
-  $('pagina-taccuino-archivio').classList.remove('aperta');
+  const el = $('pagina-taccuino-archivio');
+  el.classList.remove('aperta');
+  chiudiOverlayFocus(el);
   document.title = TITOLO_DEFAULT;
 }
 

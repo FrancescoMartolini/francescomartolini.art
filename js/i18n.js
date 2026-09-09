@@ -24,10 +24,56 @@
     return 'en';
   }
 
-  // Priorità: preferenza salvata dall'utente > lingua del browser
-  // (italiano se it, inglese in ogni altro caso).
-  var lang = localStorage.getItem(LANG_KEY) || detectBrowserLang();
+  // Lingua esplicitata nell'URL (?lang=it / ?lang=en) — è così che i motori
+  // di ricerca raggiungono una variante linguistica precisa tramite i link
+  // hreflang dichiarati più sotto. Se presente e valida ha priorità su
+  // tutto e diventa anche la preferenza salvata, così un link condiviso in
+  // una lingua resta quella lingua anche alla visita successiva.
+  function detectUrlLang() {
+    var value = (new URLSearchParams(location.search).get(LANG_KEY) || '').toLowerCase();
+    return SUPPORTED_LANGS.indexOf(value) !== -1 ? value : null;
+  }
+
+  // Priorità: lingua esplicita in URL > preferenza salvata > lingua del
+  // browser (italiano se it, inglese in ogni altro caso).
+  var langDaUrl = detectUrlLang();
+  var lang = langDaUrl || localStorage.getItem(LANG_KEY) || detectBrowserLang();
+  if (langDaUrl) localStorage.setItem(LANG_KEY, langDaUrl);
   var ui = null;
+
+  // ── SEO: canonical + hreflang per lingua ──
+  // Il sito è bilingue su un solo URL fisico (nessuna cartella /en/): la
+  // variante linguistica viene dichiarata ai motori di ricerca tramite
+  // ?lang=it / ?lang=en, con hreflang reciproci fra le due varianti e un
+  // canonical auto-referenziale per ciascuna — lo schema che Google
+  // richiede per contenuti multilingua serviti su URL alternativi invece
+  // che su sottocartelle. location.pathname va letto qui, PRIMA che
+  // libro-app.js "ripulisca" la barra degli indirizzi dopo un link diretto
+  // (vedi commento in js/libro-app.js), altrimenti ogni pagina profonda
+  // risulterebbe canonicalizzata sulla home.
+  function impostaLinkHead(rel, hreflang, href) {
+    var selettore = hreflang
+      ? 'link[rel="' + rel + '"][hreflang="' + hreflang + '"]'
+      : 'link[rel="' + rel + '"]:not([hreflang])';
+    var el = document.head.querySelector(selettore);
+    if (!el) {
+      el = document.createElement('link');
+      el.setAttribute('rel', rel);
+      if (hreflang) el.setAttribute('hreflang', hreflang);
+      document.head.appendChild(el);
+    }
+    el.setAttribute('href', href);
+  }
+
+  function aggiornaTagLingua() {
+    var percorso = location.pathname.replace(/\/+$/, '') || '/';
+    var base = location.origin + percorso;
+    impostaLinkHead('canonical', null, base + '?lang=' + lang);
+    impostaLinkHead('alternate', 'it', base + '?lang=it');
+    impostaLinkHead('alternate', 'en', base + '?lang=en');
+    impostaLinkHead('alternate', 'x-default', base);
+  }
+  aggiornaTagLingua();
 
   function getField(path, dict) {
     var parts = path.split('.');
@@ -83,7 +129,9 @@
   function setLang(newLang) {
     if (newLang === lang) return;
     localStorage.setItem(LANG_KEY, newLang);
-    location.reload(); // ricarica per rigenerare anche i contenuti dinamici (progetti, taccuino...)
+    var url = new URL(location.href);
+    url.searchParams.set(LANG_KEY, newLang);
+    location.href = url.toString(); // naviga: ricarica pagina e contenuti dinamici, ora con la lingua anche nell'URL
   }
 
   function initToggle() {
