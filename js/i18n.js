@@ -118,6 +118,41 @@
   };
   window.aggiornaMetaSociale();
 
+  // ── SEO: JSON-LD del singolo progetto/nota ──
+  // I dati strutturati di Persona e WebSite sono statici (nel markup di
+  // index.html, sempre presenti). Questo invece è il tag aggiuntivo per
+  // il progetto/nota aperti in un dato momento — un <script type=
+  // "application/ld+json"> creato e rimosso dinamicamente, così un
+  // motore di ricerca che esegue il rendering (Google, Bing) trova un
+  // CreativeWork distinto per ciascun contenuto, non sempre lo stesso.
+  var ID_LD_PROGETTO = 'ld-progetto-corrente';
+
+  window.aggiornaJsonLdProgetto = function (dati) {
+    var el = document.getElementById(ID_LD_PROGETTO);
+    if (!dati) {
+      if (el) el.remove();
+      return;
+    }
+    if (!el) {
+      el = document.createElement('script');
+      el.type = 'application/ld+json';
+      el.id = ID_LD_PROGETTO;
+      document.head.appendChild(el);
+    }
+    el.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'CreativeWork',
+      genre: 'Photography',
+      name: dati.nome,
+      description: dati.descrizione || undefined,
+      image: dati.immagine || undefined,
+      url: dati.url,
+      dateCreated: dati.anno || undefined,
+      creator: { '@type': 'Person', name: 'Francesco Martolini', url: 'https://francescomartolini.art/' },
+      isPartOf: { '@type': 'WebSite', name: 'francescomartolini.art', url: 'https://francescomartolini.art/' }
+    });
+  };
+
   function getField(path, dict) {
     var parts = path.split('.');
     var node = dict;

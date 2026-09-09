@@ -491,6 +491,7 @@ function apriArchivioPlaylist() {
     titolo: `PLAYLIST — francescomartolini.art`,
     url: location.origin + '/playlist'
   });
+  window.aggiornaJsonLdProgetto(null); // è un indice di volumi, non un'opera singola
   const el = $('pagina-progetto');
   const interno = el.querySelector('.progetto-interno');
 
@@ -528,6 +529,13 @@ function apriProgetto(id) {
     descrizione: t(pr.descrizione) || '',
     immagine: pr.immagine_copertina,
     url: location.origin + '/progetti/' + pr.id
+  });
+  window.aggiornaJsonLdProgetto({
+    nome: t(pr.titolo),
+    descrizione: t(pr.descrizione) || '',
+    immagine: pr.immagine_copertina,
+    url: location.origin + '/progetti/' + pr.id,
+    anno: (t(pr.anno).match(/\d{4}/) || [])[0]
   });
   const el = $('pagina-progetto');
   const interno = el.querySelector('.progetto-interno');
@@ -817,6 +825,7 @@ function chiudiProgetto() {
   }
   document.title = TITOLO_DEFAULT;
   window.aggiornaMetaSociale();
+  window.aggiornaJsonLdProgetto(null);
 }
 
 // ── Taccuino archivio ──
@@ -887,11 +896,19 @@ function apriTaccuino(idVoce) {
   if (voce) {
     const datiVoce = stato.taccuino.find(v => String(v.id) === String(idVoce));
     if (datiVoce) {
+      const testoPiano = t(datiVoce.testo).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
       window.aggiornaMetaSociale({
         titolo: `${tu('menu.taccuino')} — francescomartolini.art`,
-        descrizione: t(datiVoce.testo).replace(/<[^>]+>/g, ' ').trim(),
+        descrizione: testoPiano,
         immagine: datiVoce.foto || undefined,
         url: location.origin + '/taccuino/' + datiVoce.id
+      });
+      window.aggiornaJsonLdProgetto({
+        nome: testoPiano.length > 80 ? testoPiano.slice(0, 80) + '…' : testoPiano,
+        descrizione: testoPiano,
+        immagine: datiVoce.foto || undefined,
+        url: location.origin + '/taccuino/' + datiVoce.id,
+        anno: (datiVoce.data || '').slice(0, 4) || undefined
       });
     }
     setTimeout(() => {
@@ -910,6 +927,7 @@ function chiudiTaccuino() {
   chiudiOverlayFocus(el);
   document.title = TITOLO_DEFAULT;
   window.aggiornaMetaSociale();
+  window.aggiornaJsonLdProgetto(null);
 }
 
 // ── Nav mobile ──
