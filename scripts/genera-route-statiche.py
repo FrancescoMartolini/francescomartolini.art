@@ -91,7 +91,11 @@ def _sostituisci_meta(nome_o_proprieta, chiave, valore, html):
     valore = valore.replace('"', "&quot;")
     pattern = rf'(<meta {nome_o_proprieta}="{re.escape(chiave)}" content=")[^"]*(")'
     if re.search(pattern, html):
-        return re.sub(pattern, rf"\1{valore}\2", html)
+        # Usiamo una funzione di sostituzione (non una stringa rf"\1...\2") perché
+        # se valore contiene backslash (es. capita su Windows se un path finisce
+        # dentro l'URL) una stringa di sostituzione con backreference interpreta
+        # "\<lettera>" come escape non valido e re.sub solleva re.error.
+        return re.sub(pattern, lambda m: m.group(1) + valore + m.group(2), html)
     tag = f'  <meta {nome_o_proprieta}="{chiave}" content="{valore}">\n'
     return html.replace("</head>", tag + "</head>")
 
@@ -123,7 +127,12 @@ def _testo_it(campo, default=""):
 def crea_pagina(percorso_relativo, titolo, descrizione, immagine=None):
     cartella_dest = os.path.join(CARTELLA, percorso_relativo)
     os.makedirs(cartella_dest, exist_ok=True)
-    url = f"{DOMINIO}/{percorso_relativo}/"
+    # Gli URL usano sempre "/", indipendentemente dal sistema operativo.
+    # percorso_relativo può contenere os.sep (es. su Windows, se costruito con
+    # os.path.join("progetti", id) risulta "progetti\id"): per l'URL va
+    # normalizzato, altrimenti finisce un backslash dentro og:url.
+    percorso_url = percorso_relativo.replace(os.sep, "/")
+    url = f"{DOMINIO}/{percorso_url}/"
     html = html_personalizzato(titolo, descrizione, immagine, url)
     with open(os.path.join(cartella_dest, "index.html"), "w", encoding="utf-8") as f:
         f.write(html)
