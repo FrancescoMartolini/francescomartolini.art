@@ -1480,7 +1480,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 }
 
 /* overlay "note" — istruzioni di lettura */
-.overlay-titolo-nota { font-size: clamp(26px, 6vw, 36px); margin-bottom: 40px; font-style: italic; }
+.overlay-titolo-nota { font-size: clamp(26px, 6vw, 36px); margin-bottom: 40px; font-style: italic; text-align-last: center}
 .nota-testo { max-width: 420px; }
 .nota-testo p { font-size: 14px; font-weight: 300; line-height: 2; color: var(--grigio-testo); margin-bottom: 22px; text-align-last: center}
 
@@ -1490,11 +1490,6 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   color: var(--grigio-testo); margin-bottom: 40px; line-height: 1.8;
 }
 
-/* overlay "chi sono" nota contatti */
-.overlay-nota-contatti {
-  font-size: 12px; font-weight: 300; line-height: 1.7;
-  color: var(--grigio-testo); font-style: italic; margin-bottom: 16px;
-}
 .contatto-icon {
   width: 15px; height: 15px;
   stroke: currentColor; fill: none;
