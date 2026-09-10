@@ -16,6 +16,7 @@
 import { gestisciSubscribe, gestisciNotify } from './push.js';
 import { handleTelegramUpdate } from './telegram.js';
 import { gestisciVisita } from './visite.js';
+import { gestisciMostralo } from './mostralo.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -48,6 +49,10 @@ export default {
 
     if (request.method === 'POST' && url.pathname === '/visita') {
       return gestisciVisita(request, env, ctx);
+    }
+
+    if (request.method === 'POST' && url.pathname === '/mostralo') {
+      return gestisciMostralo(request, env, ctx);
     }
 
     if (url.pathname === '/telegram/webhook') {

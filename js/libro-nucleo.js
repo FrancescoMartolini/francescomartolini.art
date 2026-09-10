@@ -20,6 +20,7 @@ const stato = {
   collaborazioni: [],
   intro: {},
   playlist: {},
+  qchv: [],
   sliderIdx: 0
 };
 
@@ -178,6 +179,14 @@ function labelVolumiPlaylist() {
 // Identificatore riservato della card "PLAYLIST" dentro la lista Progetti
 const ID_CARD_PLAYLIST = '__playlist__';
 
+// Id del progetto "Quello che Hai Visto": vive in progetti.json come un
+// progetto vero (card, griglia, slider, URL /progetti/<id> — tutto
+// automatico), ma apriProgetto() lo intercetta e rende un contenuto
+// interamente dedicato invece dei blocchi contenuto[] standard (vedi
+// apriQuelloCheHaiVisto() in libro-routing.js), perché è un archivio che
+// cresce nel tempo, non un progetto a contenuto fisso.
+const ID_QCHV = 'quello-che-hai-visto';
+
 // Card sintetica: rappresenta l'intera collana PLAYLIST come un unico
 // elemento dentro "Progetti" (non è un progetto vero, apre l'archivio)
 function cardPlaylist() {
@@ -286,16 +295,17 @@ function parseCsv(csv) {
 
 // ── Carica dati ──
 async function caricaDati() {
-  const [progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi, playlist] = await Promise.all([
+  const [progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi, playlist, qchv] = await Promise.all([
     fetch('json/progetti.json').then(r => r.json()),
     fetch('json/intervalli.json').then(r => r.json()),
     fetch('json/collaborazioni.json').then(r => r.json()),
     fetch('json/intro.json').then(r => r.json()).catch(() => ({ testo: '' })),
     fetch('json/pubblicazioni.json').then(r => r.json()).catch(() => []),
     fetch('json/epiloghi.json').then(r => r.json()).catch(() => []),
-    fetch('json/playlist.json').then(r => r.json()).catch(() => ({}))
+    fetch('json/playlist.json').then(r => r.json()).catch(() => ({})),
+    fetch('json/quello-che-hai-visto.json').then(r => r.json()).catch(() => [])
   ]);
-  Object.assign(stato, { progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi, playlist });
+  Object.assign(stato, { progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi, playlist, qchv });
 
   // ── Google Sheets DISATTIVATO (vedi README, sezione TACCUINO) ──
   // Il taccuino ora si scrive solo su json/taccuino.json (a mano o via

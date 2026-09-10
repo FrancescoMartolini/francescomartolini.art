@@ -2488,3 +2488,226 @@ body.intro-attiva { overflow: hidden; }
     transition: none !important;
   }
 }
+
+/* ════════════════════════════════════════════════
+   "QUELLO CHE HAI VISTO" — archivio di sguardi
+   Vive dentro #pagina-progetto (vedi apriQuelloCheHaiVisto()
+   in js/libro-routing.js). Stessa struttura su mobile e desktop
+   (l'overlay progetto è già responsive di suo): qui regoliamo
+   solo la disposizione dell'archivio e dei pannelli.
+   ════════════════════════════════════════════════ */
+
+.qchv-pagina { min-height: 100%; position: relative; }
+
+/* ── Hero ── */
+.qchv-hero {
+  min-height: calc(100vh - 120px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 40px clamp(24px, 6vw, 72px);
+  transition: opacity 0.6s ease;
+}
+.qchv-hero--uscita { opacity: 0; pointer-events: none; }
+.qchv-hero-riga {
+  font-family: var(--font-titolo); font-weight: 400;
+  font-size: clamp(40px, 9vw, 108px); line-height: 0.98;
+  letter-spacing: 0.01em; text-transform: uppercase;
+}
+.qchv-hero-nota {
+  margin-top: 32px; font-size: 12px; font-weight: 300; line-height: 1.9;
+  letter-spacing: 0.04em; color: var(--grigio-testo);
+}
+.qchv-hero-invito {
+  margin-top: 56px; font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase;
+  border-bottom: 1px solid var(--grigio-medio); padding-bottom: 4px;
+  opacity: 0; animation: qchv-fade-in 1.4s ease 0.6s forwards;
+  transition: border-color var(--transizione), color var(--transizione);
+}
+.qchv-hero-invito:hover { color: var(--pr-accent, var(--nero)); border-color: currentColor; }
+@keyframes qchv-fade-in { to { opacity: 1; } }
+
+/* ── Archivio: muro di frammenti ── */
+.qchv-archivio { opacity: 0; transition: opacity 0.8s ease; padding: 0 clamp(16px, 5vw, 60px) 120px; }
+.qchv-archivio--visibile { opacity: 1; }
+
+.qchv-griglia {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(10px, 2vw, 28px);
+  max-width: 1400px; margin: 0 auto; padding-top: 40px;
+}
+.qchv-griglia-vuota {
+  grid-column: 1 / -1; text-align: center; padding: 80px 20px;
+  font-size: 13px; color: var(--grigio-medio); line-height: 2;
+}
+
+.qchv-frammento { position: relative; cursor: pointer; }
+.qchv-frammento-img { overflow: hidden; }
+.qchv-frammento-img img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.qchv-frammento:hover .qchv-frammento-img img { transform: scale(1.035); }
+
+/* asimmetria progettata, non casuale: alterna posizione, dimensione, offset */
+.qchv-frammento--a { grid-column: span 2; grid-row: span 2; }
+.qchv-frammento--a .qchv-frammento-img { aspect-ratio: 1 / 1; }
+.qchv-frammento--b { grid-column: span 2; margin-top: 10%; }
+.qchv-frammento--b .qchv-frammento-img { aspect-ratio: 4 / 5; }
+.qchv-frammento--c { grid-column: span 1; }
+.qchv-frammento--c .qchv-frammento-img { aspect-ratio: 3 / 4; }
+.qchv-frammento--d { grid-column: span 1; margin-top: 16%; }
+.qchv-frammento--d .qchv-frammento-img { aspect-ratio: 3 / 4; }
+.qchv-frammento--e { grid-column: span 2; }
+.qchv-frammento--e .qchv-frammento-img { aspect-ratio: 16 / 10; }
+
+.qchv-frammento-meta {
+  position: absolute; left: 10px; bottom: 10px; display: flex; gap: 8px;
+  font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--bianco);
+  opacity: 0; transition: opacity var(--transizione);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.55);
+}
+@media (hover: hover) {
+  .qchv-frammento:hover .qchv-frammento-meta { opacity: 1; }
+}
+
+.qchv-cta { max-width: 560px; margin: 140px auto 0; text-align: center; }
+.qchv-cta-titolo { font-family: var(--font-titolo); font-size: clamp(24px, 3.5vw, 36px); font-weight: 400; }
+.qchv-cta-sottotitolo { margin-top: 12px; font-size: 13px; color: var(--grigio-testo); font-weight: 300; }
+.qchv-cta-btn {
+  margin-top: 32px; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+  border-bottom: 1px solid var(--grigio-medio); padding-bottom: 4px;
+  transition: border-color var(--transizione), color var(--transizione);
+}
+.qchv-cta-btn:hover { color: var(--pr-accent, var(--nero)); border-color: currentColor; }
+
+/* ── Dettaglio contributo ── */
+.qchv-dettaglio {
+  position: fixed; inset: 0; z-index: 10; background: var(--nero); color: var(--bianco);
+  opacity: 0; pointer-events: none; transition: opacity 0.4s ease; overflow-y: auto;
+}
+.qchv-dettaglio--aperto { opacity: 1; pointer-events: all; }
+.qchv-dettaglio-chiudi {
+  position: fixed; top: 20px; right: clamp(20px, 4vw, 48px); z-index: 2;
+  font-size: 28px; font-weight: 300; line-height: 1; color: var(--bianco);
+}
+.qchv-dettaglio-corpo {
+  min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 32px; padding: 80px clamp(20px, 6vw, 60px) 60px;
+}
+.qchv-dettaglio-corpo img { max-width: min(680px, 88vw); max-height: 62vh; object-fit: contain; }
+.qchv-dettaglio-testo { max-width: 480px; text-align: center; }
+.qchv-dettaglio-eyebrow { font-size: 10px; letter-spacing: 0.24em; color: var(--grigio-medio); margin-bottom: 16px; }
+.qchv-dettaglio-luogo { font-size: 13px; letter-spacing: 0.05em; }
+.qchv-dettaglio-autore { margin-top: 6px; font-size: 13px; color: var(--grigio-medio); }
+.qchv-dettaglio-citazione { margin-top: 20px; font-family: var(--font-titolo); font-style: italic; font-size: 17px; line-height: 1.6; }
+.qchv-dettaglio-nav { display: flex; gap: 28px; margin-top: 8px; }
+.qchv-dettaglio-nav button {
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bianco);
+}
+.qchv-dettaglio-nav button:disabled { opacity: 0.25; cursor: default; }
+
+@media (min-width: 900px) {
+  .qchv-dettaglio-corpo { flex-direction: row; align-items: center; gap: 72px; }
+  .qchv-dettaglio-corpo img { max-height: 78vh; }
+  .qchv-dettaglio-testo { text-align: left; }
+  .qchv-dettaglio-nav { justify-content: flex-start; }
+}
+
+/* ── Form "Mostralo" ── */
+.qchv-form-overlay {
+  position: fixed; inset: 0; z-index: 10; background: var(--bianco); color: var(--nero);
+  opacity: 0; pointer-events: none; transition: opacity 0.4s ease; overflow-y: auto;
+}
+.qchv-form-overlay--aperto { opacity: 1; pointer-events: all; }
+.qchv-form-chiudi {
+  position: fixed; top: 20px; right: clamp(20px, 4vw, 48px); z-index: 2;
+  font-size: 28px; font-weight: 300; line-height: 1;
+}
+.qchv-form-corpo { max-width: 480px; margin: 0 auto; padding: 100px clamp(20px, 6vw, 40px) 100px; }
+.qchv-form-intro {
+  font-family: var(--font-titolo); font-style: italic; font-size: clamp(18px, 2.4vw, 22px);
+  line-height: 1.6; margin-bottom: 48px; text-align: center;
+}
+.qchv-form-sezione {
+  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--grigio-medio);
+  margin: 36px 0 16px;
+}
+.qchv-form-sezione:first-of-type { margin-top: 0; }
+.qchv-campo { display: block; margin-bottom: 20px; }
+.qchv-campo span { display: block; font-size: 11px; color: var(--grigio-testo); margin-bottom: 6px; }
+.qchv-campo input, .qchv-campo textarea {
+  width: 100%; border: none; border-bottom: 1px solid var(--grigio-chiaro);
+  background: transparent; font: inherit; font-size: 14px; color: var(--nero);
+  padding: 6px 0; transition: border-color var(--transizione);
+}
+.qchv-campo input:focus, .qchv-campo textarea:focus { outline: none; border-color: var(--nero); }
+.qchv-campo textarea { resize: vertical; line-height: 1.6; }
+
+.qchv-campo-file {
+  display: inline-flex; margin-top: 4px; margin-bottom: 12px; cursor: pointer;
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  border-bottom: 1px solid var(--grigio-medio); padding-bottom: 4px;
+}
+.qchv-campo-file input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
+.qchv-form-foto-nota { font-size: 11px; color: var(--grigio-medio); margin-bottom: 4px; }
+.qchv-anteprime { display: flex; gap: 10px; margin-bottom: 20px; }
+.qchv-anteprima-img { width: 72px; height: 72px; object-fit: cover; }
+
+.qchv-honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.qchv-consenso { display: flex; gap: 10px; align-items: flex-start; margin: 32px 0 24px; }
+.qchv-consenso input { margin-top: 3px; }
+.qchv-consenso span { font-size: 11px; line-height: 1.7; color: var(--grigio-testo); }
+
+.qchv-form-errore { font-size: 12px; color: #a13c30; margin-bottom: 16px; }
+
+.qchv-form-invia {
+  width: 100%; padding: 16px; text-align: center; background: var(--nero); color: var(--bianco);
+  font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+  transition: opacity var(--transizione);
+}
+.qchv-form-invia:hover { opacity: 0.85; }
+.qchv-form-invia:disabled { opacity: 0.5; cursor: default; }
+
+/* ── Conferma ── */
+.qchv-conferma {
+  position: fixed; inset: 0; z-index: 10; background: var(--nero); color: var(--bianco);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
+}
+.qchv-conferma--visibile { opacity: 1; pointer-events: all; }
+.qchv-conferma-titolo { font-family: var(--font-titolo); font-size: clamp(32px, 6vw, 56px); }
+.qchv-conferma-testo { margin-top: 16px; font-size: 14px; color: var(--grigio-medio); }
+.qchv-conferma-torna {
+  margin-top: 48px; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+  border-bottom: 1px solid var(--grigio-medio); padding-bottom: 4px;
+}
+.qchv-conferma-torna:hover { border-color: var(--bianco); }
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .qchv-hero { min-height: calc(100vh - 80px); }
+  .qchv-griglia { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .qchv-frammento--a { grid-column: span 2; grid-row: span 1; }
+  .qchv-frammento--a .qchv-frammento-img { aspect-ratio: 4 / 5; }
+  .qchv-frammento--b,
+  .qchv-frammento--e { grid-column: span 2; margin-top: 0; }
+  .qchv-frammento--c .qchv-frammento-img,
+  .qchv-frammento--d .qchv-frammento-img { aspect-ratio: 3 / 4; }
+  .qchv-frammento--d { margin-top: 0; }
+  /* niente hover sul touch: la didascalia resta leggibile ma discreta */
+  .qchv-frammento-meta { opacity: 1; font-size: 9px; }
+  .qchv-dettaglio-corpo img { max-height: 52vh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qchv-hero, .qchv-dettaglio, .qchv-form-overlay, .qchv-conferma,
+  .qchv-frammento-img img, .qchv-frammento-meta {
+    transition: none !important; animation: none !important;
+  }
+  /* Solo per gli elementi che partono nascosti via opacity:0 e non hanno
+     un'alternativa (hidden/classe) a coprirli: qui è sicuro forzare la
+     visibilità immediata perché il loro stato "chiuso" non dipende
+     dall'opacity ma da altri meccanismi (hidden, pointer-events). */
+  .qchv-archivio, .qchv-hero-invito {
+    transition: none !important; animation: none !important; opacity: 1 !important;
+  }
+}

@@ -31,6 +31,42 @@ export async function sendTelegramMessage(chatId, text, env, keyboard = null) {
   }
 }
 
+// Invia fino a 10 file immagine (oggetti File/Blob, non URL) come un unico
+// messaggio con più foto — usato per inoltrare gli allegati di un form
+// pubblico (es. "Quello che Hai Visto") senza passare da uno storage
+// esterno: le foto arrivano direttamente in chat, pronte da scaricare.
+// La didascalia (HTML) va sulla prima foto del gruppo.
+export async function sendTelegramMediaGroup(chatId, files, captionHtml, env) {
+  if (!files || !files.length) return false;
+
+  var url = 'https://api.telegram.org/bot' + env.TELEGRAM_BOT_TOKEN + '/sendMediaGroup';
+  var form = new FormData();
+  form.append('chat_id', String(chatId));
+
+  var media = files.map(function (file, i) {
+    var nomeCampo = 'foto' + i;
+    form.append(nomeCampo, file, file.name || (nomeCampo + '.jpg'));
+    var voce = { type: 'photo', media: 'attach://' + nomeCampo };
+    if (i === 0 && captionHtml) {
+      voce.caption = captionHtml;
+      voce.parse_mode = 'HTML';
+    }
+    return voce;
+  });
+  form.append('media', JSON.stringify(media));
+
+  try {
+    var risposta = await fetch(url, { method: 'POST', body: form });
+    if (!risposta.ok) {
+      console.error('sendTelegramMediaGroup fallita: HTTP ' + risposta.status);
+    }
+    return risposta.ok;
+  } catch (e) {
+    console.error('sendTelegramMediaGroup — errore di rete:', e);
+    return false;
+  }
+}
+
 export function sendKeyboard(chatId, text, buttons, env) {
   var keyboard = { inline_keyboard: buttons };
   return sendTelegramMessage(chatId, text, env, keyboard);

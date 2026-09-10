@@ -520,6 +520,7 @@ function apriArchivioPlaylist() {
 
 function apriProgetto(id) {
   if (id === ID_CARD_PLAYLIST) { apriArchivioPlaylist(); return; }
+  if (id === ID_QCHV) { apriQuelloCheHaiVisto(); return; }
   const pr = stato.progetti.find(p => p.id === id);
   if (!pr || pr.pubblicato === false) return;
 
@@ -835,6 +836,361 @@ function chiudiProgetto() {
   document.title = TITOLO_DEFAULT;
   window.aggiornaMetaSociale();
   window.aggiornaJsonLdProgetto(null);
+}
+
+// ════════════════════════════════
+// "QUELLO CHE HAI VISTO" — archivio di sguardi
+// Vive dentro #pagina-progetto come un progetto qualunque (vedi
+// apriProgetto/ID_QCHV in libro-nucleo.js) ma con rendering interamente
+// dedicato: hero tipografico → archivio di frammenti (json/quello-che-
+// hai-visto.json) → dettaglio contributo → invito a partecipare → form
+// "Mostralo" → conferma. Nessun URL profondo per singolo contributo in
+// questa versione (V1): si naviga solo dentro l'overlay del progetto.
+// ════════════════════════════════
+
+const QCHV_ENDPOINT = '/mostralo';
+const QCHV_MAX_FOTO = 3;
+const QCHV_MAX_MB = 8;
+
+let _qchvContributoIdx = -1;
+let _qchvFotoIdx = 0;
+let _qchvUltimoFocus = null;
+
+function apriQuelloCheHaiVisto() {
+  const pr = stato.progetti.find(p => p.id === ID_QCHV) || { titolo: 'Quello che Hai Visto', descrizione: '' };
+
+  document.title = `${t(pr.titolo)} — francescomartolini.art`;
+  window.aggiornaMetaSociale({
+    titolo: `${t(pr.titolo)} — francescomartolini.art`,
+    descrizione: t(pr.descrizione) || '',
+    immagine: pr.immagine_copertina,
+    url: location.origin + '/progetti/' + ID_QCHV
+  });
+  window.aggiornaJsonLdProgetto({
+    nome: t(pr.titolo),
+    descrizione: t(pr.descrizione) || '',
+    immagine: pr.immagine_copertina,
+    url: location.origin + '/progetti/' + ID_QCHV
+  });
+
+  const el = $('pagina-progetto');
+  const interno = el.querySelector('.progetto-interno');
+  el.style.removeProperty('--pr-bg');
+  el.style.removeProperty('--pr-text');
+  el.style.removeProperty('--pr-accent');
+
+  interno.innerHTML = `
+    <button class="progetto-torna" onclick="chiudiProgetto()">${tu('common.torna')}</button>
+    <div class="qchv-pagina" id="qchv-pagina">
+
+      <section class="qchv-hero" id="qchv-hero">
+        <p class="qchv-hero-riga">${tu('qchv.heroRigo1')}</p>
+        <p class="qchv-hero-riga">${tu('qchv.heroRigo2')}</p>
+        <p class="qchv-hero-riga">${tu('qchv.heroRigo3')}</p>
+        <p class="qchv-hero-nota">${tu('qchv.heroNota')}</p>
+        <button type="button" class="qchv-hero-invito" id="qchv-btn-invito">${tu('qchv.heroInvito')}</button>
+      </section>
+
+      <section class="qchv-archivio" id="qchv-archivio" hidden>
+        <div class="qchv-griglia" id="qchv-griglia"></div>
+        <div class="qchv-cta">
+          <h2 class="qchv-cta-titolo">${tu('qchv.invitoTitolo')}</h2>
+          <p class="qchv-cta-sottotitolo">${tu('qchv.invitoSottotitolo')}</p>
+          <button type="button" class="qchv-cta-btn" id="qchv-btn-form">${tu('qchv.mostralo')}</button>
+        </div>
+      </section>
+
+      <div class="qchv-dettaglio" id="qchv-dettaglio" aria-hidden="true">
+        <button type="button" class="qchv-dettaglio-chiudi" id="qchv-dettaglio-chiudi" aria-label="${tu('qchv.chiudi')}">×</button>
+        <div class="qchv-dettaglio-corpo" id="qchv-dettaglio-corpo"></div>
+      </div>
+
+      <div class="qchv-form-overlay" id="qchv-form-overlay" aria-hidden="true">
+        <button type="button" class="qchv-form-chiudi" id="qchv-form-chiudi" aria-label="${tu('qchv.chiudi')}">×</button>
+        <div class="qchv-form-corpo">
+          <p class="qchv-form-intro">${tu('qchv.formIntro')}</p>
+          <form id="qchv-form" novalidate>
+            <p class="qchv-form-sezione">${tu('qchv.formChiSezione')}</p>
+            <label class="qchv-campo">
+              <span>${tu('qchv.formNome')}</span>
+              <input type="text" name="nome" required maxlength="80">
+            </label>
+            <label class="qchv-campo">
+              <span>${tu('qchv.formInstagram')}</span>
+              <input type="text" name="instagram" maxlength="80">
+            </label>
+            <label class="qchv-campo">
+              <span>${tu('qchv.formEmail')}</span>
+              <input type="email" name="email" required maxlength="200">
+            </label>
+
+            <p class="qchv-form-sezione">${tu('qchv.formDoveSezione')}</p>
+            <label class="qchv-campo">
+              <span>${tu('qchv.formLuogo')}</span>
+              <input type="text" name="luogo" required maxlength="80">
+            </label>
+            <label class="qchv-campo">
+              <span>${tu('qchv.formAnno')}</span>
+              <input type="text" name="anno" required inputmode="numeric" pattern="[0-9]{4}" maxlength="4">
+            </label>
+
+            <p class="qchv-form-sezione">${tu('qchv.formCosaSezione')}</p>
+            <label class="qchv-campo">
+              <textarea name="testo" required maxlength="500" rows="4" placeholder="${tu('qchv.formCosaPlaceholder')}"></textarea>
+            </label>
+
+            <p class="qchv-form-sezione">${tu('qchv.formFotoSezione')}</p>
+            <p class="qchv-form-foto-nota">${tu('qchv.formFotoNota')}</p>
+            <label class="qchv-campo-file" id="qchv-campo-file">
+              <input type="file" name="foto" accept="image/png,image/jpeg,image/webp" multiple id="qchv-input-file">
+              <span id="qchv-input-file-label">${tu('qchv.formFotoAggiungi')}</span>
+            </label>
+            <div class="qchv-anteprime" id="qchv-anteprime"></div>
+
+            <!-- honeypot anti-spam: invisibile agli utenti reali, mai valorizzato -->
+            <label class="qchv-honeypot" aria-hidden="true">
+              Sito web
+              <input type="text" name="sito_web" tabindex="-1" autocomplete="off">
+            </label>
+
+            <label class="qchv-consenso">
+              <input type="checkbox" name="consenso" required>
+              <span>${tu('qchv.formConsenso')}</span>
+            </label>
+
+            <p class="qchv-form-errore" id="qchv-form-errore" hidden></p>
+
+            <button type="submit" class="qchv-form-invia" id="qchv-form-invia">${tu('qchv.formInvia')}</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="qchv-conferma" id="qchv-conferma" aria-hidden="true">
+        <h2 class="qchv-conferma-titolo">${tu('qchv.confermaTitolo')}</h2>
+        <p class="qchv-conferma-testo">${tu('qchv.confermaTesto')}</p>
+        <button type="button" class="qchv-conferma-torna" id="qchv-conferma-torna">${tu('qchv.confermaTorna')}</button>
+      </div>
+
+    </div>`;
+
+  el.classList.add('aperta');
+  el.scrollTop = 0;
+  apriOverlayFocus(el, el.querySelector('.progetto-torna'));
+
+  popolaGrigliaQCHV();
+  avviaInterazioniQCHV(el);
+}
+
+function popolaGrigliaQCHV() {
+  const griglia = $('qchv-griglia');
+  griglia.innerHTML = '';
+  const contributi = stato.qchv || [];
+
+  if (!contributi.length) {
+    griglia.innerHTML = `<p class="qchv-griglia-vuota">${tu('qchv.archivioVuoto')}</p>`;
+    return;
+  }
+
+  contributi.forEach((c, i) => {
+    const frammento = crea('div');
+    frammento.className = 'qchv-frammento qchv-frammento--' + String.fromCharCode(97 + (i % 5));
+    frammento.setAttribute('role', 'button');
+    frammento.setAttribute('tabindex', '0');
+    const primaFoto = (c.images && c.images[0]) || '';
+    const alt = `${tu('qchv.vistoDa')} ${escapeAttr(c.author || '')}`;
+    const wrap = crea('div'); wrap.className = 'qchv-frammento-img';
+    wrap.appendChild(creaImg(primaFoto, alt, false, '(max-width:900px) 50vw, 25vw'));
+    frammento.appendChild(wrap);
+
+    const meta = crea('div'); meta.className = 'qchv-frammento-meta';
+    meta.innerHTML = `<span>${escapeAttr(c.location || '')}</span><span>${escapeAttr(c.year || '')}</span>`;
+    frammento.appendChild(meta);
+
+    const apri = () => apriDettaglioQCHV(i);
+    frammento.addEventListener('click', apri);
+    frammento.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); apri(); } });
+
+    griglia.appendChild(frammento);
+  });
+}
+
+function avviaInterazioniQCHV(overlayEl) {
+  // Hero → rivela l'archivio (una tantum, animazione lenta e non ripetuta)
+  const btnInvito = $('qchv-btn-invito');
+  btnInvito.addEventListener('click', () => {
+    $('qchv-hero').classList.add('qchv-hero--uscita');
+    const archivio = $('qchv-archivio');
+    archivio.hidden = false;
+    requestAnimationFrame(() => archivio.classList.add('qchv-archivio--visibile'));
+    setTimeout(() => { $('qchv-hero').hidden = true; }, 500);
+  });
+
+  // Dettaglio contributo
+  $('qchv-dettaglio-chiudi').addEventListener('click', chiudiDettaglioQCHV);
+  overlayEl.removeEventListener('keydown', escQCHV); // evita accumulo tra aperture ripetute
+  overlayEl.addEventListener('keydown', escQCHV);
+
+  // Form
+  $('qchv-btn-form').addEventListener('click', apriFormQCHV);
+  $('qchv-form-chiudi').addEventListener('click', chiudiFormQCHV);
+  $('qchv-form').addEventListener('submit', inviaFormQCHV);
+  $('qchv-input-file').addEventListener('change', anteprimaFotoQCHV);
+  $('qchv-conferma-torna').addEventListener('click', () => {
+    $('qchv-conferma').classList.remove('qchv-conferma--visibile');
+    $('qchv-conferma').setAttribute('aria-hidden', 'true');
+  });
+}
+
+function escQCHV(e) {
+  if (e.key !== 'Escape') return;
+  if ($('qchv-dettaglio').classList.contains('qchv-dettaglio--aperto')) chiudiDettaglioQCHV();
+  else if ($('qchv-form-overlay').classList.contains('qchv-form-overlay--aperto')) chiudiFormQCHV();
+}
+
+// ── Dettaglio di un contributo (fino a 3 foto, navigazione interna) ──
+function apriDettaglioQCHV(i) {
+  const c = (stato.qchv || [])[i];
+  if (!c) return;
+  _qchvContributoIdx = i;
+  _qchvFotoIdx = 0;
+  _qchvUltimoFocus = document.activeElement;
+  renderDettaglioQCHV();
+  const el = $('qchv-dettaglio');
+  el.classList.add('qchv-dettaglio--aperto');
+  el.setAttribute('aria-hidden', 'false');
+  el.querySelector('.qchv-dettaglio-chiudi').focus();
+}
+
+function renderDettaglioQCHV() {
+  const c = (stato.qchv || [])[_qchvContributoIdx];
+  if (!c) return;
+  const foto = (c.images && c.images.length) ? c.images : [''];
+  if (_qchvFotoIdx >= foto.length) _qchvFotoIdx = foto.length - 1;
+  if (_qchvFotoIdx < 0) _qchvFotoIdx = 0;
+
+  const corpo = $('qchv-dettaglio-corpo');
+  corpo.innerHTML = '';
+  corpo.appendChild(creaImg(foto[_qchvFotoIdx], `${tu('qchv.vistoDa')} ${escapeAttr(c.author || '')}`, true));
+
+  const testo = crea('div'); testo.className = 'qchv-dettaglio-testo';
+  testo.innerHTML = `
+    <p class="qchv-dettaglio-eyebrow">${tu('qchv.eyebrow')}</p>
+    <p class="qchv-dettaglio-luogo">${escapeAttr(c.location || '')}${c.year ? ', ' + escapeAttr(c.year) : ''}</p>
+    <p class="qchv-dettaglio-autore">${escapeAttr(c.author || '')}</p>
+    ${c.text ? `<p class="qchv-dettaglio-citazione">“${escapeAttr(c.text)}”</p>` : ''}
+  `;
+  corpo.appendChild(testo);
+
+  if (foto.length > 1) {
+    const nav = crea('div'); nav.className = 'qchv-dettaglio-nav';
+    const prec = crea('button'); prec.type = 'button'; prec.className = 'qchv-dettaglio-prec';
+    prec.textContent = tu('qchv.precedente'); prec.disabled = _qchvFotoIdx === 0;
+    prec.addEventListener('click', () => { _qchvFotoIdx--; renderDettaglioQCHV(); });
+    const succ = crea('button'); succ.type = 'button'; succ.className = 'qchv-dettaglio-succ';
+    succ.textContent = tu('qchv.successiva'); succ.disabled = _qchvFotoIdx === foto.length - 1;
+    succ.addEventListener('click', () => { _qchvFotoIdx++; renderDettaglioQCHV(); });
+    nav.appendChild(prec); nav.appendChild(succ);
+    corpo.appendChild(nav);
+  }
+}
+
+function chiudiDettaglioQCHV() {
+  const el = $('qchv-dettaglio');
+  el.classList.remove('qchv-dettaglio--aperto');
+  el.setAttribute('aria-hidden', 'true');
+  if (_qchvUltimoFocus && document.contains(_qchvUltimoFocus)) _qchvUltimoFocus.focus();
+}
+
+// ── Form "Mostralo" ──
+function apriFormQCHV() {
+  _qchvUltimoFocus = document.activeElement;
+  const el = $('qchv-form-overlay');
+  el.classList.add('qchv-form-overlay--aperto');
+  el.setAttribute('aria-hidden', 'false');
+  el.querySelector('.qchv-form-chiudi').focus();
+}
+
+function chiudiFormQCHV() {
+  const el = $('qchv-form-overlay');
+  el.classList.remove('qchv-form-overlay--aperto');
+  el.setAttribute('aria-hidden', 'true');
+  if (_qchvUltimoFocus && document.contains(_qchvUltimoFocus)) _qchvUltimoFocus.focus();
+}
+
+function anteprimaFotoQCHV() {
+  const input = $('qchv-input-file');
+  const anteprime = $('qchv-anteprime');
+  const errore = $('qchv-form-errore');
+  anteprime.innerHTML = '';
+  errore.hidden = true;
+
+  let file = Array.from(input.files || []);
+  if (file.length > QCHV_MAX_FOTO) {
+    errore.textContent = tu('qchv.formErroreFoto');
+    errore.hidden = false;
+    file = file.slice(0, QCHV_MAX_FOTO);
+  }
+  const troppoGrande = file.some(f => f.size > QCHV_MAX_MB * 1024 * 1024);
+  if (troppoGrande) {
+    errore.textContent = tu('qchv.formErroreFoto');
+    errore.hidden = false;
+  }
+
+  file.forEach(f => {
+    const img = crea('img'); img.className = 'qchv-anteprima-img';
+    img.src = URL.createObjectURL(f);
+    img.alt = '';
+    anteprime.appendChild(img);
+  });
+}
+
+async function inviaFormQCHV(e) {
+  e.preventDefault();
+  const form = $('qchv-form');
+  const errore = $('qchv-form-errore');
+  const bottone = $('qchv-form-invia');
+  errore.hidden = true;
+
+  if (!form.checkValidity()) {
+    errore.textContent = tu('qchv.formErroreCampi');
+    errore.hidden = false;
+    form.reportValidity();
+    return;
+  }
+
+  const fileInput = $('qchv-input-file');
+  const file = Array.from(fileInput.files || []);
+  if (file.length > QCHV_MAX_FOTO || file.some(f => f.size > QCHV_MAX_MB * 1024 * 1024)) {
+    errore.textContent = tu('qchv.formErroreFoto');
+    errore.hidden = false;
+    return;
+  }
+
+  const dati = new FormData(form);
+  // Il campo honeypot ("sito_web") viaggia col resto: se valorizzato, il
+  // Worker scarta silenziosamente la richiesta (vedi worker/mostralo.js).
+
+  bottone.disabled = true;
+  const testoOriginale = bottone.textContent;
+  bottone.textContent = tu('qchv.formInvio');
+
+  try {
+    const risposta = await fetch(QCHV_ENDPOINT, { method: 'POST', body: dati });
+    if (!risposta.ok) throw new Error('HTTP ' + risposta.status);
+
+    form.reset();
+    $('qchv-anteprime').innerHTML = '';
+    chiudiFormQCHV();
+    const conferma = $('qchv-conferma');
+    conferma.classList.add('qchv-conferma--visibile');
+    conferma.setAttribute('aria-hidden', 'false');
+  } catch (err) {
+    errore.textContent = tu('qchv.formErroreGenerico');
+    errore.hidden = false;
+  } finally {
+    bottone.disabled = false;
+    bottone.textContent = testoOriginale;
+  }
 }
 
 // ── Taccuino archivio ──
