@@ -408,14 +408,10 @@
     "titolo": "Quello che Hai Visto",
     "anno": "",
     "descrizione": {
-      "it": "Una fotocamera passa di mano in mano. Ogni persona racconta il proprio mondo, un'immagine alla volta.",
-      "en": "A camera passes from hand to hand. Each person tells their story, one image at a time."
+      "it": "Tre fotografie, uno sguardo, un luogo. Quello che hai visto racconta il tempo attraverso gli occhi di qualcun altro.",
+      "en": "Three photographs, one perspective, a place. What You Saw tells time through someone else’s eyes."
     },
-    "testo_lungo": "",
-    "testo_lungo_bozza": {
-      "it": "",
-      "en": ""
-      },
+    "testo_lungo_bozza": "",
     "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/v1785776062/Quellochehaivisto-COVER_ntf7ba.jpg",
     "galleria": [],
     "pubblicato": false,
@@ -423,8 +419,8 @@
       {
         "tipo": "testo",
         "valore": {
-          "it":"",
-          "en":""
+          "it": "Un punto di vista fuori dalla mia testa, che però continua a parlare di tempo e di luoghi.\n\nQuello che hai visto nasce da una domanda semplice: cosa rimane di un luogo quando lo si guarda attraverso gli occhi di qualcun altro?\n\nChiedo a una persona di scegliere tre fotografie. Tre immagini che, per un motivo preciso, ha deciso di conservare. Poi le chiedo di raccontarmi perché le ha scelte, cosa rappresentano per lei e, soprattutto, in che modo raccontano il tempo.\n\nNon cerco necessariamente una storia. Cerco uno sguardo.\n\nAttraverso quelle tre fotografie provo a entrare nel modo in cui un'altra persona osserva, ricorda e attraversa un luogo. E può succedere che quel luogo sia uno spazio in cui sono passato anch'io, ma che attraverso i suoi occhi diventa improvvisamente un posto diverso.\n\nQuello che hai visto è quindi una raccolta di sguardi, luoghi e frammenti di tempo. Un modo per raccontare ciò che conosco attraverso ciò che hanno visto gli altri.",
+          "en": "A point of view outside my own head, yet still speaking about time and places.\n\nWhat You Saw begins with a simple question: what remains of a place when you see it through someone else’s eyes?\n\nI ask someone to choose three photographs. Three images they decided, for a specific reason, to keep. Then I ask them to tell me why they chose them, what they represent to them and, above all, how they speak about time.\n\nI’m not necessarily looking for a story. I’m looking for a point of view.\n\nThrough those three photographs, I try to enter the way another person observes, remembers and moves through a place. And sometimes that place is somewhere I have passed through myself, yet through their eyes it suddenly becomes somewhere else.\n\nWhat You Saw is a collection of perspectives, places and fragments of time. A way of telling what I know through what others have seen."
         }
       }
     ]
