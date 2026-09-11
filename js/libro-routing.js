@@ -856,6 +856,18 @@ let _qchvContributoIdx = -1;
 let _qchvFotoIdx = 0;
 let _qchvUltimoFocus = null;
 
+// Scorciatoia dal footer/fin: per chi arriva già sapendo di voler
+// partecipare, salta la cerimonia dell'hero e va dritto al form. Riusa la
+// stessa transizione "Mostramelo" (click simulato) invece di duplicarne
+// la logica.
+function vaiAMostraloQCHV() {
+  apriQuelloCheHaiVisto();
+  requestAnimationFrame(() => {
+    $('qchv-btn-invito')?.click();
+    setTimeout(apriFormQCHV, 550);
+  });
+}
+
 function apriQuelloCheHaiVisto() {
   const pr = stato.progetti.find(p => p.id === ID_QCHV) || { titolo: 'Quello che Hai Visto', descrizione: '' };
 

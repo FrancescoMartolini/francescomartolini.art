@@ -119,6 +119,24 @@ function inizializzaFin() {
   }
 }
 
+// Bottone "Mostra il tuo sguardo" nel footer (desktop) e in fondo al libro
+// (mobile, pagina "fin."): resta nascosto finché il progetto "Quello che
+// Hai Visto" non è pubblicato, per non linkare a una pagina non ancora
+// raggiungibile. Il click salta dritto al form — vedi vaiAMostraloQCHV()
+// in libro-routing.js.
+function avviaFooterQCHV() {
+  const pr = stato.progetti.find(p => p.id === ID_QCHV);
+  if (!progettoPubblicato(pr)) return;
+
+  const etichetta = tu('qchv.footerCta');
+  [$('footer-qchv-btn'), $('fin-qchv-btn')].forEach(btn => {
+    if (!btn) return;
+    btn.textContent = etichetta;
+    btn.hidden = false;
+    btn.addEventListener('click', () => vaiAMostraloQCHV());
+  });
+}
+
 const $ = id => document.getElementById(id);
 const crea = tag => document.createElement(tag);
 const isMobile = () => window.innerWidth <= 768;

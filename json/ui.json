@@ -79,7 +79,8 @@
     "confermaTitolo": { "it": "ARRIVATO.", "en": "ARRIVED." },
     "confermaTesto": { "it": "Ora tocca a me guardare.", "en": "Now it's my turn to look." },
     "confermaTorna": { "it": "Torna all'archivio", "en": "Back to the archive" },
-    "chiudi": { "it": "Chiudi", "en": "Close" }
+    "chiudi": { "it": "Chiudi", "en": "Close" },
+    "footerCta": { "it": "Mostra il tuo sguardo", "en": "Show what you saw" }
   },
   "chiSono": {
     "titolo": { "it": "Chi sono", "en": "About" },

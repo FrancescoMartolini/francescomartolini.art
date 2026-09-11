@@ -64,6 +64,7 @@ async function init() {
   avviaCursore();
   lightbox.init();
   inizializzaFin();
+  avviaFooterQCHV();
 
   // Link diretto a una pagina precisa (es. condivisa via messaggio): apri
   // subito quella. replaceState (non pushState) così il tasto "indietro"
