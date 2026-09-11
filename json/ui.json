@@ -166,7 +166,7 @@
     "tuttiProgetti": { "it": "Tutti i progetti", "en": "All projects" },
     "inLavorazione": { "it": "In lavorazione", "en": "Work in progress" },
     "note": {
-      "titolo": { "it": "Note", "en": "Notes" },
+      "titolo": { "it": "Come si usa il sito", "en": "How to use the site" },
       "p1": { "it": "Questo sito si legge come un libro.", "en": "This site reads like a book." },
       "p2": { "it": "Tocca il lato destro della pagina per proseguire, il lato sinistro per tornare indietro. Puoi anche scorrere con il dito, come si sfoglia una pagina.", "en": "Tap the right side of the page to move forward, the left side to go back. You can also swipe with your finger, as if turning a page." },
       "p3": { "it": "Il punto sul bordo destro segna la posizione nel libro: trascinalo per muoverti più rapidamente tra le pagine.", "en": "The dot on the right edge marks your position in the book: drag it to move more quickly between pages." }
