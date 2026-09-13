@@ -1480,7 +1480,7 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
 }
 
 /* overlay "note" — istruzioni di lettura */
-.overlay-titolo-nota { font-size: clamp(26px, 6vw, 36px); margin-bottom: 40px; font-style: italic; text-align-last: center}
+.overlay-titolo-nota { font-size: clamp(26px, 6vw, 36px); margin-bottom: 40px; font-style: italic; }
 .nota-testo { max-width: 420px; }
 .nota-testo p { font-size: 14px; font-weight: 300; line-height: 2; color: var(--grigio-testo); margin-bottom: 22px; text-align-last: center}
 
@@ -1490,6 +1490,11 @@ body.tema-scuro .slider-arrow:hover { color: var(--progetti-fg); border-color: r
   color: var(--grigio-testo); margin-bottom: 40px; line-height: 1.8;
 }
 
+/* overlay "chi sono" nota contatti */
+.overlay-nota-contatti {
+  font-size: 12px; font-weight: 300; line-height: 1.7;
+  color: var(--grigio-testo); font-style: italic; margin-bottom: 16px;
+}
 .contatto-icon {
   width: 15px; height: 15px;
   stroke: currentColor; fill: none;
@@ -2496,42 +2501,51 @@ body.intro-attiva { overflow: hidden; }
 
 /* ── Hero ── */
 .qchv-hero {
-  min-height: calc(100vh - 120px);
+  min-height: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; padding: 40px clamp(24px, 6vw, 72px);
-  transition: opacity 0.6s ease;
+  text-align: center; padding: 48px clamp(24px, 5vw, 72px) 32px;
 }
 .qchv-hero--uscita { opacity: 0; pointer-events: none; }
 .qchv-hero-riga {
   font-family: var(--font-titolo); font-weight: 400;
-  font-size: clamp(40px, 9vw, 108px); line-height: 0.98;
-  letter-spacing: 0.01em; text-transform: uppercase;
+  font-size: clamp(36px, 8vw, 72px); line-height: 1.02;
+  letter-spacing: -0.02em; text-transform: uppercase;
 }
 .qchv-hero-nota {
-  margin-top: 32px; font-size: 12px; font-weight: 300; line-height: 1.9;
-  letter-spacing: 0.04em; color: var(--grigio-testo);
+  margin-top: 24px; font-size: 11px; font-weight: 300; line-height: 1.8;
+  letter-spacing: 0.02em; color: var(--grigio-medio);
 }
-.qchv-hero-invito {
-  margin-top: 56px; font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase;
-  border-bottom: 1px solid var(--grigio-medio); padding-bottom: 4px;
-  opacity: 0; animation: qchv-fade-in 1.4s ease 0.6s forwards;
-  transition: border-color var(--transizione), color var(--transizione);
-}
-.qchv-hero-invito:hover { color: var(--pr-accent, var(--nero)); border-color: currentColor; }
-@keyframes qchv-fade-in { to { opacity: 1; } }
 
 /* ── Archivio: muro di frammenti ── */
-.qchv-archivio { opacity: 0; transition: opacity 0.8s ease; padding: 0 clamp(16px, 5vw, 60px) 120px; }
+.qchv-archivio { padding: 0 clamp(16px, 5vw, 60px) 120px; }
 .qchv-archivio--visibile { opacity: 1; }
+
+.qchv-intro {
+  max-width: 560px; margin: 0 auto 72px; text-align: center;
+}
+.qchv-intro:empty { margin: 0; }
+.qchv-intro p {
+  font-family: var(--font-testo); font-style: normal; font-weight: 300;
+  font-size: 14px; line-height: 1.8; color: var(--grigio-testo);
+}
+.qchv-intro p + p { margin-top: 20px; }
 
 .qchv-griglia {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(10px, 2vw, 28px);
-  max-width: 1400px; margin: 0 auto; padding-top: 40px;
+  max-width: 1400px; margin: 0 auto; padding-top: 40px; margin: 50px 0;
 }
 .qchv-griglia-vuota {
   grid-column: 1 / -1; text-align: center; padding: 80px 20px;
   font-size: 13px; color: var(--grigio-medio); line-height: 2;
 }
+
+/* Archivio senza contributi: niente scroll vuoto da attraversare prima
+   di arrivare all'invito a partecipare. */
+.qchv-archivio--vuoto .qchv-griglia-vuota { padding: 40px 20px 0; }
+.qchv-archivio--vuoto .qchv-cta { margin-top: 40px; }
+.qchv-archivio--vuoto .qchv-intro { margin-bottom: 40px; }
+.qchv-archivio--vuoto .qchv-griglia { padding-top: 0; }
+.qchv-archivio--vuoto .qchv-griglia-vuota { padding-top: 0; }
 
 .qchv-frammento { position: relative; cursor: pointer; }
 .qchv-frammento-img { overflow: hidden; }
@@ -2540,6 +2554,11 @@ body.intro-attiva { overflow: hidden; }
   transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
 }
 .qchv-frammento:hover .qchv-frammento-img img { transform: scale(1.035); }
+.qchv-frammento-testo {
+  min-height: 180px; padding: 28px; display: flex; align-items: center;
+  background: var(--grigio-chiaro); font-family: var(--font-testo);
+  font-size: 14px; font-weight: 300; line-height: 1.7;
+}
 
 /* asimmetria progettata, non casuale: alterna posizione, dimensione, offset */
 .qchv-frammento--a { grid-column: span 2; grid-row: span 2; }
@@ -2563,8 +2582,8 @@ body.intro-attiva { overflow: hidden; }
   .qchv-frammento:hover .qchv-frammento-meta { opacity: 1; }
 }
 
-.qchv-cta { max-width: 560px; margin: 140px auto 0; text-align: center; }
-.qchv-cta-titolo { font-family: var(--font-titolo); font-size: clamp(24px, 3.5vw, 36px); font-weight: 400; }
+.qchv-cta { max-width: 560px; margin: 96px auto 0; text-align: center; }
+.qchv-cta-titolo { font-family: var(--font-titolo); font-size: clamp(26px, 3.5vw, 36px); font-weight: 400; }
 .qchv-cta-sottotitolo { margin-top: 12px; font-size: 13px; color: var(--grigio-testo); font-weight: 300; }
 .qchv-cta-btn {
   margin-top: 32px; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
@@ -2679,8 +2698,9 @@ body.intro-attiva { overflow: hidden; }
 
 /* ── Mobile ── */
 @media (max-width: 768px) {
-  .qchv-hero { min-height: calc(100vh - 80px); }
+  .qchv-hero { padding-top: 40px; }
   .qchv-griglia { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .qchv-intro { margin-bottom: 48px; }
   .qchv-frammento--a { grid-column: span 2; grid-row: span 1; }
   .qchv-frammento--a .qchv-frammento-img { aspect-ratio: 4 / 5; }
   .qchv-frammento--b,
@@ -2702,7 +2722,7 @@ body.intro-attiva { overflow: hidden; }
      un'alternativa (hidden/classe) a coprirli: qui è sicuro forzare la
      visibilità immediata perché il loro stato "chiuso" non dipende
      dall'opacity ma da altri meccanismi (hidden, pointer-events). */
-  .qchv-archivio, .qchv-hero-invito {
+  .qchv-archivio {
     transition: none !important; animation: none !important; opacity: 1 !important;
   }
 }

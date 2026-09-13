@@ -863,7 +863,6 @@ let _qchvUltimoFocus = null;
 function vaiAMostraloQCHV() {
   apriQuelloCheHaiVisto();
   requestAnimationFrame(() => {
-    $('qchv-btn-invito')?.click();
     setTimeout(apriFormQCHV, 550);
   });
 }
@@ -900,11 +899,11 @@ function apriQuelloCheHaiVisto() {
         <p class="qchv-hero-riga">${tu('qchv.heroRigo2')}</p>
         <p class="qchv-hero-riga">${tu('qchv.heroRigo3')}</p>
         <p class="qchv-hero-nota">${tu('qchv.heroNota')}</p>
-        <button type="button" class="qchv-hero-invito" id="qchv-btn-invito">${tu('qchv.heroInvito')}</button>
       </section>
 
-      <section class="qchv-archivio" id="qchv-archivio" hidden>
+      <section class="qchv-archivio qchv-archivio--visibile" id="qchv-archivio">
         <div class="qchv-griglia" id="qchv-griglia"></div>
+        <div class="qchv-intro" id="qchv-intro"></div>
         <div class="qchv-cta">
           <h2 class="qchv-cta-titolo">${tu('qchv.invitoTitolo')}</h2>
           <p class="qchv-cta-sottotitolo">${tu('qchv.invitoSottotitolo')}</p>
@@ -989,14 +988,32 @@ function apriQuelloCheHaiVisto() {
   el.scrollTop = 0;
   apriOverlayFocus(el, el.querySelector('.progetto-torna'));
 
+  popolaIntroQCHV(pr);
   popolaGrigliaQCHV();
   avviaInterazioniQCHV(el);
 }
 
+// Introduzione del progetto: legge gli eventuali blocchi "testo" da
+// pr.contenuto[] (lo stesso campo che usi già dal bot Telegram per gli
+// altri progetti) e li mostra come paragrafi editoriali sopra l'archivio.
+// Se non c'è alcun blocco testo, la sezione resta vuota e non occupa spazio.
+function popolaIntroQCHV(pr) {
+  const intro = $('qchv-intro');
+  const blocchiTesto = (pr.contenuto || []).filter(b => b.tipo === 'testo');
+  if (!blocchiTesto.length) { intro.innerHTML = ''; return; }
+
+  intro.innerHTML = blocchiTesto.map(b =>
+    t(b.valore).split('\n\n').map(p => p.trim() ? `<p>${escapeAttr(p).replace(/\n/g, '<br>')}</p>` : '').join('')
+  ).join('');
+}
+
 function popolaGrigliaQCHV() {
   const griglia = $('qchv-griglia');
+  const archivio = $('qchv-archivio');
   griglia.innerHTML = '';
   const contributi = stato.qchv || [];
+
+  archivio.classList.toggle('qchv-archivio--vuoto', !contributi.length);
 
   if (!contributi.length) {
     griglia.innerHTML = `<p class="qchv-griglia-vuota">${tu('qchv.archivioVuoto')}</p>`;
@@ -1008,11 +1025,18 @@ function popolaGrigliaQCHV() {
     frammento.className = 'qchv-frammento qchv-frammento--' + String.fromCharCode(97 + (i % 5));
     frammento.setAttribute('role', 'button');
     frammento.setAttribute('tabindex', '0');
-    const primaFoto = (c.images && c.images[0]) || '';
-    const alt = `${tu('qchv.vistoDa')} ${escapeAttr(c.author || '')}`;
-    const wrap = crea('div'); wrap.className = 'qchv-frammento-img';
-    wrap.appendChild(creaImg(primaFoto, alt, false, '(max-width:900px) 50vw, 25vw'));
-    frammento.appendChild(wrap);
+    const primaFoto = c.images && c.images[0];
+    if (primaFoto) {
+      const alt = `${tu('qchv.vistoDa')} ${escapeAttr(c.author || '')}`;
+      const wrap = crea('div'); wrap.className = 'qchv-frammento-img';
+      wrap.appendChild(creaImg(primaFoto, alt, false, '(max-width:900px) 50vw, 25vw'));
+      frammento.appendChild(wrap);
+    } else if (c.text) {
+      const testo = crea('p');
+      testo.className = 'qchv-frammento-testo';
+      testo.textContent = c.text;
+      frammento.appendChild(testo);
+    }
 
     const meta = crea('div'); meta.className = 'qchv-frammento-meta';
     meta.innerHTML = `<span>${escapeAttr(c.location || '')}</span><span>${escapeAttr(c.year || '')}</span>`;
@@ -1027,16 +1051,6 @@ function popolaGrigliaQCHV() {
 }
 
 function avviaInterazioniQCHV(overlayEl) {
-  // Hero → rivela l'archivio (una tantum, animazione lenta e non ripetuta)
-  const btnInvito = $('qchv-btn-invito');
-  btnInvito.addEventListener('click', () => {
-    $('qchv-hero').classList.add('qchv-hero--uscita');
-    const archivio = $('qchv-archivio');
-    archivio.hidden = false;
-    requestAnimationFrame(() => archivio.classList.add('qchv-archivio--visibile'));
-    setTimeout(() => { $('qchv-hero').hidden = true; }, 500);
-  });
-
   // Dettaglio contributo
   $('qchv-dettaglio-chiudi').addEventListener('click', chiudiDettaglioQCHV);
   overlayEl.removeEventListener('keydown', escQCHV); // evita accumulo tra aperture ripetute
@@ -1082,7 +1096,9 @@ function renderDettaglioQCHV() {
 
   const corpo = $('qchv-dettaglio-corpo');
   corpo.innerHTML = '';
-  corpo.appendChild(creaImg(foto[_qchvFotoIdx], `${tu('qchv.vistoDa')} ${escapeAttr(c.author || '')}`, true));
+  if (foto[_qchvFotoIdx]) {
+    corpo.appendChild(creaImg(foto[_qchvFotoIdx], `${tu('qchv.vistoDa')} ${escapeAttr(c.author || '')}`, true));
+  }
 
   const testo = crea('div'); testo.className = 'qchv-dettaglio-testo';
   testo.innerHTML = `
