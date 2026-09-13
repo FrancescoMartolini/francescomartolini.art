@@ -75,7 +75,13 @@ async function init() {
   const route = leggiRoute();
   if (route?.tipo === 'progetto') {
     const pr = stato.progetti.find(p => p.id === route.id && p.pubblicato !== false);
-    if (pr) apriProgetto(route.id);
+    if (pr) {
+      // Link diretto al form: francescomartolini.art/progetti/quello-che-hai-visto#mostralo
+      // Riusa la stessa pagina già generata per il progetto (nessuna route
+      // statica/sitemap in più: l'ancora non tocca il percorso).
+      if (route.id === ID_QCHV && location.hash === '#mostralo') vaiAMostraloQCHV();
+      else apriProgetto(route.id);
+    }
   } else if (route?.tipo === 'taccuino') {
     apriTaccuino();
   } else if (route?.tipo === 'taccuino-voce') {
