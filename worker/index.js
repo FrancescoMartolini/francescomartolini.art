@@ -55,6 +55,14 @@ export default {
       return gestisciMostralo(request, env, ctx);
     }
 
+    // Link corto da mettere in bio Instagram: rimanda alla home
+    // aggiungendo l'utm_source, così js/visite.js lo rileva anche
+    // se l'in-app browser azzera il referrer. Il visitatore vede
+    // solo "francescomartolini.art/ig", mai il parametro.
+    if (request.method === 'GET' && url.pathname === '/ig') {
+      return Response.redirect(url.origin + '/?utm_source=instagram', 302);
+    }
+
     if (url.pathname === '/telegram/webhook') {
       var telegramSecret = url.searchParams.get('secret');
       if (telegramSecret !== env.TELEGRAM_WEBHOOK_SECRET) {

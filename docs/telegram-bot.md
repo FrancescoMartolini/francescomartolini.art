@@ -116,6 +116,12 @@ Non servono nuovi secret: usa `TELEGRAM_BOT_TOKEN` e `TELEGRAM_ALLOWED_CHAT_ID`,
 
 **Per tracciare una nuova fonte** (es. un nuovo link in bio, una newsletter): aggiungi `?utm_source=<nome>` al link pubblicato e, se vuoi un'etichetta più leggibile del valore grezzo, aggiungi la voce corrispondente in `NOMI_UTM` dentro `worker/visite.js`.
 
+### Link pulito per la bio Instagram
+
+`GET /ig` (in `worker/index.js`) fa un redirect 302 a `/?utm_source=instagram`: in bio metti `francescomartolini.art/ig` invece del link con il parametro visibile. Funziona anche quando l'in-app browser di Instagram azzera `document.referrer`, perché l'utm_source viene aggiunto server-side prima che il visitatore veda qualsiasi URL.
+
+Per altre fonti con la stessa esigenza (es. Biosite, materiale stampato con QR code), si può aggiungere una rotta analoga: `GET /biosite` → redirect a `/?utm_source=biosite`, ecc.
+
 ## Sicurezza
 
 - `TELEGRAM_ALLOWED_CHAT_ID`: chiunque altro scriva al bot riceve "Accesso non autorizzato".

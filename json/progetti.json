@@ -354,6 +354,29 @@
     ]
   },
   {
+    "id": "quello-che-hai-visto",
+    "titolo": {
+      "it": "Quello che Hai Visto",
+      "en": "What You Have Seen"
+    },
+    "anno": "In corso",
+    "descrizione": {
+      "it": "Tre fotografie, uno sguardo, un luogo. Quello che hai visto racconta il tempo attraverso gli occhi di qualcun altro.",
+      "en": "Three photographs, one perspective, a place. What You Saw tells time through someone else’s eyes."
+    },
+    "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1785776062/Quellochehaivisto-COVER_ntf7ba.jpg",
+    "galleria": [],
+    "contenuto": [
+      {
+        "tipo": "testo",
+        "valore": {
+          "it": "Un punto di vista fuori dalla mia testa, che però continua a parlare di tempo e di luoghi.\n\nQuello che hai visto nasce da una domanda semplice: cosa rimane di un luogo quando lo si guarda attraverso gli occhi di qualcun altro?\n\nChiedo a una persona di scegliere tre fotografie. Tre immagini che, per un motivo preciso, ha deciso di conservare. Poi le chiedo di raccontarmi perché le ha scelte, cosa rappresentano per lei e, soprattutto, in che modo raccontano il tempo.\n\nNon cerco necessariamente una storia. Cerco uno sguardo.\n\nAttraverso quelle tre fotografie provo a entrare nel modo in cui un'altra persona osserva, ricorda e attraversa un luogo. E può succedere che quel luogo sia uno spazio in cui sono passato anch'io, ma che attraverso i suoi occhi diventa improvvisamente un posto diverso.\n\nQuello che hai visto è quindi una raccolta di sguardi, luoghi e frammenti di tempo. Un modo per raccontare ciò che conosco attraverso ciò che hanno visto gli altri.",
+          "en": "A point of view outside my own head, yet still speaking about time and places.\n\nWhat You Saw begins with a simple question: what remains of a place when you see it through someone else’s eyes?\n\nI ask someone to choose three photographs. Three images they decided, for a specific reason, to keep. Then I ask them to tell me why they chose them, what they represent to them and, above all, how they speak about time.\n\nI’m not necessarily looking for a story. I’m looking for a point of view.\n\nThrough those three photographs, I try to enter the way another person observes, remembers and moves through a place. And sometimes that place is somewhere I have passed through myself, yet through their eyes it suddenly becomes somewhere else.\n\nWhat You Saw is a collection of perspectives, places and fragments of time. A way of telling what I know through what others have seen."
+        }
+      }
+    ]
+  },
+  {
     "id": "anatomia-degli-alberi",
     "titolo": {
       "it": "Anatomia degli alberi",
@@ -399,30 +422,6 @@
         "valore": {
           "it": "3.3 nasce da una semplice ripetizione: il numero tre. La fotocamera utilizzata è una HP Photosmart 715 da 3.3 megapixel. Il progetto è composto da tre fotografie, realizzate nello stesso punto, alla stessa ora, in tre momenti differenti. All'interno di ogni immagine cerco tre elementi che appartengono alla scena: tre finestre, tre persone, tre ombre, tre oggetti o qualsiasi altra forma di ripetizione che la città offre. La stessa inquadratura diventa così un punto di osservazione attraverso cui registrare ciò che cambia e ciò che rimane. Le immagini vengono ritagliate in formato 1:1 e convertite in bianco e nero, lasciando che i limiti tecnici della fotocamera diventino parte del linguaggio del progetto. 3.3 è un esercizio di osservazione, ripetizione e tempo: tre megapixel, tre fotografie, tre elementi, tre momenti.",
           "en": "3.3 begins with a simple repetition: the number three. The camera used is an HP Photosmart 715 with a resolution of 3.3 megapixels. The project consists of three photographs, taken from the same point, at the same time of day, across three different moments. Within each image, I look for three elements that belong to the scene: three windows, three people, three shadows, three objects, or any other form of repetition offered by the city. The same frame becomes a point of observation through which to record what changes and what remains. The images are cropped to a 1:1 format and converted to black and white, allowing the technical limitations of the camera to become part of the project's visual language. 3.3 is an exercise in observation, repetition, and time: three megapixels, three photographs, three elements, three moments."
-        }
-      }
-    ]
-  },
-  {
-    "id": "quello-che-hai-visto",
-    "titolo": {
-      "it": "Quello che Hai Visto",
-      "en": "What You Have Seen"
-    },
-    "anno": "In corso",
-    "descrizione": {
-      "it": "Tre fotografie, uno sguardo, un luogo. Quello che hai visto racconta il tempo attraverso gli occhi di qualcun altro.",
-      "en": "Three photographs, one perspective, a place. What You Saw tells time through someone else’s eyes."
-    },
-    "immagine_copertina": "https://res.cloudinary.com/dgo7tnyv6/image/upload/w_600,q_auto,f_auto/v1785776062/Quellochehaivisto-COVER_ntf7ba.jpg",
-    "galleria": [],
-    "pubblicato": false,
-    "contenuto": [
-      {
-        "tipo": "testo",
-        "valore": {
-          "it": "Un punto di vista fuori dalla mia testa, che però continua a parlare di tempo e di luoghi.\n\nQuello che hai visto nasce da una domanda semplice: cosa rimane di un luogo quando lo si guarda attraverso gli occhi di qualcun altro?\n\nChiedo a una persona di scegliere tre fotografie. Tre immagini che, per un motivo preciso, ha deciso di conservare. Poi le chiedo di raccontarmi perché le ha scelte, cosa rappresentano per lei e, soprattutto, in che modo raccontano il tempo.\n\nNon cerco necessariamente una storia. Cerco uno sguardo.\n\nAttraverso quelle tre fotografie provo a entrare nel modo in cui un'altra persona osserva, ricorda e attraversa un luogo. E può succedere che quel luogo sia uno spazio in cui sono passato anch'io, ma che attraverso i suoi occhi diventa improvvisamente un posto diverso.\n\nQuello che hai visto è quindi una raccolta di sguardi, luoghi e frammenti di tempo. Un modo per raccontare ciò che conosco attraverso ciò che hanno visto gli altri.",
-          "en": "A point of view outside my own head, yet still speaking about time and places.\n\nWhat You Saw begins with a simple question: what remains of a place when you see it through someone else’s eyes?\n\nI ask someone to choose three photographs. Three images they decided, for a specific reason, to keep. Then I ask them to tell me why they chose them, what they represent to them and, above all, how they speak about time.\n\nI’m not necessarily looking for a story. I’m looking for a point of view.\n\nThrough those three photographs, I try to enter the way another person observes, remembers and moves through a place. And sometimes that place is somewhere I have passed through myself, yet through their eyes it suddenly becomes somewhere else.\n\nWhat You Saw is a collection of perspectives, places and fragments of time. A way of telling what I know through what others have seen."
         }
       }
     ]
