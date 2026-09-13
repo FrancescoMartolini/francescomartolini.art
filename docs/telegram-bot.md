@@ -88,13 +88,33 @@ Se manca un campo obbligatorio, `/pubblica` rifiuta e suggerisce `/modifica <id>
 
 `js/visite.js`, caricato in `index.html`, chiama `POST /visita` una sola volta per sessione di navigazione (`sessionStorage`), indipendentemente da quante pagine del libro vengono sfogliate. Fallisce sempre in silenzio: nessun impatto sull'esperienza di lettura se la rete manca o il worker non risponde.
 
+Insieme alla richiesta manda un body JSON con la provenienza della visita:
+
+```json
+{ "referrer": "https://www.instagram.com/", "utm_source": "instagram" }
+```
+
+- `referrer` è `document.referrer`, cioè l'URL della pagina da cui arriva il click. È il browser a fornirlo, quindi funziona bene per ricerche Google o click da siti esterni, ma **un in-app browser (es. Instagram, TikTok) spesso lo azzera o lo tronca** — in quel caso arriva `null`.
+- `utm_source` è letto dal parametro `?utm_source=...` nell'URL della pagina, se presente. È il valore affidabile per i link che pubblichi tu (bio Instagram, Biosite, newsletter...), perché non dipende dal comportamento del browser che lo apre.
+
 `worker/visite.js` (`gestisciVisita()`):
 
 - Legge il paese (e, se disponibile, la città) da `request.cf` — dato fornito nativamente da Cloudflare, nessun servizio esterno di geolocalizzazione.
-- Manda un messaggio al chat_id in `TELEGRAM_ALLOWED_CHAT_ID` con `sendTelegramMessage()` (la stessa funzione usata dal bot), es. "📖 Una nuova visita da Italia (Firenze)".
+- Legge `referrer` e `utm_source` dal body della richiesta (se il body manca o non è JSON valido, la notifica viene comunque inviata solo con paese/città).
+- Traduce la provenienza in un'etichetta leggibile con `nomeProvenienza()`:
+  - se `utm_source` è presente, cerca una corrispondenza nella mappa `NOMI_UTM` (es. `instagram` → "Instagram (bio)", `biosite` → "Biosite"); se il valore non è mappato, lo mostra così com'è;
+  - altrimenti, se c'è `referrer`, ne estrae l'host e lo confronta con la lista `NOMI_HOST` (Google, Instagram, Facebook, Linktree, X/Twitter, Pinterest, Behance, ecc.); se l'host non è riconosciuto, mostra l'host così com'è;
+  - se non c'è né `utm_source` né `referrer`, mostra "diretto o app senza referrer" (URL digitato a mano, segnalibro, o in-app browser che non trasmette nulla).
+- Manda un messaggio al chat_id in `TELEGRAM_ALLOWED_CHAT_ID` con `sendTelegramMessage()` (la stessa funzione usata dal bot), es.:
+  ```
+  📖 Una nuova visita da Italia (Firenze)
+  Provenienza: Instagram (bio)
+  ```
 - **Rate limit**: al massimo una notifica ogni 30 minuti per lo stesso IP (chiave `visita:<ip>` in KV `PUSH_SUBS`, `expirationTtl`), per non trasformare ogni reload o crawler in spam.
 
 Non servono nuovi secret: usa `TELEGRAM_BOT_TOKEN` e `TELEGRAM_ALLOWED_CHAT_ID`, già configurati per il bot.
+
+**Per tracciare una nuova fonte** (es. un nuovo link in bio, una newsletter): aggiungi `?utm_source=<nome>` al link pubblicato e, se vuoi un'etichetta più leggibile del valore grezzo, aggiungi la voce corrispondente in `NOMI_UTM` dentro `worker/visite.js`.
 
 ## Sicurezza
 
