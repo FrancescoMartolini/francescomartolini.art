@@ -518,6 +518,24 @@ function apriArchivioPlaylist() {
   rivelaAlloScroll(el, '.pl-sezione, .pl-step');
 }
 
+// Il pannello si apre con un transform (translateY) per l'animazione di
+// scorrimento. Una volta assestato, quel transform resta comunque attivo
+// (anche translateY(0) conta) e trasforma il pannello in un "containing
+// block" per ogni discendente position:fixed — combinato con la tastiera
+// o lo zoom su iOS Safari, questa combinazione è una causa nota di crash
+// del motore di rendering. Una volta finita la transizione lo rimuoviamo,
+// così i discendenti fixed (form, dettaglio contributo, conferma...)
+// tornano ad essere relativi al vero viewport. chiudiProgetto() lo
+// ripristina prima di richiudere, per non perdere l'animazione di uscita.
+function stabilizzaTransformOverlay(el) {
+  const aTransizioneFinita = e => {
+    if (e.target !== el || e.propertyName !== 'transform') return;
+    if (el.classList.contains('aperta')) el.style.transform = 'none';
+    el.removeEventListener('transitionend', aTransizioneFinita);
+  };
+  el.addEventListener('transitionend', aTransizioneFinita);
+}
+
 function apriProgetto(id) {
   if (id === ID_CARD_PLAYLIST) { apriArchivioPlaylist(); return; }
   if (id === ID_QCHV) { apriQuelloCheHaiVisto(); return; }
@@ -590,6 +608,7 @@ function apriProgetto(id) {
 
   interno.innerHTML = _cacheProgetti[id];
   el.classList.add('aperta');
+  stabilizzaTransformOverlay(el);
   el.scrollTop = 0;
   apriOverlayFocus(el, el.querySelector('.progetto-torna'));
 
@@ -824,6 +843,7 @@ function generaSpotifyHTML(v) {
 
 function chiudiProgetto() {
   const el = $('pagina-progetto');
+  el.style.removeProperty('transform');
   el.classList.remove('aperta');
   chiudiOverlayFocus(el);
   el.style.removeProperty('--pr-bg');
@@ -985,6 +1005,7 @@ function apriQuelloCheHaiVisto() {
     </div>`;
 
   el.classList.add('aperta');
+  stabilizzaTransformOverlay(el);
   el.scrollTop = 0;
   apriOverlayFocus(el, el.querySelector('.progetto-torna'));
 
