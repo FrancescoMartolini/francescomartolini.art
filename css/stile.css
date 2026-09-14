@@ -2500,6 +2500,7 @@ body.intro-attiva { overflow: hidden; }
 
 #qchv-standalone .qchv-pagina {
   min-height: 100%; position: relative; background: var(--bianco); color: var(--nero);
+  padding-top: clamp(40px, 7vh, 72px);
 }
 #qchv-standalone {
   overflow-y: auto;
@@ -2599,7 +2600,7 @@ body.intro-attiva { overflow: hidden; }
 .qchv-cta-btn:hover { color: var(--pr-accent, var(--nero)); border-color: currentColor; }
 
 #qchv-standalone {
-  position: fixed; inset: 0; z-index: 30; opacity: 0; visibility: hidden; pointer-events: none;
+  position: fixed; inset: 0; z-index: 600; opacity: 0; visibility: hidden; pointer-events: none;
   transition: opacity 0.25s ease, visibility 0s linear 0.25s;
 }
 #qchv-standalone[aria-hidden="false"] {
@@ -2607,6 +2608,14 @@ body.intro-attiva { overflow: hidden; }
   transition: opacity 0.25s ease, visibility 0s linear 0s;
 }
 #qchv-standalone > * {
+  pointer-events: none;
+}
+#qchv-standalone[aria-hidden="false"] > .qchv-pagina {
+  pointer-events: auto;
+}
+#qchv-standalone[aria-hidden="false"] > .qchv-dettaglio.qchv-dettaglio--aperto,
+#qchv-standalone[aria-hidden="false"] > .qchv-form-overlay.qchv-form-overlay--aperto,
+#qchv-standalone[aria-hidden="false"] > .qchv-conferma.qchv-conferma--visibile {
   pointer-events: auto;
 }
 
