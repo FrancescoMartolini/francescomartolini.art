@@ -2627,12 +2627,12 @@ body.intro-attiva { overflow: hidden; }
 
 /* ── Form "Mostralo" ── */
 .qchv-form-overlay {
-  position: fixed; inset: 0; z-index: 10; background: var(--bianco); color: var(--nero);
+  position: absolute; inset: 0; z-index: 10; background: var(--bianco); color: var(--nero);
   opacity: 0; pointer-events: none; transition: opacity 0.4s ease; overflow-y: auto;
 }
 .qchv-form-overlay--aperto { opacity: 1; pointer-events: all; }
 .qchv-form-chiudi {
-  position: fixed; top: 20px; right: clamp(20px, 4vw, 48px); z-index: 2;
+  position: absolute; top: 20px; right: clamp(20px, 4vw, 48px); z-index: 2;
   font-size: 28px; font-weight: 300; line-height: 1;
 }
 .qchv-form-corpo { max-width: 480px; margin: 0 auto; padding: 100px clamp(20px, 6vw, 40px) 100px; }

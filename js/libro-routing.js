@@ -511,6 +511,7 @@ function apriArchivioPlaylist() {
 
   interno.innerHTML = _cacheProgetti[ID_CARD_PLAYLIST];
   el.classList.add('aperta');
+  stabilizzaTransformOverlay(el);
   el.scrollTop = 0;
   apriOverlayFocus(el, el.querySelector('.progetto-torna'));
 
@@ -528,12 +529,28 @@ function apriArchivioPlaylist() {
 // tornano ad essere relativi al vero viewport. chiudiProgetto() lo
 // ripristina prima di richiudere, per non perdere l'animazione di uscita.
 function stabilizzaTransformOverlay(el) {
+  if (el._transformStabilizationTimer) {
+    clearTimeout(el._transformStabilizationTimer);
+  }
+
+  const rimuoviTransform = () => {
+    if (el.classList.contains('aperta')) el.style.transform = 'none';
+  };
   const aTransizioneFinita = e => {
     if (e.target !== el || e.propertyName !== 'transform') return;
-    if (el.classList.contains('aperta')) el.style.transform = 'none';
+    rimuoviTransform();
     el.removeEventListener('transitionend', aTransizioneFinita);
+    el._transformStabilizationTimer = null;
   };
   el.addEventListener('transitionend', aTransizioneFinita);
+  // Safari può interrompere la transizione quando apre la tastiera e non
+  // emettere transitionend: in quel caso il fallback evita di lasciare un
+  // containing block trasformato attorno ai pannelli fixed del progetto.
+  el._transformStabilizationTimer = setTimeout(() => {
+    rimuoviTransform();
+    el.removeEventListener('transitionend', aTransizioneFinita);
+    el._transformStabilizationTimer = null;
+  }, 700);
 }
 
 function apriProgetto(id) {
@@ -843,6 +860,10 @@ function generaSpotifyHTML(v) {
 
 function chiudiProgetto() {
   const el = $('pagina-progetto');
+  if (el._transformStabilizationTimer) {
+    clearTimeout(el._transformStabilizationTimer);
+    el._transformStabilizationTimer = null;
+  }
   el.style.removeProperty('transform');
   el.classList.remove('aperta');
   chiudiOverlayFocus(el);
