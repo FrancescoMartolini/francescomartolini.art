@@ -14,6 +14,13 @@ Quasi sempre JSON non valido (virgola, virgola finale, virgolette). Aprire la co
 - `id` che inizia con `playlist`: è trattato come collana, non come progetto.
 - Id duplicati: `stato.progetti.find()` prende il primo.
 
+### Il form “Mostralo” riavvia la pagina su smartphone
+Il form QCHV deve aprirsi su `qchv-form.html`, una pagina autonoma. Non reinserirlo dentro `#pagina-progetto` o in un overlay `position: fixed`: su iOS Safari la tastiera può causare un ricalcolo instabile del viewport quando il form è dentro overlay trasformati e gesture globali. Verificare che:
+
+- `js/libro-routing.js` usi `location.href = 'qchv-form.html'` in `apriFormQCHV()`;
+- `qchv-form.html` carichi `js/qchv-form.js`;
+- `qchv-form.js` invii a `/mostralo` con `FormData`.
+
 ### Le immagini non si caricano
 - URL Cloudinary errato o senza trasformazioni; verificare che contenga `/image/upload/`.
 - Per i video il prefisso è `/video/upload/`.

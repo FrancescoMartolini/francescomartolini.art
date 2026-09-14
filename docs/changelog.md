@@ -34,6 +34,13 @@
 - Documentazione aggiornata: [accessibility.md](accessibility.md), [seo.md](seo.md) (corretta anche una nota non più valida sulle anteprime social), [images.md](images.md), [projects.md](projects.md), [quick-reference.md](quick-reference.md).
 - Non fatto in questo giro (resta in [accessibility.md](accessibility.md) come apertura): skip-link, `prefers-reduced-motion` sulle transizioni di pagina/overlay, alternativa allo swipe per il libro mobile; didascalie reali delle foto esistenti (lo schema è pronto, il testo va scritto da chi conosce ogni scatto).
 
+## 2026-09-14 — Form QCHV autonomo per tastiera mobile
+- Il form “Quello che Hai Visto” ora si apre nella pagina autonoma `qchv-form.html`, invece di essere renderizzato dentro gli overlay del progetto.
+- La pagina del form non usa `position: fixed`, `transform` o i listener globali del libro durante la digitazione: questo evita il riavvio apparente/ritorno alla Home osservato su iOS Safari quando compare la tastiera.
+- La validazione, l'anteprima delle foto e l'invio a `/mostralo` sono stati spostati in `js/qchv-form.js`.
+- Il flusso precedente resta utilizzato per l'archivio e il dettaglio QCHV; solo l'azione “Mostralo” effettua la navigazione alla pagina autonoma.
+- File principali: `qchv-form.html`, `js/qchv-form.js`, `js/libro-routing.js`, `css/stile.css`.
+
 ## Template per le voci future
 
 ```markdown

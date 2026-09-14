@@ -2,7 +2,7 @@
 
 ## Panoramica
 
-Il sito è una **single page statica senza framework**. Un unico `index.html` contiene lo scheletro di entrambe le esperienze (mobile e desktop); `js/libro-*.js` (6 file, caricati in sequenza con `<script>` classici, nessun bundler) carica i dati JSON e costruisce dinamicamente la maggior parte del DOM.
+Il sito è una **single page statica senza framework**, con una pagina statica aggiuntiva per il form QCHV. `index.html` contiene lo scheletro di entrambe le esperienze (mobile e desktop); `js/libro-*.js` (6 file, caricati in sequenza con `<script>` classici, nessun bundler) carica i dati JSON e costruisce dinamicamente la maggior parte del DOM. `qchv-form.html` è volutamente separata dall'applicazione principale.
 
 ### I 6 file di `libro-*.js`
 
@@ -14,6 +14,12 @@ Sono lo stesso motore di un tempo (`libro.js`), diviso solo per organizzazione �
 4. **`libro-routing.js`** — apertura/chiusura degli overlay (progetto, taccuino, sezioni, archivio playlist), generazione del contenuto di un progetto, interpretazione dell'URL d'arrivo (`leggiRoute`), navigazione fra le pagine del libro (`navigaA`).
 5. **`libro-interazioni.js`** — gesture (tastiera, touch, tap), lightbox, cursore custom, tema, cookie banner, embed Spotify.
 6. **`libro-app.js`** — orchestratore: `init()` collega tutto e parte su `DOMContentLoaded`; espone su `window` le funzioni richiamate dagli `onclick` inline nei template. Va caricato per ultimo.
+
+### Form “Quello che Hai Visto”
+
+Il pulsante “Mostralo” non apre più un pannello dentro `#pagina-progetto` o `#qchv-standalone`: `apriFormQCHV()` naviga a `qchv-form.html`. La pagina carica solo `js/qchv-form.js`, usa il form in flusso normale e invia i dati a `/mostralo`.
+
+Questa separazione è intenzionale. Su iOS Safari l'apertura della tastiera modifica il viewport; un form annidato in overlay `fixed`/trasformati e nella pagina con gesture e routing globali può provocare un ricalcolo instabile, percepito come riavvio dell'app. La pagina autonoma elimina quel contesto senza cambiare l'endpoint o il formato `FormData`.
 
 ```text
                 ┌────────────────────────────────────────────────────┐
