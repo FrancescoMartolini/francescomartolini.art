@@ -2594,12 +2594,12 @@ body.intro-attiva { overflow: hidden; }
 
 /* ── Dettaglio contributo ── */
 .qchv-dettaglio {
-  position: fixed; inset: 0; z-index: 10; background: var(--nero); color: var(--bianco);
+  position: absolute; inset: 0; z-index: 10; background: var(--nero); color: var(--bianco);
   opacity: 0; pointer-events: none; transition: opacity 0.4s ease; overflow-y: auto;
 }
 .qchv-dettaglio--aperto { opacity: 1; pointer-events: all; }
 .qchv-dettaglio-chiudi {
-  position: fixed; top: 20px; right: clamp(20px, 4vw, 48px); z-index: 2;
+  position: absolute; top: 20px; right: clamp(20px, 4vw, 48px); z-index: 2;
   font-size: 28px; font-weight: 300; line-height: 1; color: var(--bianco);
 }
 .qchv-dettaglio-corpo {
@@ -2683,7 +2683,7 @@ body.intro-attiva { overflow: hidden; }
 
 /* ── Conferma ── */
 .qchv-conferma {
-  position: fixed; inset: 0; z-index: 10; background: var(--nero); color: var(--bianco);
+  position: absolute; inset: 0; z-index: 10; background: var(--nero); color: var(--bianco);
   display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
   opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
 }

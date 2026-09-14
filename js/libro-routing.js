@@ -511,7 +511,6 @@ function apriArchivioPlaylist() {
 
   interno.innerHTML = _cacheProgetti[ID_CARD_PLAYLIST];
   el.classList.add('aperta');
-  stabilizzaTransformOverlay(el);
   el.scrollTop = 0;
   apriOverlayFocus(el, el.querySelector('.progetto-torna'));
 
@@ -529,28 +528,12 @@ function apriArchivioPlaylist() {
 // tornano ad essere relativi al vero viewport. chiudiProgetto() lo
 // ripristina prima di richiudere, per non perdere l'animazione di uscita.
 function stabilizzaTransformOverlay(el) {
-  if (el._transformStabilizationTimer) {
-    clearTimeout(el._transformStabilizationTimer);
-  }
-
-  const rimuoviTransform = () => {
-    if (el.classList.contains('aperta')) el.style.transform = 'none';
-  };
   const aTransizioneFinita = e => {
     if (e.target !== el || e.propertyName !== 'transform') return;
-    rimuoviTransform();
+    if (el.classList.contains('aperta')) el.style.transform = 'none';
     el.removeEventListener('transitionend', aTransizioneFinita);
-    el._transformStabilizationTimer = null;
   };
   el.addEventListener('transitionend', aTransizioneFinita);
-  // Safari può interrompere la transizione quando apre la tastiera e non
-  // emettere transitionend: in quel caso il fallback evita di lasciare un
-  // containing block trasformato attorno ai pannelli fixed del progetto.
-  el._transformStabilizationTimer = setTimeout(() => {
-    rimuoviTransform();
-    el.removeEventListener('transitionend', aTransizioneFinita);
-    el._transformStabilizationTimer = null;
-  }, 700);
 }
 
 function apriProgetto(id) {
@@ -860,10 +843,6 @@ function generaSpotifyHTML(v) {
 
 function chiudiProgetto() {
   const el = $('pagina-progetto');
-  if (el._transformStabilizationTimer) {
-    clearTimeout(el._transformStabilizationTimer);
-    el._transformStabilizationTimer = null;
-  }
   el.style.removeProperty('transform');
   el.classList.remove('aperta');
   chiudiOverlayFocus(el);
@@ -1174,7 +1153,15 @@ function chiudiDettaglioQCHV() {
 // ── Form "Mostralo" ──
 function apriFormQCHV() {
   _qchvUltimoFocus = document.activeElement;
+  const progetto = $('pagina-progetto');
   const el = $('qchv-form-overlay');
+  if (!el) return;
+  const isSafariIphone = /iPhone|iPad|iPod/i.test(navigator.userAgent) && /Safari/i.test(navigator.userAgent) && !/CriOS|FxiOS|OPiOS/i.test(navigator.userAgent);
+  if (isSafariIphone && progetto) {
+    progetto.style.transform = 'none';
+    progetto.style.position = 'absolute';
+    el.style.position = 'absolute';
+  }
   el.classList.add('qchv-form-overlay--aperto');
   el.setAttribute('aria-hidden', 'false');
   el.querySelector('.qchv-form-chiudi').focus();
@@ -1182,8 +1169,14 @@ function apriFormQCHV() {
 
 function chiudiFormQCHV() {
   const el = $('qchv-form-overlay');
+  const progetto = $('pagina-progetto');
+  if (!el) return;
   el.classList.remove('qchv-form-overlay--aperto');
   el.setAttribute('aria-hidden', 'true');
+  if (progetto) {
+    progetto.style.position = '';
+    progetto.style.transform = '';
+  }
   if (_qchvUltimoFocus && document.contains(_qchvUltimoFocus)) _qchvUltimoFocus.focus();
 }
 
