@@ -15,6 +15,7 @@ Tutti i contenuti vivono in `json/`, caricati a runtime da `js/libro.js` (`caric
 | `epiloghi.json` | frasi di chiusura | qui sotto |
 | `taccuino.json` | note del Taccuino | [taccuino.md](taccuino.md) |
 | `ui.json` | testi di interfaccia IT/EN | [i18n.md](i18n.md) |
+| `quello-che-hai-visto.json` | contributi pubblici del progetto "Quello che Hai Visto" | qui sotto |
 
 ## Regole generali
 
@@ -78,6 +79,33 @@ Usato sia nel libro mobile (capitolo 0) sia nell'overlay Chi sono.
 Array di frasi brevi per la pagina "fin.".
 **Stato attuale**: il file viene caricato, ma la frase mostrata è fissa (`FRASE_FIN` in `libro.js`); la selezione casuale dall'elenco è commentata. Per usarlo davvero: decommentare la riga in `inizializzaFin()`.
 
+### `quello-che-hai-visto.json`
+
+```json
+[
+  {
+    "id": "001",
+    "author": "Nome",
+    "instagram": "@username",
+    "location": "Firenze",
+    "year": "2026",
+    "text": "Il testo che ha scritto.",
+    "images": [
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/…-1.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/…-2.jpg",
+      "https://res.cloudinary.com/dgo7tnyv6/image/upload/…-3.jpg"
+    ]
+  }
+]
+```
+
+- `id`: solo deve essere univoco nell'array (va bene una numerazione progressiva "001", "002"…).
+- `instagram`: opzionale.
+- `images`: da 1 a 3 URL Cloudinary. Il primo è quello mostrato nella griglia dell'archivio.
+- **Non includere mai l'email** del mittente: questo file è pubblico (servito al frontend), l'email resta solo nel messaggio Telegram della submission.
+
+Il file parte vuoto (`[]`) e cresce solo per aggiunta manuale: le submission arrivano via `/mostralo` (endpoint del Worker, `worker/mostralo.js`) come messaggio Telegram con foto allegate, sullo stesso bot/chat usato per le notifiche di `/visita`. Chi gestisce il sito decide se pubblicare, carica le foto approvate su Cloudinary e aggiunge la voce qui a mano. Nessuna pubblicazione automatica, nessun database, nessuna dashboard admin.
+
 ## Dove viene reso ciascun contenuto
 
 | Dato | Mobile | Desktop |
@@ -90,3 +118,4 @@ Array di frasi brevi per la pagina "fin.".
 | `collaborazioni` | capitolo Commercial | overlay Fotografie Commerciali |
 | `pubblicazioni` | capitolo Pubblicazioni | colonna in Chi sono |
 | `epiloghi`/`FRASE_FIN` | pagina "fin." | epilogo nel footer |
+| `quello-che-hai-visto` | stesso overlay progetto, archivio sempre visibile | stesso overlay progetto, archivio sempre visibile |
