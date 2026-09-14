@@ -392,6 +392,78 @@
     <div class="progetto-interno"></div>
   </article>
 
+  <!-- ══ PAGINA DEDICATA AL FORM QCHV ══ -->
+  <div id="qchv-standalone" aria-hidden="true">
+    <div class="qchv-dettaglio" id="qchv-dettaglio" aria-hidden="true">
+      <button type="button" class="qchv-dettaglio-chiudi" id="qchv-dettaglio-chiudi" aria-label="Chiudi">×</button>
+      <div class="qchv-dettaglio-corpo" id="qchv-dettaglio-corpo"></div>
+    </div>
+
+    <div class="qchv-form-overlay" id="qchv-form-overlay" aria-hidden="true">
+      <button type="button" class="qchv-form-chiudi" id="qchv-form-chiudi" aria-label="Chiudi">×</button>
+      <div class="qchv-form-corpo">
+        <p class="qchv-form-intro">Mostra il tuo sguardo</p>
+        <form id="qchv-form" novalidate>
+          <p class="qchv-form-sezione">Chi sei</p>
+          <label class="qchv-campo">
+            <span>Nome</span>
+            <input type="text" name="nome" required maxlength="80">
+          </label>
+          <label class="qchv-campo">
+            <span>Instagram</span>
+            <input type="text" name="instagram" maxlength="80">
+          </label>
+          <label class="qchv-campo">
+            <span>Email</span>
+            <input type="email" name="email" required maxlength="200">
+          </label>
+
+          <p class="qchv-form-sezione">Dove</p>
+          <label class="qchv-campo">
+            <span>Luogo</span>
+            <input type="text" name="luogo" required maxlength="80">
+          </label>
+          <label class="qchv-campo">
+            <span>Anno</span>
+            <input type="text" name="anno" required inputmode="numeric" pattern="[0-9]{4}" maxlength="4">
+          </label>
+
+          <p class="qchv-form-sezione">Cosa hai visto</p>
+          <label class="qchv-campo">
+            <textarea name="testo" required maxlength="500" rows="4" placeholder="Scrivi qui..."></textarea>
+          </label>
+
+          <p class="qchv-form-sezione">Foto</p>
+          <p class="qchv-form-foto-nota">Fino a 3 foto, max 8MB ciascuna.</p>
+          <label class="qchv-campo-file" id="qchv-campo-file">
+            <input type="file" name="foto" accept="image/png,image/jpeg,image/webp" multiple id="qchv-input-file">
+            <span id="qchv-input-file-label">Aggiungi foto</span>
+          </label>
+          <div class="qchv-anteprime" id="qchv-anteprime"></div>
+
+          <label class="qchv-honeypot" aria-hidden="true">
+            Sito web
+            <input type="text" name="sito_web" tabindex="-1" autocomplete="off">
+          </label>
+
+          <label class="qchv-consenso">
+            <input type="checkbox" name="consenso" required>
+            <span>Acconsento al trattamento dei miei dati.</span>
+          </label>
+
+          <p class="qchv-form-errore" id="qchv-form-errore" hidden></p>
+          <button type="submit" class="qchv-form-invia" id="qchv-form-invia">Invia</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="qchv-conferma" id="qchv-conferma" aria-hidden="true">
+      <h2 class="qchv-conferma-titolo">Grazie</h2>
+      <p class="qchv-conferma-testo">Il tuo sguardo è stato ricevuto.</p>
+      <button type="button" class="qchv-conferma-torna" id="qchv-conferma-torna">Torna</button>
+    </div>
+  </div>
+
   <!-- ══ OVERLAY taccuino archivio ══ -->
   <section id="pagina-taccuino-archivio" aria-hidden="true">
     <div class="taccuino-archivio-interno"></div>

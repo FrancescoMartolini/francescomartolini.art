@@ -842,6 +842,15 @@ function generaSpotifyHTML(v) {
 }
 
 function chiudiProgetto() {
+  const qchv = $('qchv-standalone');
+  if (qchv && qchv.getAttribute('aria-hidden') === 'false') {
+    qchv.setAttribute('aria-hidden', 'true');
+    const paginaQCHV = qchv.querySelector('.qchv-pagina');
+    if (paginaQCHV) paginaQCHV.remove();
+    if (_qchvUltimoFocus && document.contains(_qchvUltimoFocus)) _qchvUltimoFocus.focus();
+    return;
+  }
+
   const el = $('pagina-progetto');
   el.style.removeProperty('transform');
   el.classList.remove('aperta');
@@ -904,114 +913,51 @@ function apriQuelloCheHaiVisto() {
     url: location.origin + '/progetti/' + ID_QCHV
   });
 
-  const el = $('pagina-progetto');
-  const interno = el.querySelector('.progetto-interno');
-  el.style.removeProperty('--pr-bg');
-  el.style.removeProperty('--pr-text');
-  el.style.removeProperty('--pr-accent');
+  const progetto = $('pagina-progetto');
+  if (progetto) {
+    progetto.classList.remove('aperta');
+    progetto.setAttribute('aria-hidden', 'true');
+    progetto.style.removeProperty('transform');
+    progetto.style.removeProperty('--pr-bg');
+    progetto.style.removeProperty('--pr-text');
+    progetto.style.removeProperty('--pr-accent');
+  }
 
-  interno.innerHTML = `
+  const root = $('qchv-standalone');
+  if (!root) return;
+
+  const pagina = root.querySelector('.qchv-pagina') || document.createElement('div');
+  pagina.className = 'qchv-pagina';
+  pagina.id = 'qchv-pagina';
+  pagina.innerHTML = `
     <button class="progetto-torna" onclick="chiudiProgetto()">${tu('common.torna')}</button>
-    <div class="qchv-pagina" id="qchv-pagina">
+    <section class="qchv-hero" id="qchv-hero">
+      <p class="qchv-hero-riga">${tu('qchv.heroRigo1')}</p>
+      <p class="qchv-hero-riga">${tu('qchv.heroRigo2')}</p>
+      <p class="qchv-hero-riga">${tu('qchv.heroRigo3')}</p>
+      <p class="qchv-hero-nota">${tu('qchv.heroNota')}</p>
+    </section>
 
-      <section class="qchv-hero" id="qchv-hero">
-        <p class="qchv-hero-riga">${tu('qchv.heroRigo1')}</p>
-        <p class="qchv-hero-riga">${tu('qchv.heroRigo2')}</p>
-        <p class="qchv-hero-riga">${tu('qchv.heroRigo3')}</p>
-        <p class="qchv-hero-nota">${tu('qchv.heroNota')}</p>
-      </section>
-
-      <section class="qchv-archivio qchv-archivio--visibile" id="qchv-archivio">
-        <div class="qchv-griglia" id="qchv-griglia"></div>
-        <div class="qchv-intro" id="qchv-intro"></div>
-        <div class="qchv-cta">
-          <h2 class="qchv-cta-titolo">${tu('qchv.invitoTitolo')}</h2>
-          <p class="qchv-cta-sottotitolo">${tu('qchv.invitoSottotitolo')}</p>
-          <button type="button" class="qchv-cta-btn" id="qchv-btn-form">${tu('qchv.mostralo')}</button>
-        </div>
-      </section>
-
-      <div class="qchv-dettaglio" id="qchv-dettaglio" aria-hidden="true">
-        <button type="button" class="qchv-dettaglio-chiudi" id="qchv-dettaglio-chiudi" aria-label="${tu('qchv.chiudi')}">×</button>
-        <div class="qchv-dettaglio-corpo" id="qchv-dettaglio-corpo"></div>
+    <section class="qchv-archivio qchv-archivio--visibile" id="qchv-archivio">
+      <div class="qchv-griglia" id="qchv-griglia"></div>
+      <div class="qchv-intro" id="qchv-intro"></div>
+      <div class="qchv-cta">
+        <h2 class="qchv-cta-titolo">${tu('qchv.invitoTitolo')}</h2>
+        <p class="qchv-cta-sottotitolo">${tu('qchv.invitoSottotitolo')}</p>
+        <button type="button" class="qchv-cta-btn" id="qchv-btn-form">${tu('qchv.mostralo')}</button>
       </div>
+    </section>
+  `;
 
-      <div class="qchv-form-overlay" id="qchv-form-overlay" aria-hidden="true">
-        <button type="button" class="qchv-form-chiudi" id="qchv-form-chiudi" aria-label="${tu('qchv.chiudi')}">×</button>
-        <div class="qchv-form-corpo">
-          <p class="qchv-form-intro">${tu('qchv.formIntro')}</p>
-          <form id="qchv-form" novalidate>
-            <p class="qchv-form-sezione">${tu('qchv.formChiSezione')}</p>
-            <label class="qchv-campo">
-              <span>${tu('qchv.formNome')}</span>
-              <input type="text" name="nome" required maxlength="80">
-            </label>
-            <label class="qchv-campo">
-              <span>${tu('qchv.formInstagram')}</span>
-              <input type="text" name="instagram" maxlength="80">
-            </label>
-            <label class="qchv-campo">
-              <span>${tu('qchv.formEmail')}</span>
-              <input type="email" name="email" required maxlength="200">
-            </label>
+  if (!pagina.parentElement) root.insertBefore(pagina, root.firstChild);
 
-            <p class="qchv-form-sezione">${tu('qchv.formDoveSezione')}</p>
-            <label class="qchv-campo">
-              <span>${tu('qchv.formLuogo')}</span>
-              <input type="text" name="luogo" required maxlength="80">
-            </label>
-            <label class="qchv-campo">
-              <span>${tu('qchv.formAnno')}</span>
-              <input type="text" name="anno" required inputmode="numeric" pattern="[0-9]{4}" maxlength="4">
-            </label>
-
-            <p class="qchv-form-sezione">${tu('qchv.formCosaSezione')}</p>
-            <label class="qchv-campo">
-              <textarea name="testo" required maxlength="500" rows="4" placeholder="${tu('qchv.formCosaPlaceholder')}"></textarea>
-            </label>
-
-            <p class="qchv-form-sezione">${tu('qchv.formFotoSezione')}</p>
-            <p class="qchv-form-foto-nota">${tu('qchv.formFotoNota')}</p>
-            <label class="qchv-campo-file" id="qchv-campo-file">
-              <input type="file" name="foto" accept="image/png,image/jpeg,image/webp" multiple id="qchv-input-file">
-              <span id="qchv-input-file-label">${tu('qchv.formFotoAggiungi')}</span>
-            </label>
-            <div class="qchv-anteprime" id="qchv-anteprime"></div>
-
-            <!-- honeypot anti-spam: invisibile agli utenti reali, mai valorizzato -->
-            <label class="qchv-honeypot" aria-hidden="true">
-              Sito web
-              <input type="text" name="sito_web" tabindex="-1" autocomplete="off">
-            </label>
-
-            <label class="qchv-consenso">
-              <input type="checkbox" name="consenso" required>
-              <span>${tu('qchv.formConsenso')}</span>
-            </label>
-
-            <p class="qchv-form-errore" id="qchv-form-errore" hidden></p>
-
-            <button type="submit" class="qchv-form-invia" id="qchv-form-invia">${tu('qchv.formInvia')}</button>
-          </form>
-        </div>
-      </div>
-
-      <div class="qchv-conferma" id="qchv-conferma" aria-hidden="true">
-        <h2 class="qchv-conferma-titolo">${tu('qchv.confermaTitolo')}</h2>
-        <p class="qchv-conferma-testo">${tu('qchv.confermaTesto')}</p>
-        <button type="button" class="qchv-conferma-torna" id="qchv-conferma-torna">${tu('qchv.confermaTorna')}</button>
-      </div>
-
-    </div>`;
-
-  el.classList.add('aperta');
-  stabilizzaTransformOverlay(el);
-  el.scrollTop = 0;
-  apriOverlayFocus(el, el.querySelector('.progetto-torna'));
+  root.setAttribute('aria-hidden', 'false');
+  root.scrollTop = 0;
+  apriOverlayFocus(root, pagina.querySelector('.progetto-torna'));
 
   popolaIntroQCHV(pr);
   popolaGrigliaQCHV();
-  avviaInterazioniQCHV(el);
+  avviaInterazioniQCHV(root);
 }
 
 // Introduzione del progetto: legge gli eventuali blocchi "testo" da
@@ -1153,15 +1099,8 @@ function chiudiDettaglioQCHV() {
 // ── Form "Mostralo" ──
 function apriFormQCHV() {
   _qchvUltimoFocus = document.activeElement;
-  const progetto = $('pagina-progetto');
   const el = $('qchv-form-overlay');
   if (!el) return;
-  const isSafariIphone = /iPhone|iPad|iPod/i.test(navigator.userAgent) && /Safari/i.test(navigator.userAgent) && !/CriOS|FxiOS|OPiOS/i.test(navigator.userAgent);
-  if (isSafariIphone && progetto) {
-    progetto.style.transform = 'none';
-    progetto.style.position = 'absolute';
-    el.style.position = 'absolute';
-  }
   el.classList.add('qchv-form-overlay--aperto');
   el.setAttribute('aria-hidden', 'false');
   el.querySelector('.qchv-form-chiudi').focus();
@@ -1169,14 +1108,9 @@ function apriFormQCHV() {
 
 function chiudiFormQCHV() {
   const el = $('qchv-form-overlay');
-  const progetto = $('pagina-progetto');
   if (!el) return;
   el.classList.remove('qchv-form-overlay--aperto');
   el.setAttribute('aria-hidden', 'true');
-  if (progetto) {
-    progetto.style.position = '';
-    progetto.style.transform = '';
-  }
   if (_qchvUltimoFocus && document.contains(_qchvUltimoFocus)) _qchvUltimoFocus.focus();
 }
 
