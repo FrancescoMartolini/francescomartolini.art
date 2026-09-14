@@ -1098,12 +1098,7 @@ function chiudiDettaglioQCHV() {
 
 // ── Form "Mostralo" ──
 function apriFormQCHV() {
-  _qchvUltimoFocus = document.activeElement;
-  const el = $('qchv-form-overlay');
-  if (!el) return;
-  el.classList.add('qchv-form-overlay--aperto');
-  el.setAttribute('aria-hidden', 'false');
-  el.querySelector('.qchv-form-chiudi').focus();
+  location.href = 'qchv-form.html';
 }
 
 function chiudiFormQCHV() {

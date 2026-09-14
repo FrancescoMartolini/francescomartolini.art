@@ -2708,6 +2708,47 @@ body.intro-attiva { overflow: hidden; }
 .qchv-form-invia:hover { opacity: 0.85; }
 .qchv-form-invia:disabled { opacity: 0.5; cursor: default; }
 
+/* Pagina autonoma del form: nessun overlay fixed durante l'apertura della
+   tastiera mobile. */
+.qchv-form-page {
+  min-height: 100vh;
+  background: var(--bianco);
+  color: var(--nero);
+}
+.qchv-form-page .qchv-form-overlay {
+  position: static;
+  min-height: 100vh;
+  opacity: 1;
+  overflow: visible;
+}
+.qchv-form-page .qchv-form-chiudi {
+  position: absolute;
+}
+.qchv-form-success {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 100px clamp(20px, 6vw, 40px);
+  text-align: center;
+}
+.qchv-form-success h1 {
+  font-family: var(--font-titolo);
+  font-size: clamp(32px, 6vw, 56px);
+  font-weight: 400;
+}
+.qchv-form-success p {
+  margin-top: 16px;
+  color: var(--grigio-medio);
+}
+.qchv-form-success a {
+  display: inline-block;
+  margin-top: 48px;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--grigio-medio);
+  padding-bottom: 4px;
+}
+
 /* ── Conferma ── */
 .qchv-conferma {
   position: fixed; inset: 0; z-index: 10; background: var(--nero); color: var(--bianco);

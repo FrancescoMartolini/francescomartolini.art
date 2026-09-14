@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f4f0">
+  <title>Mostra il tuo sguardo — francescomartolini.art</title>
+  <link rel="stylesheet" href="css/stile.css">
+</head>
+<body class="qchv-form-page">
+  <main class="qchv-form-overlay qchv-form-overlay--aperto">
+    <a class="qchv-form-chiudi" href="./" aria-label="Torna">×</a>
+    <div class="qchv-form-corpo">
+      <p class="qchv-form-intro">Mostra il tuo sguardo</p>
+      <form id="qchv-form" novalidate>
+        <p class="qchv-form-sezione">Chi sei</p>
+        <label class="qchv-campo"><span>Nome</span><input type="text" name="nome" required maxlength="80"></label>
+        <label class="qchv-campo"><span>Instagram</span><input type="text" name="instagram" maxlength="80"></label>
+        <label class="qchv-campo"><span>Email</span><input type="email" name="email" required maxlength="200"></label>
+
+        <p class="qchv-form-sezione">Dove</p>
+        <label class="qchv-campo"><span>Luogo</span><input type="text" name="luogo" required maxlength="80"></label>
+        <label class="qchv-campo"><span>Anno</span><input type="text" name="anno" required inputmode="numeric" pattern="[0-9]{4}" maxlength="4"></label>
+
+        <p class="qchv-form-sezione">Cosa hai visto</p>
+        <label class="qchv-campo"><textarea name="testo" required maxlength="500" rows="4" placeholder="Scrivi qui..."></textarea></label>
+
+        <p class="qchv-form-sezione">Foto</p>
+        <p class="qchv-form-foto-nota">Fino a 3 foto, max 8MB ciascuna.</p>
+        <label class="qchv-campo-file">
+          <input type="file" name="foto" accept="image/png,image/jpeg,image/webp" multiple id="qchv-input-file">
+          <span>Aggiungi foto</span>
+        </label>
+        <div class="qchv-anteprime" id="qchv-anteprime"></div>
+
+        <label class="qchv-honeypot" aria-hidden="true">Sito web<input type="text" name="sito_web" tabindex="-1" autocomplete="off"></label>
+        <label class="qchv-consenso">
+          <input type="checkbox" name="consenso" required>
+          <span>Acconsento al trattamento dei miei dati.</span>
+        </label>
+        <p class="qchv-form-errore" id="qchv-form-errore" hidden></p>
+        <button type="submit" class="qchv-form-invia" id="qchv-form-invia">Invia</button>
+      </form>
+      <section class="qchv-form-success" id="qchv-form-success" hidden>
+        <h1>Grazie</h1>
+        <p>Il tuo sguardo è stato ricevuto.</p>
+        <a href="./">Torna al sito</a>
+      </section>
+    </div>
+  </main>
+  <script src="js/qchv-form.js"></script>
+</body>
+</html>
