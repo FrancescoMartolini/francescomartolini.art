@@ -1245,7 +1245,14 @@ function chiudiDettaglioQCHV() {
 
 // ── Form "Mostralo" ──
 function apriFormQCHV() {
-  location.href = 'qchv-form.html';
+  const base = (document.querySelector('base') && document.querySelector('base').getAttribute('href')) || '';
+  const chunks = (window.location.pathname || '/').split('/').filter(Boolean);
+  const repoRoot = (window.location.hostname.endsWith('github.io') && chunks.length ? '/' + chunks[0] + '/' : '/');
+  const formUrl = new URL(
+    'qchv-form.html',
+    (base && base !== '/') ? new URL(base, window.location.origin).toString() : new URL(repoRoot, window.location.origin).toString()
+  );
+  window.location.assign(formUrl.toString());
 }
 
 function chiudiFormQCHV() {
