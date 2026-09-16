@@ -61,12 +61,26 @@ export async function gestisciMostralo(request, env, ctx) {
   var instagram = (form.get('instagram') || '').toString().trim();
   var email = (form.get('email') || '').toString().trim();
   var luogo = (form.get('luogo') || '').toString().trim();
+  var lat = (form.get('lat') || '').toString().trim();
+  var lng = (form.get('lng') || '').toString().trim();
   var anno = (form.get('anno') || '').toString().trim();
   var testo = (form.get('testo') || '').toString().trim();
   var consenso = (form.get('consenso') || '').toString();
 
   if (!nome || !email || !luogo || !anno || !testo) {
     return rispostaJson({ ok: false, errore: 'Compila tutti i campi obbligatori.' }, 400);
+  }
+  if (lat && !/^[-+]?\d+(?:\.\d+)?$/.test(lat)) {
+    return rispostaJson({ ok: false, errore: 'Coordinate non valide.' }, 400);
+  }
+  if (lng && !/^[-+]?\d+(?:\.\d+)?$/.test(lng)) {
+    return rispostaJson({ ok: false, errore: 'Coordinate non valide.' }, 400);
+  }
+  if (lat && (Number(lat) < -90 || Number(lat) > 90)) {
+    return rispostaJson({ ok: false, errore: 'Latitudine fuori range.' }, 400);
+  }
+  if (lng && (Number(lng) < -180 || Number(lng) > 180)) {
+    return rispostaJson({ ok: false, errore: 'Longitudine fuori range.' }, 400);
   }
   if (!/^\d{4}$/.test(anno)) {
     return rispostaJson({ ok: false, errore: 'L\'anno deve essere di 4 cifre.' }, 400);
@@ -96,12 +110,17 @@ export async function gestisciMostralo(request, env, ctx) {
     return rispostaJson({ ok: false, errore: 'Servizio momentaneamente non disponibile.' }, 500);
   }
 
+  var coordinate = '';
+  if (lat && lng) {
+    coordinate = '\n<b>Coordinate approssimate:</b> ' + escapeHtml(lat) + ', ' + escapeHtml(lng);
+  }
+
   var didascalia =
     '👁️ <b>Nuovo sguardo — Quello che Hai Visto</b>\n\n' +
     '<b>Nome:</b> ' + escapeHtml(nome) + '\n' +
     (instagram ? '<b>Instagram/sito:</b> ' + escapeHtml(instagram) + '\n' : '') +
     '<b>Email:</b> ' + escapeHtml(email) + '\n' +
-    '<b>Luogo:</b> ' + escapeHtml(luogo) + '\n' +
+    '<b>Luogo:</b> ' + escapeHtml(luogo) + coordinate + '\n' +
     '<b>Anno:</b> ' + escapeHtml(anno) + '\n\n' +
     '<i>' + escapeHtml(testo) + '</i>' +
     (file.length ? '' : '\n\n<i>(nessuna fotografia allegata)</i>');

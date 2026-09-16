@@ -939,7 +939,12 @@ function apriQuelloCheHaiVisto() {
     </section>
 
     <section class="qchv-archivio qchv-archivio--visibile" id="qchv-archivio">
+      <div class="qchv-vista-toggle" id="qchv-vista-toggle" aria-label="Seleziona vista archivio">
+        <button type="button" class="qchv-vista-btn qchv-vista-btn--attivo" data-qchv-view="griglia">Griglia</button>
+        <button type="button" class="qchv-vista-btn" data-qchv-view="mappa">Mappa</button>
+      </div>
       <div class="qchv-griglia" id="qchv-griglia"></div>
+      <div class="qchv-mappa" id="qchv-mappa" hidden></div>
       <div class="qchv-intro" id="qchv-intro"></div>
       <div class="qchv-cta">
         <h2 class="qchv-cta-titolo">${tu('qchv.invitoTitolo')}</h2>
@@ -1017,11 +1022,95 @@ function popolaGrigliaQCHV() {
   });
 }
 
+let _qchvLeafletPromise = null;
+
+function caricaLeafletQCHV() {
+  if (window.L) return Promise.resolve(window.L);
+  if (_qchvLeafletPromise) return _qchvLeafletPromise;
+
+  const link = document.querySelector('link[data-qchv-leaflet="1"]');
+  if (!link) {
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    css.dataset.qchvLeaflet = '1';
+    document.head.appendChild(css);
+  }
+
+  _qchvLeafletPromise = new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[data-qchv-leaflet="1"]');
+    if (existing) {
+      existing.addEventListener('load', () => resolve(window.L), { once: true });
+      existing.addEventListener('error', () => reject(new Error('Leaflet non caricato')), { once: true });
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.async = true;
+    script.dataset.qchvLeaflet = '1';
+    script.addEventListener('load', () => resolve(window.L), { once: true });
+    script.addEventListener('error', () => reject(new Error('Leaflet non caricato')), { once: true });
+    document.head.appendChild(script);
+  });
+
+  return _qchvLeafletPromise;
+}
+
 function avviaInterazioniQCHV(overlayEl) {
   // Dettaglio contributo
   $('qchv-dettaglio-chiudi').addEventListener('click', chiudiDettaglioQCHV);
   overlayEl.removeEventListener('keydown', escQCHV); // evita accumulo tra aperture ripetute
   overlayEl.addEventListener('keydown', escQCHV);
+
+  // Vista archivio: griglia / mappa
+  const toggle = overlayEl.querySelector('#qchv-vista-toggle');
+  const contributi = stato.qchv || [];
+  const haCoordinate = contributi.some(c => {
+    const lat = Number(c.lat); const lng = Number(c.lng);
+    return Number.isFinite(lat) && Number.isFinite(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+  });
+
+  if (toggle) {
+    const pulsanti = toggle.querySelectorAll('.qchv-vista-btn');
+    toggle.hidden = !contributi.length || !haCoordinate;
+    pulsanti.forEach(btn => {
+      const mostra = btn.dataset.qchvView === 'mappa' ? haCoordinate : true;
+      btn.hidden = !mostra;
+    });
+
+    if (toggle.hidden) {
+      const griglia = overlayEl.querySelector('#qchv-griglia');
+      const mappa = overlayEl.querySelector('#qchv-mappa');
+      if (griglia) {
+        griglia.hidden = false;
+        griglia.style.display = '';
+      }
+      if (mappa) {
+        mappa.hidden = true;
+        mappa.style.display = 'none';
+      }
+      return;
+    }
+
+    const setVista = vista => {
+      const isMappa = vista === 'mappa';
+      const griglia = overlayEl.querySelector('#qchv-griglia');
+      const mappa = overlayEl.querySelector('#qchv-mappa');
+      if (griglia) {
+        griglia.hidden = isMappa;
+        griglia.style.display = isMappa ? 'none' : '';
+      }
+      if (mappa) {
+        mappa.hidden = !isMappa;
+        mappa.style.display = isMappa ? 'block' : 'none';
+      }
+      pulsanti.forEach(btn => btn.classList.toggle('qchv-vista-btn--attivo', btn.dataset.qchvView === vista));
+      if (isMappa) popolaMappaQCHV();
+    };
+    pulsanti.forEach(btn => btn.addEventListener('click', () => setVista(btn.dataset.qchvView)));
+    setVista('griglia');
+  }
 
   // Form
   $('qchv-btn-form').addEventListener('click', apriFormQCHV);
@@ -1031,6 +1120,64 @@ function avviaInterazioniQCHV(overlayEl) {
   $('qchv-conferma-torna').addEventListener('click', () => {
     $('qchv-conferma').classList.remove('qchv-conferma--visibile');
     $('qchv-conferma').setAttribute('aria-hidden', 'true');
+  });
+}
+
+function popolaMappaQCHV() {
+  const mappaEl = $('qchv-mappa');
+  if (!mappaEl) return;
+
+  const contributi = (stato.qchv || []).filter(c => {
+    const lat = Number(c.lat); const lng = Number(c.lng);
+    return Number.isFinite(lat) && Number.isFinite(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+  });
+
+  if (!contributi.length) {
+    mappaEl.innerHTML = '<p class="qchv-mappa-vuota">Nessun contributo con coordinate geografiche.</p>';
+    return;
+  }
+
+  mappaEl.innerHTML = '';
+  caricaLeafletQCHV().then(() => {
+    if (mappaEl._qchvMap) {
+      mappaEl._qchvMap.remove();
+      mappaEl._qchvMap = null;
+    }
+
+    const map = L.map(mappaEl, { scrollWheelZoom: false, zoomControl: true }).setView([43.7696, 11.2558], 5);
+    mappaEl._qchvMap = map;
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 19
+    }).addTo(map);
+
+    const bounds = [];
+    contributi.forEach(c => {
+      const lat = Number(c.lat);
+      const lng = Number(c.lng);
+      const marker = L.marker([lat, lng]).addTo(map);
+      const popupHtml = `
+        <strong>${escapeAttr(c.author || '')}</strong><br>
+        ${escapeAttr(c.location || '')}${c.year ? `, ${escapeAttr(c.year)}` : ''}
+        ${c.text ? `<br>${escapeAttr(c.text)}` : ''}
+      `;
+      marker.bindPopup(popupHtml);
+      marker.on('click', () => {
+        const idx = (stato.qchv || []).findIndex(item => item === c);
+        if (idx >= 0) apriDettaglioQCHV(idx);
+      });
+      bounds.push([lat, lng]);
+    });
+
+    if (bounds.length === 1) {
+      map.setView(bounds[0], 11);
+    } else {
+      map.fitBounds(bounds, { padding: [30, 30] });
+    }
+    requestAnimationFrame(() => map.invalidateSize());
+  }).catch(() => {
+    mappaEl.innerHTML = '<p class="qchv-mappa-vuota">La mappa non è disponibile al momento.</p>';
   });
 }
 

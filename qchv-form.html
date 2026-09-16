@@ -20,6 +20,9 @@
 
         <p class="qchv-form-sezione">Dove</p>
         <label class="qchv-campo"><span>Luogo</span><input type="text" name="luogo" required maxlength="80"></label>
+        <p class="qchv-form-foto-nota">Se non conosci le coordinate precise, il sito usa il centro approssimativo del luogo indicato.</p>
+        <input type="hidden" name="lat" id="qchv-lat">
+        <input type="hidden" name="lng" id="qchv-lng">
         <label class="qchv-campo"><span>Anno</span><input type="text" name="anno" required inputmode="numeric" pattern="[0-9]{4}" maxlength="4"></label>
 
         <p class="qchv-form-sezione">Cosa hai visto</p>
@@ -31,6 +34,7 @@
           <input type="file" name="foto" accept="image/png,image/jpeg,image/webp" multiple id="qchv-input-file">
           <span>Aggiungi foto</span>
         </label>
+        <p class="qchv-form-foto-nota">Se vuoi rimuovere una foto, clicca la X sulla miniatura.</p>
         <div class="qchv-anteprime" id="qchv-anteprime"></div>
 
         <label class="qchv-honeypot" aria-hidden="true">Sito web<input type="text" name="sito_web" tabindex="-1" autocomplete="off"></label>

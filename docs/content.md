@@ -89,6 +89,8 @@ Array di frasi brevi per la pagina "fin.".
     "instagram": "@username",
     "location": "Firenze",
     "year": "2026",
+    "lat": 43.7696,
+    "lng": 11.2558,
     "text": "Il testo che ha scritto.",
     "images": [
       "https://res.cloudinary.com/dgo7tnyv6/image/upload/…-1.jpg",
@@ -101,8 +103,10 @@ Array di frasi brevi per la pagina "fin.".
 
 - `id`: solo deve essere univoco nell'array (va bene una numerazione progressiva "001", "002"…).
 - `instagram`: opzionale.
+- `lat` / `lng`: opzionali; se presenti devono essere numeri validi, usati per mostrare il contributo anche nella vista Mappa. Se sono assenti, il contributo resta nella griglia ma non compare sulla mappa.
 - `images`: da 1 a 3 URL Cloudinary. Il primo è quello mostrato nella griglia dell'archivio.
 - **Non includere mai l'email** del mittente: questo file è pubblico (servito al frontend), l'email resta solo nel messaggio Telegram della submission.
+- La vista Mappa compare solo quando ci sono contributi con coordinate valide; se non ci sono punti, l’interruttore viene nascosto e l’archivio resta solo in griglia.
 
 Il file parte vuoto (`[]`) e cresce solo per aggiunta manuale: le submission arrivano via `/mostralo` (endpoint del Worker, `worker/mostralo.js`) come messaggio Telegram con foto allegate, sullo stesso bot/chat usato per le notifiche di `/visita`. Chi gestisce il sito decide se pubblicare, carica le foto approvate su Cloudinary e aggiunge la voce qui a mano. Nessuna pubblicazione automatica, nessun database, nessuna dashboard admin.
 
