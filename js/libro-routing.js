@@ -1090,26 +1090,28 @@ function avviaInterazioniQCHV(overlayEl) {
         mappa.hidden = true;
         mappa.style.display = 'none';
       }
-      return;
+      // Niente "return" qui: con l'archivio vuoto o senza coordinate il
+      // toggle griglia/mappa resta nascosto, ma l'inizializzazione deve
+      // proseguire — più sotto si aggancia anche il pulsante "Mostralo".
+    } else {
+      const setVista = vista => {
+        const isMappa = vista === 'mappa';
+        const griglia = overlayEl.querySelector('#qchv-griglia');
+        const mappa = overlayEl.querySelector('#qchv-mappa');
+        if (griglia) {
+          griglia.hidden = isMappa;
+          griglia.style.display = isMappa ? 'none' : '';
+        }
+        if (mappa) {
+          mappa.hidden = !isMappa;
+          mappa.style.display = isMappa ? 'block' : 'none';
+        }
+        pulsanti.forEach(btn => btn.classList.toggle('qchv-vista-btn--attivo', btn.dataset.qchvView === vista));
+        if (isMappa) popolaMappaQCHV();
+      };
+      pulsanti.forEach(btn => btn.addEventListener('click', () => setVista(btn.dataset.qchvView)));
+      setVista('griglia');
     }
-
-    const setVista = vista => {
-      const isMappa = vista === 'mappa';
-      const griglia = overlayEl.querySelector('#qchv-griglia');
-      const mappa = overlayEl.querySelector('#qchv-mappa');
-      if (griglia) {
-        griglia.hidden = isMappa;
-        griglia.style.display = isMappa ? 'none' : '';
-      }
-      if (mappa) {
-        mappa.hidden = !isMappa;
-        mappa.style.display = isMappa ? 'block' : 'none';
-      }
-      pulsanti.forEach(btn => btn.classList.toggle('qchv-vista-btn--attivo', btn.dataset.qchvView === vista));
-      if (isMappa) popolaMappaQCHV();
-    };
-    pulsanti.forEach(btn => btn.addEventListener('click', () => setVista(btn.dataset.qchvView)));
-    setVista('griglia');
   }
 
   // Form
