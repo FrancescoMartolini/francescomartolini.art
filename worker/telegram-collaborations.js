@@ -122,6 +122,17 @@ async function avanzaStepCollaborazione(chatId, stato, env, valore) {
   }
 }
 
+// Inserisce la trasformazione standard del sito (larghezza, qualità e formato auto)
+// dopo /image/upload/. Se l'URL ha già una trasformazione, resta com'è.
+function cloudinaryConLarghezza(url, larghezza) {
+  var marker = '/image/upload/';
+  var i = url.indexOf(marker);
+  if (i === -1) return url;
+  var resto = url.slice(i + marker.length);
+  if (!/^v\d+\//.test(resto)) return url;
+  return url.slice(0, i + marker.length) + 'w_' + larghezza + ',q_auto,f_auto/' + resto;
+}
+
 export async function pubblicaCollaborazione(bozza, env) {
   var data = bozza.data;
   
@@ -148,22 +159,28 @@ export async function pubblicaCollaborazione(bozza, env) {
   var fileInfo = await getResp.json();
   var contenutoAttuale = JSON.parse(decodeBase64Utf8(fileInfo.content));
   
-  var idMassimo = contenutoAttuale.reduce(function (max, item) {
-    var id = typeof item.id === 'string' ? parseInt(item.id) : item.id;
-    return (id > max) ? id : max;
+  // Stesso schema delle voci scritte a mano: id "ClienteN", titolo, descrizione,
+  // anno, foto (copertina, stringa singola) e galleria (le altre foto).
+  var numeroMassimo = contenutoAttuale.reduce(function (max, item) {
+    var m = String(item.id).match(/(\d+)$/);
+    var n = m ? parseInt(m[1], 10) : 0;
+    return n > max ? n : max;
   }, 0);
   
+  var fotoBozza = Array.isArray(data.foto) ? data.foto : [];
+  
   var nuovaCollaborazione = {
-    id: String(idMassimo + 1),
-    collaboratore: data.collaboratore,
-    foto: data.foto || [],
+    id: 'Cliente' + (numeroMassimo + 1),
+    titolo: data.collaboratore,
+    descrizione: '',
     anno: data.anno,
-    creato: new Date().toISOString()
+    foto: fotoBozza.length > 0 ? cloudinaryConLarghezza(fotoBozza[0], 600) : '',
+    galleria: fotoBozza.slice(1).map(function (u) { return cloudinaryConLarghezza(u, 1400); })
   };
   
   contenutoAttuale.push(nuovaCollaborazione);
   
   await pubblicaSuGithub(path, contenutoAttuale, 'Nuova collaborazione: ' + data.collaboratore, env);
   
-  return 'Collaborazione #' + nuovaCollaborazione.id + ' aggiunta con ' + data.collaboratore + '.';
+  return 'Collaborazione ' + nuovaCollaborazione.id + ' aggiunta con ' + data.collaboratore + '.';
 }

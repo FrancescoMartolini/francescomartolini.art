@@ -62,7 +62,7 @@ Al termine mostra "Bozza completata" con tastiera **[Pubblica / Salva in bozza]*
 
 > ⚠️ **Da verificare prima di affidarcisi**: le funzioni di pubblicazione dei flussi diversi da `/nuovanota` scrivono campi che **non coincidono pienamente** con gli schemi letti da `libro.js` (vedi [content.md](content.md) e [projects.md](projects.md)).
 > - `pubblicaProgetto()` scrive `copertina`, `layout`, `foto`, `about`, `ispirazione`, ma il sito legge `immagine_copertina`, `layoutType`, `contenuto`. Il valore `layout` proposto ("grid", "minimal"…) non è uno dei `layoutType` supportati.
-> - `pubblicaCollaborazione()` scrive `collaboratore` e `foto` come **array**, ma il sito legge `titolo` e `foto` come **stringa singola** + `galleria`.
+> - ~~`pubblicaCollaborazione()`~~ **allineato** (28/09/2026): scrive `id` "ClienteN", `titolo`, `descrizione`, `anno`, `foto` (prima foto = copertina, `w_600`) e `galleria` (le altre, `w_1400`), come le voci manuali.
 > - `pubblicaIntervallo()` scrive `testo` e `immagini`, ma il sito legge anche `titolo` e `descrizione`.
 > - `pubblicaPubblicazione()` scrive `link` e `nome`, ma il sito legge `titolo`, `anno`, `immagine`.
 >

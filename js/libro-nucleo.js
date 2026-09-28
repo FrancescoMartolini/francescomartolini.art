@@ -323,6 +323,8 @@ async function caricaDati() {
     fetch('json/playlist.json').then(r => r.json()).catch(() => ({})),
     fetch('json/quello-che-hai-visto.json').then(r => r.json()).catch(() => [])
   ]);
+  // Collaborazioni dalla più recente alla meno recente; a pari anno resta l'ordine del JSON (sort stabile)
+  collaborazioni.sort((a, b) => (parseInt(b.anno, 10) || 0) - (parseInt(a.anno, 10) || 0));
   Object.assign(stato, { progetti, intervalli, collaborazioni, intro, pubblicazioni, epiloghi, playlist, qchv });
 
   // ── Google Sheets DISATTIVATO (vedi README, sezione TACCUINO) ──
